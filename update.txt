@@ -39,7 +39,7 @@ goto menu
 start https://drive.google.com/file/d/1Zdo79lXiUwB_DOqH8Zwy2PExfjvGcq8M/view
 goto menu
 :opcao4
-tracert www.google.com
+start https://www.microsoft.com/pt-br/software-download/windows10
 goto menu
 :opcao5
 tracert www.google.com
