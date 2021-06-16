@@ -13,9 +13,13 @@ cls
 color 
 echo                 MENU
 echo  _______________________________________
-echo * 1. ping google           * 
+echo * 1. ping google            * 
 echo * 2. Office_2019            * 
 echo * 3. Office_2010            * 
+echo * 4. Zera-Fila            * 
+echo * 5. --            * 
+echo * 6. --            * 
+echo * 7. --            * 
 echo * 100. Sair                                  * 
 echo  _______________________________________
 set /p opcao=    choose the option and hit ENTER: 
