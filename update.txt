@@ -42,7 +42,7 @@ goto menu
 start https://www.microsoft.com/pt-br/software-download/windows10
 goto menu
 :opcao5
-tracert www.google.com
+start https://www.inilog.com.br/suporte/pacote/Zerar_fila_de_impressao.bat
 goto menu
 :opcao6
 tracert www.google.com
