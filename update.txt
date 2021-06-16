@@ -1,5 +1,5 @@
 @echo off
-Title  %computername%
+Title  Suporte Inilog
 cls
 color 
 rem Script Criado por Francisney Delmondes
@@ -17,7 +17,7 @@ echo * 1. ping google           *
 echo * 2. tracert gogole            * 
 echo * 3. Sair                                  * 
 echo  _______________________________________
-set /p opcao=    Digite uma op‡Æo e tecle ENTER: 
+set /p opcao=    choose the option and hit ENTER: 
 echo ------------------------------
 if %opcao% equ 1 goto opcao1
 if %opcao% equ 2 goto opcao2
