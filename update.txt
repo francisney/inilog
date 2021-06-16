@@ -1,1 +1,49 @@
-teste
+@echo off
+Title  %computername%
+cls
+color 
+rem Script Criado por Francisney Delmondes
+rem (61)993630969
+rem delmondesfrancisney@gmail.com
+
+:programa
+cls
+:menu
+cls
+color 
+echo                 MENU
+echo  _______________________________________
+echo * 1. ping google           * 
+echo * 2. tracert gogole            * 
+echo * 3. Sair                                  * 
+echo  _______________________________________
+set /p opcao=    Digite uma op‡Æo e tecle ENTER: 
+echo ------------------------------
+if %opcao% equ 1 goto opcao1
+if %opcao% equ 2 goto opcao2
+if %opcao% equ 3 goto opcao3
+if %opcao% GEQ 6 goto opcao6
+:opcao1
+
+ping www.google.com
+
+
+goto menu
+:opcao2
+tracert www.google.com
+goto menu
+:opcao3
+
+exit
+pause
+goto menu
+:opcao6
+echo ==============================================
+echo * Opcao Invalida! Escolha outra opcao do menu *
+echo ==============================================
+pause
+goto menu
+exit
+:senha
+msg * Senha incorreta, tente novamente.   
+pause
