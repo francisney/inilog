@@ -18,23 +18,23 @@ echo * 1. Kaspersky business
 echo * 2. Office 19             
 echo * 3. Office 10             
 echo * 4. Windows 10             
-echo * 5. Zerar Fila de impressão             
+echo * 5. reset  spooler print           
 echo * 6. CC              
 echo * 7. REVO            
-echo * 8. Drive Impressora Zebra             
+echo * 8. Drive  Zebra             
 echo * 9. Drive Bematech 4200 
-echo * 10. Scanner de Rede
+echo * 10. Scanner Network
 echo * 11. ATV OFFICE            
 echo * 12. ATV Windows    
-echo * 13. Update de foto  
-echo * 14. Testar HD 
-echo * 15. Ver operadora
-echo * 16. Velocidade do link
+echo * 13. Update de photo 
+echo * 14. Test HD 
+echo * 15. Ip-api
+echo * 16. Speed test
 echo * 17. Download WinRAR
 echo * 18. Download AnyDesk
 echo * 19.  
 echo * 20. 
-echo * 0. Sair                                   
+echo * 0. Exit                                   
 echo  _______________________________________
 set /p opcao=    choose the option and hit ENTER: 
 echo ------------------------------
