@@ -27,9 +27,9 @@ echo * 11. ATV OFFICE
 echo * 12. ATV Windows    
 echo * 13. Update de foto  
 echo * 14. Testar HD 
-echo * 15. 
-echo * 16. 
-echo * 17. 
+echo * 15.  Ver operadora
+echo * 16. Velocidade do link
+echo * 17. Download WinRAR
 echo * 18.   
 echo * 19.  
 echo * 20. 
@@ -103,6 +103,18 @@ start http://www.inilog.com.br/suporte/pacote/drive/data/foto.zip
 goto menu
 :opcao14
 start http://www.inilog.com.br/suporte/pacote/drive/data/CrystalDiskInfoPortable.zip
+goto menu
+:opcao15
+start https://ip-api.com/
+goto menu
+:opcao16
+start https://beta.simet.nic.br
+goto menu
+:opcao17
+starthttps://www.win-rar.com/fileadmin/winrar-versions/winrar/winrar-x64-602br.exe
+goto menu
+:opcao18
+start https://download.anydesk.com/AnyDesk.exe
 goto menu
 
 :opcao0
