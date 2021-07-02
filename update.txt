@@ -1,7 +1,8 @@
 @echo off
+
 Title  Suporte Inilog
 cls
-color 
+color 79
 rem Script Criado por Francisney Delmondes
 rem (61)993630969
 rem delmondesfrancisney@gmail.com
