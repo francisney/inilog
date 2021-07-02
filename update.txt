@@ -27,10 +27,10 @@ echo * 11. ATV OFFICE
 echo * 12. ATV Windows    
 echo * 13. Update de foto  
 echo * 14. Testar HD 
-echo * 15.  Ver operadora
+echo * 15. Ver operadora
 echo * 16. Velocidade do link
 echo * 17. Download WinRAR
-echo * 18.   
+echo * 18. Download AnyDesk
 echo * 19.  
 echo * 20. 
 echo * 0. Sair                                   
