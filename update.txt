@@ -96,7 +96,7 @@ goto menu
 start https://www.inilog.com.br/suporte/pacote/drive/data/Atv_office_cmd.rar
 goto menu
 :opcao12
-start https://www.inilog.com.br/suporte/pacote/drive/data/Atv_office_cmd.rar
+start  https://www.inilog.com.br/suporte/pacote/drive/data/Atv_office_cmd.rar
 goto menu
 :opcao13
 start http://www.inilog.com.br/suporte/pacote/drive/data/foto.zip 
