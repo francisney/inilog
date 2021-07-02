@@ -14,10 +14,10 @@ color
 echo                 MENU
 echo  _______________________________________
 echo * 1. Kaspersky business           
-echo * 2. Office_2019             
-echo * 3. Office_2010             
+echo * 2. Office 19             
+echo * 3. Office 10             
 echo * 4. Windows 10             
-echo * 5. Zerar_Fila             
+echo * 5. Zerar Fila de impressão             
 echo * 6. CC              
 echo * 7. REVO            
 echo * 8. Drive Impressora Zebra             
@@ -43,7 +43,7 @@ if %opcao% equ 11 goto opcao10
 if %opcao% equ 12 goto opcao11
 if %opcao% equ 13 goto opcao12
 
-if %opcao% equ 100 goto opcao3
+if %opcao% equ 0 goto opcao0
 if %opcao% GEQ 6 goto opcao6
 :opcao1
 
@@ -88,7 +88,7 @@ start http://www.inilog.com.br/suporte/pacote/drive/data/foto.zip
 goto menu
 
 
-:opcao100
+:opcao0
 
 exit
 pause
