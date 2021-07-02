@@ -13,7 +13,7 @@ cls
 color 
 echo                 MENU
 echo  _______________________________________
-echo * 1. ping google            
+echo * 1. Kaspersky business           
 echo * 2. Office_2019             
 echo * 3. Office_2010             
 echo * 4. Windows 10             
@@ -47,8 +47,7 @@ if %opcao% equ 100 goto opcao3
 if %opcao% GEQ 6 goto opcao6
 :opcao1
 
-ping www.google.com
-
+start http://www.inilog.com.br/suporte/pacote/drive/data/ksos21.3.10.391pt_26068.exe
 
 goto menu
 :opcao2
