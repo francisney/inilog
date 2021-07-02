@@ -13,13 +13,19 @@ cls
 color 
 echo                 MENU
 echo  _______________________________________
-echo * 1. ping google            * 
-echo * 2. Office_2019            * 
-echo * 3. Office_2010            * 
-echo * 4. Zera-Fila            * 
-echo * 5. --            * 
-echo * 6. --            * 
-echo * 7. --            * 
+echo * 1. ping google            
+echo * 2. Office_2019             
+echo * 3. Office_2010             
+echo * 4. Windows 10             
+echo * 5. Zerar_Fila             
+echo * 6. CC              
+echo * 7. REVO            
+echo * 8. Drive Impressora Zebra             
+echo * 9. Drive Bematech 4200 
+echo * 10. Scanner de Rede
+echo * 11. ATV OFFICE            
+echo * 12. ATV Windows    
+echo * 12. Update de foto   
 echo * 100. Sair                                  * 
 echo  _______________________________________
 set /p opcao=    choose the option and hit ENTER: 
@@ -27,6 +33,15 @@ echo ------------------------------
 if %opcao% equ 1 goto opcao1
 if %opcao% equ 2 goto opcao2
 if %opcao% equ 3 goto opcao3
+if %opcao% equ 4 goto opcao4
+if %opcao% equ 5 goto opcao5
+if %opcao% equ 6 goto opcao6
+if %opcao% equ 7 goto opcao7
+if %opcao% equ 8 goto opcao8
+if %opcao% equ 9 goto opcao9
+if %opcao% equ 11 goto opcao10
+if %opcao% equ 12 goto opcao11
+if %opcao% equ 13 goto opcao12
 
 if %opcao% equ 100 goto opcao3
 if %opcao% GEQ 6 goto opcao6
@@ -49,7 +64,28 @@ goto menu
 start https://www.inilog.com.br/suporte/pacote/Zerar_fila_de_impressao.bat
 goto menu
 :opcao6
-tracert www.google.com
+start https://download.ccleaner.com/portable/ccsetup582.zip
+goto menu
+:opcao7
+start https://download.revouninstaller.com/RevoUninstaller_Portable.zip
+goto menu
+:opcao8
+start https://www.inilog.com.br/suporte/pacote/drive_zebra.exe
+goto menu
+:opcao9
+start https://www.inilog.com.br/suporte/pacote/Drive_4200.exe
+goto menu
+:opcao10
+start https://download.advanced-ip-scanner.com/download/files/Advanced_IP_Scanner_2.5.3850.exe
+goto menu
+:opcao11
+start https://www.inilog.com.br/suporte/pacote/drive/data/Atv_office_cmd.rar
+goto menu
+:opcao12
+start https://www.inilog.com.br/suporte/pacote/drive/data/Atv_office_cmd.rar
+goto menu
+:opcao13
+start http://www.inilog.com.br/suporte/pacote/drive/data/foto.zip 
 goto menu
 
 
@@ -58,7 +94,7 @@ goto menu
 exit
 pause
 goto menu
-:opcao6
+:opcao99
 echo ==============================================
 echo * Opcao Invalida! Escolha outra opcao do menu *
 echo ==============================================
