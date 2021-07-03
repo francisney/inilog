@@ -32,7 +32,7 @@ echo * 15. Ip-api
 echo * 16. Speed test
 echo * 17. Download WinRAR
 echo * 18. Download AnyDesk
-echo * 19.  
+echo * 19. Backup Config  
 echo * 20. 
 echo * 0. Exit                                   
 echo  _______________________________________
@@ -112,10 +112,14 @@ goto menu
 start https://beta.simet.nic.br
 goto menu
 :opcao17
-starthttps://www.win-rar.com/fileadmin/winrar-versions/winrar/winrar-x64-602br.exe
+star thttps://www.win-rar.com/fileadmin/winrar-versions/winrar/winrar-x64-602br.exe
 goto menu
 :opcao18
 start https://download.anydesk.com/AnyDesk.exe
+goto menu
+:opcao18
+powershell.exe -command "& {get-WmiObject -class Win32_printer | ft name, systemName, shareName >> c:\ti\printers.txt}"
+copy c:\USE\config.xml c:\ti\%hostname%_config.xml
 goto menu
 
 :opcao0
