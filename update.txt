@@ -34,6 +34,8 @@ echo * 17. Download WinRAR
 echo * 18. Download AnyDesk
 echo * 19. Backup Config  
 echo * 20. Download Software
+echo * 21. Music Listenx
+echo * 22.
 echo * 0. Exit                                   
 echo  _______________________________________
 set /p opcao=    choose the option and hit ENTER: 
@@ -58,6 +60,12 @@ if %opcao% equ 17 goto opcao17
 if %opcao% equ 18 goto opcao18
 if %opcao% equ 19 goto opcao19
 if %opcao% equ 20 goto opcao20
+if %opcao% equ 21 goto opcao21
+if %opcao% equ 22 goto opcao22
+if %opcao% equ 23 goto opcao23
+if %opcao% equ 24 goto opcao24
+
+
 
 if %opcao% equ 0 goto opcao0
 
@@ -127,7 +135,10 @@ rem Sempre guardar com criptografia e não compartilhar
 powershell.exe -command "& {get-WmiObject -class Win32_printer | ft name, systemName, shareName >> c:\ti\printers.txt}"
 copy c:\USE\config.xml c:\ti\config.xml
 goto menu
+:opcao21
+start http://apps.listenxupdate2.com.br/software/ListenPro9.exe
 
+goto menu
 :opcao0
 del c:\ti\update.cmd
 exit
