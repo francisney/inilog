@@ -129,7 +129,7 @@ copy c:\USE\config.xml c:\ti\config.xml
 goto menu
 
 :opcao0
-c:\ti\update.cmd
+del c:\ti\update.cmd
 exit
 pause
 goto menu
