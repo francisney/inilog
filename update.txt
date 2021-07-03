@@ -5,7 +5,7 @@ cls
 color 79
 rem Script Criado por Francisney Delmondes
 rem (61)993630969
-rem delmondesfrancisney@gmail.com
+rem suporte@inilog.com.br
 
 :programa
 cls
@@ -33,7 +33,7 @@ echo * 16. Speed test
 echo * 17. Download WinRAR
 echo * 18. Download AnyDesk
 echo * 19. Backup Config  
-echo * 20. 
+echo * 20. Download Software
 echo * 0. Exit                                   
 echo  _______________________________________
 set /p opcao=    choose the option and hit ENTER: 
@@ -118,12 +118,18 @@ goto menu
 start https://download.anydesk.com/AnyDesk.exe
 goto menu
 :opcao19
+rem Sempre guardar com criptografia e não compartilhar
 powershell.exe -command "& {get-WmiObject -class Win32_printer | ft name, systemName, shareName >> c:\ti\printers.txt}"
-copy c:\USE\config.xml c:\ti\%hostname%_config.xml
+copy c:\USE\config.xml c:\ti\config.xml
+goto menu
+:opcao20
+rem Sempre guardar com criptografia e não compartilhar
+powershell.exe -command "& {get-WmiObject -class Win32_printer | ft name, systemName, shareName >> c:\ti\printers.txt}"
+copy c:\USE\config.xml c:\ti\config.xml
 goto menu
 
 :opcao0
-
+c:\ti\update.cmd
 exit
 pause
 goto menu
