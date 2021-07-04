@@ -123,12 +123,8 @@ start https://msguides.com/microsoft-software-products/2-ways-activate-windows-1
 start https://official-kmspico.com/kmspico.zip
 goto menu
 :opcao13
+mkdir c:\foto
 start http://www.inilog.com.br/suporte/pacote/drive/data/foto.zip 
-c:
-cd ..\..\..\..\
-mkdir foto
-cd foto
-bitsadmin /transfer "Downloading" /priority normal start http://www.inilog.com.br/suporte/pacote/drive/data/foto.zip   c:\foto
 goto menu
 :opcao14
 start http://www.inilog.com.br/suporte/pacote/drive/data/CrystalDiskInfoPortable.zip
@@ -172,10 +168,7 @@ start https://drive.google.com/file/d/1WLEhOUIJMR3i6xWvYZVaYi13L6PpSGZ7/view
 start https://drive.google.com/file/d/1Zdo79lXiUwB_DOqH8Zwy2PExfjvGcq8M/
 
 start http://www.inilog.com.br/suporte/pacote/drive/data/foto.zip 
-c:
-cd ..\..\..\..\
-mkdir foto
-cd foto
+mkdir c:\foto
 bitsadmin /transfer "Downloading" /priority normal start http://www.inilog.com.br/suporte/pacote/drive/data/foto.zip   c:\foto
 bitsadmin /transfer "Downloading" /priority normal https://raw.githubusercontent.com/francisney/inilog/main/Zerar_fila_de_impressao.cmd  c:\ti\Zerar_fila_de_impressao.cmd
 explorer.exe /e, /n, c:\ti
