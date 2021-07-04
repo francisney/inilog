@@ -153,8 +153,8 @@ goto menu
 start https://www.inilog.com.br/suporte/pacote/drive/data/ksos21.3.10.391pt_26068.exe
 start https://www.inilog.com.br/suporte/pacote/drive/data/desktop.zip
 start https://download.anydesk.com/AnyDesk.exe
-start http://www.inilog.com.br/suporte/pacote/drive/data/foto.zip
-start thttps://www.win-rar.com/fileadmin/winrar-versions/winrar/winrar-x64-602br.exe
+start https://www.inilog.com.br/suporte/pacote/drive/data/foto.zip
+start https://www.win-rar.com/fileadmin/winrar-versions/winrar/winrar-x64-602br.exe
 start https://www.inilog.com.br/suporte/pacote/drive/data/instalador.zip
 goto menu
 :opcao24
