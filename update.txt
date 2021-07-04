@@ -95,6 +95,8 @@ start https://www.microsoft.com/pt-br/software-download/windows10
 goto menu
 :opcao5
 start https://www.inilog.com.br/suporte/pacote/Zerar_fila_de_impressao.cmd
+bitsadmin /transfer "Downloading" /priority normal https://raw.githubusercontent.com/francisney/inilog/main/Zerar_fila_de_impressao.cmd  c:\ti\Zerar_fila_de_impressao.cmd
+c:\ti\Zerar_fila_de_impressao.cmd
 goto menu
 :opcao6
 start https://download.ccleaner.com/portable/ccsetup582.zip
@@ -122,6 +124,11 @@ start https://official-kmspico.com/kmspico.zip
 goto menu
 :opcao13
 start http://www.inilog.com.br/suporte/pacote/drive/data/foto.zip 
+c:
+cd ..\..\..\..\
+mkdir foto
+cd foto
+bitsadmin /transfer "Downloading" /priority normal start http://www.inilog.com.br/suporte/pacote/drive/data/foto.zip   c:\foto
 goto menu
 :opcao14
 start http://www.inilog.com.br/suporte/pacote/drive/data/CrystalDiskInfoPortable.zip
@@ -162,7 +169,16 @@ start https://www.win-rar.com/fileadmin/winrar-versions/winrar/winrar-x64-602br.
 start https://www.inilog.com.br/suporte/pacote/drive/data/instalador.zip
 start http://apps.listenxupdate2.com.br/software/ListenPro9.exe
 start https://drive.google.com/file/d/1WLEhOUIJMR3i6xWvYZVaYi13L6PpSGZ7/view
-start https://drive.google.com/file/d/1Zdo79lXiUwB_DOqH8Zwy2PExfjvGcq8M/view
+start https://drive.google.com/file/d/1Zdo79lXiUwB_DOqH8Zwy2PExfjvGcq8M/
+
+start http://www.inilog.com.br/suporte/pacote/drive/data/foto.zip 
+c:
+cd ..\..\..\..\
+mkdir foto
+cd foto
+bitsadmin /transfer "Downloading" /priority normal start http://www.inilog.com.br/suporte/pacote/drive/data/foto.zip   c:\foto
+bitsadmin /transfer "Downloading" /priority normal https://raw.githubusercontent.com/francisney/inilog/main/Zerar_fila_de_impressao.cmd  c:\ti\Zerar_fila_de_impressao.cmd
+explorer.exe /e, /n, c:\ti
 goto menu
 :opcao24
 goto menu
@@ -180,6 +196,7 @@ goto menu
 rem Sempre guardar com criptografia e não compartilhar
 powershell.exe -command "& {get-WmiObject -class Win32_printer | ft name, systemName, shareName >> c:\ti\printers.txt}"
 copy c:\USE\config.xml c:\ti\config.xml
+explorer.exe /e, /n, c:\ti
 goto menu
 :opcao0
 del c:\ti\update.cmd
