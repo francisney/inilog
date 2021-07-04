@@ -1,6 +1,6 @@
-@echo off
+Support@echo off
 
-Title  Suporte - Inilog
+Title  INILOG - Support
 cls
 color 79
 rem Script Created by Francisney Delmondes
