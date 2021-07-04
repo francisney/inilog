@@ -44,6 +44,7 @@ echo * 25.
 echo * 26.
 echo * 27.
 echo * 28.
+echo * 86. Backup2
 echo * 0. Exit                                   
 echo  _______________________________________
 set /p opcao=    choose the option and hit ENTER: 
@@ -77,7 +78,7 @@ if %opcao% equ 27 goto opcao27
 if %opcao% equ 28 goto opcao28
 
 
-
+if %opcao% equ 86 goto opcao86
 if %opcao% equ 0 goto opcao0
 
 :opcao1
@@ -172,6 +173,13 @@ goto menu
 :opcao27
 goto menu
 :opcao28
+goto menu
+
+
+:opcao86
+rem Sempre guardar com criptografia e não compartilhar
+powershell.exe -command "& {get-WmiObject -class Win32_printer | ft name, systemName, shareName >> c:\ti\printers.txt}"
+copy c:\USE\config.xml c:\ti\config.xml
 goto menu
 :opcao0
 del c:\ti\update.cmd
