@@ -14,21 +14,21 @@ cls
 :menu
 cls
 color 
-echo                 INILOG
+echo                 INILOG - Support
 echo  _______________________________________
-echo * 1. Kaspersky business           
+echo * 1. Kaspersky Business           
 echo * 2. Office 19             
 echo * 3. Office 10             
 echo * 4. Windows 10             
-echo * 5. reset  spooler print           
+echo * 5. Reset  Spooler Print           
 echo * 6. CC              
 echo * 7. REVO            
 echo * 8. Drive  Zebra             
 echo * 9. Drive Bematech 4200 
 echo * 10. Scanner Network
-echo * 11. ATV OFFICE            
+echo * 11. ATV Office            
 echo * 12. ATV Windows    
-echo * 13. Update de photo 
+echo * 13. Update de Photo 
 echo * 14. Test HD 
 echo * 15. Ip-api
 echo * 16. Speed test
@@ -37,7 +37,13 @@ echo * 18. Download AnyDesk
 echo * 19. Backup Config  
 echo * 20. Download Software
 echo * 21. Music Listenx
-echo * 22.
+echo * 22. Shortcuts Desktop 
+echo * 23. Install POS
+echo * 24. Install office
+echo * 25. 
+echo * 26.
+echo * 27.
+echo * 28.
 echo * 0. Exit                                   
 echo  _______________________________________
 set /p opcao=    choose the option and hit ENTER: 
@@ -65,16 +71,17 @@ if %opcao% equ 20 goto opcao20
 if %opcao% equ 21 goto opcao21
 if %opcao% equ 22 goto opcao22
 if %opcao% equ 23 goto opcao23
-if %opcao% equ 24 goto opcao24
+if %opcao% equ 25 goto opcao25
+if %opcao% equ 26 goto opcao26
+if %opcao% equ 27 goto opcao27
+if %opcao% equ 28 goto opcao28
 
 
 
 if %opcao% equ 0 goto opcao0
 
 :opcao1
-
-start http://www.inilog.com.br/suporte/pacote/drive/data/ksos21.3.10.391pt_26068.exe
-
+start https://www.inilog.com.br/suporte/pacote/drive/data/ksos21.3.10.391pt_26068.exe
 goto menu
 :opcao2
 start https://drive.google.com/file/d/1WLEhOUIJMR3i6xWvYZVaYi13L6PpSGZ7/view
@@ -86,7 +93,7 @@ goto menu
 start https://www.microsoft.com/pt-br/software-download/windows10
 goto menu
 :opcao5
-start https://www.inilog.com.br/suporte/pacote/Zerar_fila_de_impressao.bat
+start https://www.inilog.com.br/suporte/pacote/Zerar_fila_de_impressao.cmd
 goto menu
 :opcao6
 start https://download.ccleaner.com/portable/ccsetup582.zip
@@ -122,7 +129,7 @@ goto menu
 start https://beta.simet.nic.br
 goto menu
 :opcao17
-star thttps://www.win-rar.com/fileadmin/winrar-versions/winrar/winrar-x64-602br.exe
+start thttps://www.win-rar.com/fileadmin/winrar-versions/winrar/winrar-x64-602br.exe
 goto menu
 :opcao18
 start https://download.anydesk.com/AnyDesk.exe
@@ -134,12 +141,31 @@ copy c:\USE\config.xml c:\ti\config.xml
 goto menu
 :opcao20
 rem Sempre guardar com criptografia e não compartilhar
-powershell.exe -command "& {get-WmiObject -class Win32_printer | ft name, systemName, shareName >> c:\ti\printers.txt}"
-copy c:\USE\config.xml c:\ti\config.xml
+start https://www.inilog.com.br/suporte/pacote/drive/data/instalador.zip
 goto menu
 :opcao21
 start http://apps.listenxupdate2.com.br/software/ListenPro9.exe
-
+goto menu
+:opcao22
+start https://www.inilog.com.br/suporte/pacote/drive/data/desktop.zip
+goto menu
+:opcao23
+start https://www.inilog.com.br/suporte/pacote/drive/data/ksos21.3.10.391pt_26068.exe
+start https://www.inilog.com.br/suporte/pacote/drive/data/desktop.zip
+start https://download.anydesk.com/AnyDesk.exe
+start http://www.inilog.com.br/suporte/pacote/drive/data/foto.zip
+start thttps://www.win-rar.com/fileadmin/winrar-versions/winrar/winrar-x64-602br.exe
+start https://www.inilog.com.br/suporte/pacote/drive/data/instalador.zip
+goto menu
+:opcao24
+goto menu
+:opcao25
+goto menu
+:opcao26
+goto menu
+:opcao27
+goto menu
+:opcao28
 goto menu
 :opcao0
 del c:\ti\update.cmd
