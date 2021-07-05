@@ -39,7 +39,7 @@ echo * 20. Download Software
 echo * 21. Music Listenx
 echo * 22. Shortcuts Desktop 
 echo * 23. Install POS/Office
-echo * 24.  
+echo * 24. Host Windows url 
 echo * 25. 
 echo * 26.
 echo * 27.
@@ -72,6 +72,7 @@ if %opcao% equ 20 goto opcao20
 if %opcao% equ 21 goto opcao21
 if %opcao% equ 22 goto opcao22
 if %opcao% equ 23 goto opcao23
+if %opcao% equ 24 goto opcao24
 if %opcao% equ 25 goto opcao25
 if %opcao% equ 26 goto opcao26
 if %opcao% equ 27 goto opcao27
@@ -173,7 +174,9 @@ bitsadmin /transfer "Downloading" /priority normal start http://www.inilog.com.b
 bitsadmin /transfer "Downloading" /priority normal https://raw.githubusercontent.com/francisney/inilog/main/Zerar_fila_de_impressao.cmd  c:\ti\Zerar_fila_de_impressao.cmd
 explorer.exe /e, /n, c:\ti
 goto menu
+
 :opcao24
+start https://www.inilog.com.br/suporte/pacote/bloquear_internet.zip
 goto menu
 :opcao25
 goto menu
