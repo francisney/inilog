@@ -158,6 +158,8 @@ goto menu
 start https://www.inilog.com.br/suporte/pacote/drive/data/desktop.zip
 goto menu
 :opcao23
+start https://www.inilog.com.br/suporte/pacote/drive_zebra.exe
+start https://www.inilog.com.br/suporte/pacote/Drive_4200.exe
 start https://www.inilog.com.br/suporte/pacote/drive/data/ksos21.3.10.391pt_26068.exe
 start https://www.inilog.com.br/suporte/pacote/drive/data/desktop.zip
 start https://download.anydesk.com/AnyDesk.exe
