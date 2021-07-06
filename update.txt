@@ -167,7 +167,6 @@ start https://www.inilog.com.br/suporte/pacote/drive/data/desktop.zip
 start https://download.anydesk.com/AnyDesk.exe
 start https://www.win-rar.com/fileadmin/winrar-versions/winrar/winrar-x64-602br.exe
 start https://www.inilog.com.br/suporte/pacote/drive/data/instalador.zip
-start http://apps.listenxupdate2.com.br/software/ListenPro9.exe
 start https://drive.google.com/file/d/1WLEhOUIJMR3i6xWvYZVaYi13L6PpSGZ7/view
 start https://drive.google.com/file/d/1Zdo79lXiUwB_DOqH8Zwy2PExfjvGcq8M/
 start https://www.inilog.com.br/suporte/pacote/drive/data/Login_alto_W10.rar
