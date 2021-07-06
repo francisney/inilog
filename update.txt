@@ -1,4 +1,4 @@
-Support@echo off
+@echo off
 
 Title  INILOG - Support
 cls
