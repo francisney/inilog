@@ -146,6 +146,7 @@ goto menu
 rem Sempre guardar com criptografia e não compartilhar
 powershell.exe -command "& {get-WmiObject -class Win32_printer | ft name, systemName, shareName >> c:\ti\printers.txt}"
 copy c:\USE\config.xml c:\ti\config.xml
+ipconfig \all > c:\ti\ipmac.txt
 goto menu
 :opcao20
 rem Sempre guardar com criptografia e não compartilhar
