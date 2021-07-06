@@ -42,7 +42,7 @@ echo * 23. Install POS/Office
 echo * 24. Host Windows url 
 echo * 25. Auto login
 echo * 26. Config Kaspersky
-echo * 27.
+echo * 27. Drive PINPAD
 echo * 28.
 echo * 86. Backup2
 echo * 0. Exit                                   
@@ -191,6 +191,7 @@ start https://www.inilog.com.br/suporte/pacote/drive/data/Config_Kaspersky.zip
 
 goto menu
 :opcao27
+start https://www.inilog.com.br/suporte/pacote/drive/data/drivepinpad.zip
 goto menu
 :opcao28
 goto menu
