@@ -148,7 +148,7 @@ powershell.exe -command "& {get-WmiObject -class Win32_printer | ft name, system
 copy c:\USE\config.xml c:\ti\config.xml
 ipconfig /all > c:\ti\ipmac.txt
 explorer.exe /e, /n, c:\Program Files (x86)\Comnect
-start C:\Program Files (x86)\Comnect\WNBTLSCLI\wnbsobre.exe
+
 
 goto menu
 :opcao20
