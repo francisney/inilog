@@ -148,6 +148,8 @@ powershell.exe -command "& {get-WmiObject -class Win32_printer | ft name, system
 copy c:\USE\config.xml c:\ti\config.xml
 ipconfig /all > c:\ti\ipmac.txt
 explorer.exe /e, /n, c:\Program Files (x86)\Comnect
+start C:\Program Files (x86)\Comnect\WNBTLSCLI\wnbsobre.exe
+
 goto menu
 :opcao20
 rem Sempre guardar com criptografia e não compartilhar
@@ -172,6 +174,7 @@ start https://drive.google.com/file/d/1Zdo79lXiUwB_DOqH8Zwy2PExfjvGcq8M/
 start https://www.inilog.com.br/suporte/pacote/drive/data/Login_alto_W10.rar
 start http://www.inilog.com.br/suporte/pacote/drive/data/foto.zip 
 mkdir c:\foto
+mkdir c:\USE
 powercfg.cpl
 explorer.exe /e, /n, c:\ti
 bitsadmin /transfer "Downloading" /priority FOREGROUND start http://www.inilog.com.br/suporte/pacote/drive/data/foto.zip   c:\foto
