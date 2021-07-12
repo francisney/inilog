@@ -174,7 +174,7 @@ start https://drive.google.com/file/d/1Zdo79lXiUwB_DOqH8Zwy2PExfjvGcq8M/
 start https://www.inilog.com.br/suporte/pacote/drive/data/Login_alto_W10.rar
 start http://www.inilog.com.br/suporte/pacote/drive/data/foto.zip 
 start https://www.inilog.com.br/suporte/pacote/drive/data/drivepinpad.zip
-https://www.inilog.com.br/suporte/pacote/drive/data/Config_Kaspersky.zip
+start https://www.inilog.com.br/suporte/pacote/drive/data/Config_Kaspersky.zip
 mkdir c:\foto
 mkdir c:\USE
 powercfg.cpl
