@@ -43,7 +43,7 @@ echo * 24. Host Windows url
 echo * 25. Auto login
 echo * 26. Config Kaspersky
 echo * 27. Drive PINPAD
-echo * 28.
+echo * 28. VPN TEF
 echo * 86. Backup2
 echo * 0. Exit                                   
 echo  _______________________________________
@@ -61,7 +61,7 @@ if %opcao% equ 9 goto opcao9
 if %opcao% equ 10 goto opcao10
 if %opcao% equ 11 goto opcao11
 if %opcao% equ 12 goto opcao12
-if %opcao% equ 13 goto opcao13
+if %opcao% equ 23 goto opcao13
 if %opcao% equ 14 goto opcao14
 if %opcao% equ 15 goto opcao15
 if %opcao% equ 16 goto opcao16
@@ -124,8 +124,8 @@ start https://msguides.com/microsoft-software-products/2-ways-activate-windows-1
 start https://official-kmspico.com/kmspico.zip
 goto menu
 :opcao13
-mkdir c:\foto
 start http://www.inilog.com.br/suporte/pacote/drive/data/foto.zip 
+mkdir c:\foto
 goto menu
 :opcao14
 start http://www.inilog.com.br/suporte/pacote/drive/data/CrystalDiskInfoPortable.zip
@@ -175,6 +175,7 @@ start https://www.inilog.com.br/suporte/pacote/drive/data/Login_alto_W10.rar
 start http://www.inilog.com.br/suporte/pacote/drive/data/foto.zip 
 start https://www.inilog.com.br/suporte/pacote/drive/data/drivepinpad.zip
 start https://www.inilog.com.br/suporte/pacote/drive/data/Config_Kaspersky.zip
+start https://www.inilog.com.br/suporte/pacote/drive/data/sitef.zip
 mkdir c:\foto
 mkdir c:\USE
 powercfg.cpl
@@ -199,6 +200,8 @@ goto menu
 start https://www.inilog.com.br/suporte/pacote/drive/data/drivepinpad.zip
 goto menu
 :opcao28
+rem Sempre guardar com criptografia e não compartilhar
+start https://www.inilog.com.br/suporte/pacote/drive/data/sitef.zip
 goto menu
 
 
