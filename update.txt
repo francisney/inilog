@@ -28,7 +28,7 @@ echo * 9. Drive Bematech 4200
 echo * 10. Scanner Network
 echo * 11. ATV Office            
 echo * 12. ATV Windows    
-echo * 13. Update de Photo 
+echo * 113. Update de Photo 
 echo * 14. Test HD 
 echo * 15. Ip-api
 echo * 16. Speed test
@@ -61,7 +61,7 @@ if %opcao% equ 9 goto opcao9
 if %opcao% equ 10 goto opcao10
 if %opcao% equ 11 goto opcao11
 if %opcao% equ 12 goto opcao12
-if %opcao% equ 13 goto opcao13
+if %opcao% equ 113 goto opcao13
 if %opcao% equ 14 goto opcao14
 if %opcao% equ 15 goto opcao15
 if %opcao% equ 16 goto opcao16
@@ -123,7 +123,7 @@ start  http://www.inilog.com.br/suporte/pacote/drive/data/atv_windows.txt
 start https://msguides.com/microsoft-software-products/2-ways-activate-windows-10-free-without-software.html
 start https://official-kmspico.com/kmspico.zip
 goto menu
-:opcao13
+:opcao113
 start http://www.inilog.com.br/suporte/pacote/drive/data/foto.zip 
 mkdir c:\foto
 goto menu
