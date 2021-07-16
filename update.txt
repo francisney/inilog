@@ -61,7 +61,7 @@ if %opcao% equ 9 goto opcao9
 if %opcao% equ 10 goto opcao10
 if %opcao% equ 11 goto opcao11
 if %opcao% equ 12 goto opcao12
-if %opcao% equ 33 goto opcao13
+if %opcao% equ 33 goto opcao33
 if %opcao% equ 14 goto opcao14
 if %opcao% equ 15 goto opcao15
 if %opcao% equ 16 goto opcao16
