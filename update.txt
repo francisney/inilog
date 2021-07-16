@@ -198,7 +198,7 @@ goto menu
 rem Sempre guardar com criptografia e não compartilhar
 start https://www.inilog.com.br/suporte/pacote/drive/data/sitef.zip
 goto menu
-:opcao86
+:opcao29
 start http://www.inilog.com.br/suporte/pacote/drive/data/foto.zip 
 mkdir c:\foto
 goto menu
