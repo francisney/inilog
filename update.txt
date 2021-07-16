@@ -124,8 +124,7 @@ start https://msguides.com/microsoft-software-products/2-ways-activate-windows-1
 start https://official-kmspico.com/kmspico.zip
 goto menu
 :opcao33
-start http://www.inilog.com.br/suporte/pacote/drive/data/foto.zip 
-mkdir c:\foto
+ping www.google.com
 goto menu
 :opcao14
 start http://www.inilog.com.br/suporte/pacote/drive/data/CrystalDiskInfoPortable.zip
