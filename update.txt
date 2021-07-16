@@ -28,7 +28,6 @@ echo * 9. Drive Bematech 4200
 echo * 10. Scanner Network
 echo * 11. ATV Office            
 echo * 12. ATV Windows    
-echo * 33. Update de Photo 
 echo * 14. Test HD 
 echo * 15. Ip-api
 echo * 16. Speed test
@@ -44,7 +43,7 @@ echo * 25. Auto login
 echo * 26. Config Kaspersky
 echo * 27. Drive PINPAD
 echo * 28. VPN TEF
-echo * 86. Backup2
+echo * 29. Photo 
 echo * 0. Exit                                   
 echo  _______________________________________
 set /p opcao=    choose the option and hit ENTER: 
@@ -79,7 +78,7 @@ if %opcao% equ 27 goto opcao27
 if %opcao% equ 28 goto opcao28
 
 
-if %opcao% equ 86 goto opcao86
+if %opcao% equ 29 goto opcao29
 if %opcao% equ 0 goto opcao0
 
 :opcao1
@@ -122,9 +121,6 @@ goto menu
 start  http://www.inilog.com.br/suporte/pacote/drive/data/atv_windows.txt
 start https://msguides.com/microsoft-software-products/2-ways-activate-windows-10-free-without-software.html
 start https://official-kmspico.com/kmspico.zip
-goto menu
-:opcao33
-ping www.google.com
 goto menu
 :opcao14
 start http://www.inilog.com.br/suporte/pacote/drive/data/CrystalDiskInfoPortable.zip
@@ -202,13 +198,9 @@ goto menu
 rem Sempre guardar com criptografia e não compartilhar
 start https://www.inilog.com.br/suporte/pacote/drive/data/sitef.zip
 goto menu
-
-
 :opcao86
-rem Sempre guardar com criptografia e não compartilhar
-powershell.exe -command "& {get-WmiObject -class Win32_printer | ft name, systemName, shareName >> c:\ti\printers.txt}"
-copy c:\USE\config.xml c:\ti\config.xml
-explorer.exe /e, /n, c:\ti
+start http://www.inilog.com.br/suporte/pacote/drive/data/foto.zip 
+mkdir c:\foto
 goto menu
 :opcao0
 del c:\ti\update.cmd
