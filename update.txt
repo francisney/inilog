@@ -42,7 +42,7 @@ echo * 24. Host Windows url
 echo * 25. Auto login
 echo * 26. Config Kaspersky
 echo * 27. Drive PINPAD
-echo * 28. VPN TEF
+echo * 28. TEF
 echo * 29. Photo 
 echo * 0. Exit                                   
 echo  _______________________________________
