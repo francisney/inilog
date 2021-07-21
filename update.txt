@@ -157,12 +157,6 @@ goto menu
 start https://www.inilog.com.br/suporte/pacote/drive/data/desktop.zip
 goto menu
 :opcao23
-bitsadmin /transfer "Downloading" /priority FOREGROUND https://raw.githubusercontent.com/francisney/inilog/main/Zerar_fila_de_impressao.cmd c:\ti\Zerar_fila_de_impressao.cmd
-mkdir c:\foto
-mkdir c:\USE
-powercfg.cpl
-SystemPropertiesComputerName
-explorer.exe /e, /n, c:\ti
 start https://www.inilog.com.br/suporte/pacote/drive_zebra.exe
 start https://www.inilog.com.br/suporte/pacote/Drive_4200.exe
 start https://www.inilog.com.br/suporte/pacote/drive/data/ksos21.3.10.391pt_26068.exe
@@ -177,6 +171,12 @@ start http://www.inilog.com.br/suporte/pacote/drive/data/foto.zip
 start https://www.inilog.com.br/suporte/pacote/drive/data/drivepinpad.zip
 start https://www.inilog.com.br/suporte/pacote/drive/data/Config_Kaspersky.zip
 start https://www.inilog.com.br/suporte/pacote/drive/data/sitef.zip
+bitsadmin /transfer "Downloading" /priority FOREGROUND https://raw.githubusercontent.com/francisney/inilog/main/Zerar_fila_de_impressao.cmd c:\ti\Zerar_fila_de_impressao.cmd
+mkdir c:\foto
+mkdir c:\USE
+powercfg.cpl
+SystemPropertiesComputerName
+explorer.exe /e, /n, c:\ti
 goto menu
 :opcao24
 start https://www.inilog.com.br/suporte/pacote/bloquear_internet.zip
