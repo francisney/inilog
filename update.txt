@@ -44,6 +44,7 @@ echo * 26. Config Kaspersky
 echo * 27. Drive PINPAD
 echo * 28. TEF
 echo * 29. Photo 
+echo * 30. Kavremvr
 echo * 0. Exit                                   
 echo  _______________________________________
 set /p opcao=    choose the option and hit ENTER: 
@@ -76,9 +77,8 @@ if %opcao% equ 25 goto opcao25
 if %opcao% equ 26 goto opcao26
 if %opcao% equ 27 goto opcao27
 if %opcao% equ 28 goto opcao28
-
-
 if %opcao% equ 29 goto opcao29
+if %opcao% equ 30 goto opcao30
 if %opcao% equ 0 goto opcao0
 
 :opcao1
@@ -198,6 +198,9 @@ goto menu
 :opcao29
 start http://www.inilog.com.br/suporte/pacote/drive/data/foto.zip 
 mkdir c:\foto
+goto menu
+:opcao30
+start https://media.kaspersky.com/utilities/ConsumerUtilities/kavremvr.exe
 goto menu
 :opcao0
 del c:\ti\update.cmd
