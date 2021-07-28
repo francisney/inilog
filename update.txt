@@ -34,7 +34,6 @@ echo * 16. Speed test
 echo * 17. Download WinRAR
 echo * 18. Download AnyDesk
 echo * 19. Backup Config  
-echo * 20. Download Software
 echo * 21. Music Listenx
 echo * 22. Shortcuts Desktop 
 echo * 23. Install POS/Office
@@ -45,6 +44,7 @@ echo * 27. Drive PINPAD
 echo * 28. TEF
 echo * 29. Photo 
 echo * 30. Kavremvr
+echo * 30. Software
 echo * 0. Exit                                   
 echo  _______________________________________
 set /p opcao=    choose the option and hit ENTER: 
@@ -68,7 +68,6 @@ if %opcao% equ 16 goto opcao16
 if %opcao% equ 17 goto opcao17
 if %opcao% equ 18 goto opcao18
 if %opcao% equ 19 goto opcao19
-if %opcao% equ 20 goto opcao20
 if %opcao% equ 21 goto opcao21
 if %opcao% equ 22 goto opcao22
 if %opcao% equ 23 goto opcao23
@@ -79,6 +78,7 @@ if %opcao% equ 27 goto opcao27
 if %opcao% equ 28 goto opcao28
 if %opcao% equ 29 goto opcao29
 if %opcao% equ 30 goto opcao30
+if %opcao% equ 31 goto opcao31
 if %opcao% equ 0 goto opcao0
 
 :opcao1
@@ -120,7 +120,7 @@ goto menu
 :opcao12
 start  http://www.inilog.com.br/suporte/pacote/drive/data/atv_windows.txt
 start https://msguides.com/microsoft-software-products/2-ways-activate-windows-10-free-without-software.html
-start https://official-kmspico.com/kmspico.zip
+echo https://official-kmspico.com/kmspico.zip
 goto menu
 :opcao14
 start http://www.inilog.com.br/suporte/pacote/drive/data/CrystalDiskInfoPortable.zip
@@ -143,12 +143,6 @@ powershell.exe -command "& {get-WmiObject -class Win32_printer | ft name, system
 copy c:\USE\config.xml c:\ti\config.xml
 ipconfig /all > c:\ti\ipmac.txt
 explorer.exe /e, /n, C:\Program Files (x86)\Comnect\WNBTLSCLI
-
-
-goto menu
-:opcao20
-rem Sempre guardar com criptografia e não compartilhar
-start https://www.inilog.com.br/suporte/pacote/drive/data/instalador.zip
 goto menu
 :opcao21
 start http://apps.listenxupdate2.com.br/software/ListenPro9.exe
@@ -157,15 +151,13 @@ goto menu
 start https://www.inilog.com.br/suporte/pacote/drive/data/desktop.zip
 goto menu
 :opcao23
-start https://www.inilog.com.br/suporte/pacote/drive_zebra.exe
+start https://www.inilog.com.br/suporte/pacote/drive/data/zsu-1191289.zip
 start https://www.inilog.com.br/suporte/pacote/Drive_4200.exe
 start https://www.inilog.com.br/suporte/pacote/drive/data/ksos21.3.10.391pt_26068.exe
 start https://www.inilog.com.br/suporte/pacote/drive/data/desktop.zip
 start https://download.anydesk.com/AnyDesk.exe
 start https://www.win-rar.com/fileadmin/winrar-versions/winrar/winrar-x64-602br.exe
 start https://www.inilog.com.br/suporte/pacote/drive/data/instalador.zip
-start https://drive.google.com/file/d/1WLEhOUIJMR3i6xWvYZVaYi13L6PpSGZ7/view
-start https://drive.google.com/file/d/1Zdo79lXiUwB_DOqH8Zwy2PExfjvGcq8M/
 start https://www.inilog.com.br/suporte/pacote/drive/data/Login_alto_W10.rar
 start http://www.inilog.com.br/suporte/pacote/drive/data/foto.zip 
 start https://www.inilog.com.br/suporte/pacote/drive/data/drivepinpad.zip
@@ -201,6 +193,9 @@ mkdir c:\foto
 goto menu
 :opcao30
 start https://media.kaspersky.com/utilities/ConsumerUtilities/kavremvr.exe
+goto menu
+:opcao31
+start https://www.inilog.com.br/suporte/pacote/drive/data/instalador.zip
 goto menu
 :opcao0
 del c:\ti\update.cmd
