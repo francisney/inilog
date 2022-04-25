@@ -45,7 +45,7 @@ echo * 28. TEF
 echo * 29. Photo 
 echo * 30. Kavremvr
 echo * 31. Software
-echo * 32. Software
+echo * 32. remove Bloatwares
 echo * 0. Exit                                   
 echo  _______________________________________
 set /p opcao=    choose the option and hit ENTER: 
