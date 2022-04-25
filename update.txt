@@ -105,7 +105,7 @@ goto menu
 start https://download.revouninstaller.com/RevoUninstaller_Portable.zip
 goto menu
 :opcao8
-start https://www.inilog.com.br/suporte/pacote/drive_zebra.exe
+start https://inilog.com/suporte/pacote/drive/data/driver-zebra-zd220-e-zd230.zip
 goto menu
 :opcao9
 start https://www.inilog.com.br/suporte/pacote/Drive_4200.exe
@@ -151,7 +151,7 @@ goto menu
 start https://www.inilog.com.br/suporte/pacote/drive/data/desktop.zip
 goto menu
 :opcao23
-start https://www.inilog.com.br/suporte/pacote/drive/data/zsu-1191289.zip
+start https://inilog.com/suporte/pacote/drive/data/driver-zebra-zd220-e-zd230.zip
 start https://www.inilog.com.br/suporte/pacote/Drive_4200.exe
 start https://www.inilog.com.br/suporte/pacote/drive/data/ksos21.3.10.391pt_26068.exe
 start https://www.inilog.com.br/suporte/pacote/drive/data/desktop.zip
