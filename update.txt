@@ -44,7 +44,8 @@ echo * 27. Drive PINPAD
 echo * 28. TEF
 echo * 29. Photo 
 echo * 30. Kavremvr
-echo * 30. Software
+echo * 31. Software
+echo * 32. Software
 echo * 0. Exit                                   
 echo  _______________________________________
 set /p opcao=    choose the option and hit ENTER: 
@@ -79,6 +80,7 @@ if %opcao% equ 28 goto opcao28
 if %opcao% equ 29 goto opcao29
 if %opcao% equ 30 goto opcao30
 if %opcao% equ 31 goto opcao31
+if %opcao% equ 32 goto opcao32
 if %opcao% equ 0 goto opcao0
 
 :opcao1
@@ -196,6 +198,9 @@ start https://media.kaspersky.com/utilities/ConsumerUtilities/kavremvr.exe
 goto menu
 :opcao31
 start https://www.inilog.com.br/suporte/pacote/drive/data/instalador.zip
+goto menu
+:opcao32
+start https://github.com/Sycnex/Windows10Debloater/archive/refs/heads/master.zip
 goto menu
 :opcao0
 del c:\ti\update.cmd
