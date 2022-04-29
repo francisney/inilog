@@ -45,7 +45,8 @@ echo * 28. TEF
 echo * 29. Photo 
 echo * 30. Kavremvr
 echo * 31. Software
-echo * 32. remove Bloatwares
+echo * 32. Remove Bloatwares
+echo * 33. Dual network script
 echo * 0. Exit                                   
 echo  _______________________________________
 set /p opcao=    choose the option and hit ENTER: 
@@ -81,6 +82,7 @@ if %opcao% equ 29 goto opcao29
 if %opcao% equ 30 goto opcao30
 if %opcao% equ 31 goto opcao31
 if %opcao% equ 32 goto opcao32
+if %opcao% equ 33 goto opcao33
 if %opcao% equ 0 goto opcao0
 
 :opcao1
@@ -201,6 +203,10 @@ start https://www.inilog.com.br/suporte/pacote/drive/data/instalador.zip
 goto menu
 :opcao32
 start https://github.com/Sycnex/Windows10Debloater/archive/refs/heads/master.zip
+goto menu
+:opcao33
+start https://raw.githubusercontent.com/francisney/inilog/main/Mudar_de_internet.cmd
+mshta vbscript:Execute("msgbox ""Comando executado!. Abrir como administrador    https://inilog.com/hesk "":close")
 goto menu
 :opcao0
 del c:\ti\update.cmd
