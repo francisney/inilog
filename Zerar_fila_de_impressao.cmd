@@ -2,7 +2,7 @@
 Title Suporte - Inilog
 color f9
 mode 80,10
-ren Created byFrancisney Delmondes
+ren Created by Francisney Delmondes
 ren francisney@inilgog.com.br
 ren www.inilog.com
 rem @francisneydelmondes @inilog #inilog #francisneydelmondes
