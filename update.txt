@@ -19,7 +19,7 @@ echo  _______________________________________
 echo * 1. Kaspersky Business           
 echo * 2. Office 19             
 echo * 3. Office 10             
-echo * 4. Windows 10             
+echo * 4. Download Windows              
 echo * 5. Reset  Spooler Print           
 echo * 6. CC              
 echo * 7. REVO            
@@ -37,9 +37,9 @@ echo * 19. Backup Config
 echo * 21. Music Listenx
 echo * 22. Shortcuts Desktop 
 echo * 23. Install POS/Office
-echo * 24. Host Windows url 
-echo * 25. Auto login
-echo * 26. Config Kaspersky
+echo * 24. Host Windows block
+echo * 25. Auto login Windows
+echo * 26. Ninite
 echo * 27. Drive PINPAD
 echo * 28. TEF
 echo * 29. Photo 
@@ -181,7 +181,7 @@ goto menu
 start https://www.inilog.com.br/suporte/pacote/drive/data/Login_alto_W10.rar
 goto menu
 :opcao26
-start https://www.inilog.com.br/suporte/pacote/drive/data/Config_Kaspersky.zip
+start https://download.anydesk.com/AnyDesk.exe
 
 goto menu
 :opcao27
