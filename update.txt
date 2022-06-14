@@ -25,7 +25,7 @@ echo * 6. CC
 echo * 7. REVO            
 echo * 8. Drive  Zebra             
 echo * 9. Drive Bematech 4200 
-echo * 10. Scanner Network
+echo * 10. Scanner Network powershell
 echo * 11. ATV Office            
 echo * 12. ATV Windows    
 echo * 14. Test HD 
@@ -115,7 +115,13 @@ goto menu
 start https://www.inilog.com.br/suporte/pacote/Drive_4200.exe
 goto menu
 :opcao10
-start https://download.advanced-ip-scanner.com/download/files/Advanced_IP_Scanner_2.5.3850.exe
+bitsadmin /transfer "Downloading" /priority FOREGROUND https://raw.githubusercontent.com/francisney/inilog/main/scan.ps1  c:\ti\scan.ps1
+bitsadmin /transfer "Downloading" /priority FOREGROUND https://raw.githubusercontent.com/francisney/inilog/main/pscmdscan.txt  c:\ti\pscmdscan.txt
+
+c:\ti\pscmdscan.txt
+
+
+
 goto menu
 :opcao11
 start https://www.inilog.com.br/suporte/pacote/drive/data/Atv_office_cmd.rar
