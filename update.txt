@@ -168,6 +168,7 @@ start https://www.inilog.com.br/suporte/pacote/drive/data/desktop.zip
 start https://download.anydesk.com/AnyDesk.exe
 start https://www.win-rar.com/fileadmin/winrar-versions/winrar/winrar-x64-602br.exe
 start https://www.inilog.com.br/suporte/pacote/drive/data/instalador.zip
+start https://www.inilog.com.br/suporte/pacote/drive/data/SetupChat.zip
 start https://www.inilog.com.br/suporte/pacote/drive/data/Login_alto_W10.rar
 start http://www.inilog.com.br/suporte/pacote/drive/data/foto.zip 
 start https://www.inilog.com.br/suporte/pacote/drive/data/drivepinpad.zip
@@ -206,6 +207,7 @@ start https://media.kaspersky.com/utilities/ConsumerUtilities/kavremvr.exe
 goto menu
 :opcao31
 start https://www.inilog.com.br/suporte/pacote/drive/data/instalador.zip
+start https://www.inilog.com.br/suporte/pacote/drive/data/SetupChat.zip
 goto menu
 :opcao32
 start https://github.com/Sycnex/Windows10Debloater/archive/refs/heads/master.zip
