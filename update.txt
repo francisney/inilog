@@ -104,7 +104,7 @@ bitsadmin /transfer "Downloading" /priority FOREGROUND https://raw.githubusercon
 c:\ti\Zerar_fila_de_impressao.cmd
 goto menu
 :opcao6
-start https://download.ccleaner.com/portable/ccsetup582.zip
+start https://download.ccleaner.com/portable/ccsetup603.zip
 goto menu
 :opcao7
 start https://download.revouninstaller.com/RevoUninstaller_Portable.zip
