@@ -125,7 +125,7 @@ c:\ti\pscmdscan.txt
 
 goto menu
 :opcao11
-start https://www.inilog.com.br/suporte/pacote/drive/data/Atv_office_cmd.rar
+start https://www.inilog.com.br/suporte/pacote/drive/data/Atv_office_cmd.zip
 rem https://official-kmspico.com/kmspico.zip
 goto menu
 :opcao12
