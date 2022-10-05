@@ -116,10 +116,12 @@ goto menu
 start https://www.inilog.com.br/suporte/pacote/Drive_4200.exe
 goto menu
 :opcao10
-bitsadmin /transfer "Downloading" /priority FOREGROUND https://raw.githubusercontent.com/francisney/inilog/main/scan.ps1  c:\ti\scan.ps1
-bitsadmin /transfer "Downloading" /priority FOREGROUND https://raw.githubusercontent.com/francisney/inilog/main/pscmdscan.txt  c:\ti\pscmdscan.txt
+start https://download.advanced-ip-scanner.com/download/files/Advanced_IP_Scanner_2.5.4594.1.exe
 
-c:\ti\pscmdscan.txt
+rem bitsadmin /transfer "Downloading" /priority FOREGROUND https://raw.githubusercontent.com/francisney/inilog/main/scan.ps1  c:\ti\scan.ps1
+rem bitsadmin /transfer "Downloading" /priority FOREGROUND https://raw.githubusercontent.com/francisney/inilog/main/pscmdscan.txt  c:\ti\pscmdscan.txt
+
+rem c:\ti\pscmdscan.txt
 
 
 
