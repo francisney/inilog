@@ -2,7 +2,7 @@
 
 Title  INILOG - Support
 cls
-color 89
+color 79
 rem Script Created by Francisney Delmondes
 rem (61)99363-0969
 rem suporte@inilog.com.br
