@@ -2,7 +2,7 @@
 
 Title  INILOG - Support
 cls
-color 79
+color 89
 rem Script Created by Francisney Delmondes
 rem (61)99363-0969
 rem suporte@inilog.com.br
@@ -48,6 +48,7 @@ echo * 31. Software
 echo * 32. Remove Bloatwares
 echo * 33. Dual network script
 echo * 34. MTR
+echo * 35. Cpu-z
 echo * 0. Exit                                   
 echo  _______________________________________
 set /p opcao=    choose the option and hit ENTER: 
@@ -84,6 +85,8 @@ if %opcao% equ 30 goto opcao30
 if %opcao% equ 31 goto opcao31
 if %opcao% equ 32 goto opcao32
 if %opcao% equ 33 goto opcao33
+if %opcao% equ 34 goto opcao34
+if %opcao% equ 35 goto opcao35
 if %opcao% equ 0 goto opcao0
 
 :opcao1
@@ -221,6 +224,8 @@ mshta vbscript:Execute("msgbox ""Comando executado!. Abrir como administrador   
 goto menu
 :opcao34
 start https://www.inilog.com.br/suporte/pacote/drive/data/WinMTR.exe
+:opcao35
+start https://download.cpuid.com/cpu-z/cpu-z_2.02-en.zip
 goto menu
 :opcao0
 del c:\ti\update.cmd
