@@ -216,6 +216,7 @@ start https://www.inilog.com.br/suporte/pacote/drive/data/instalador.zip
 start https://www.inilog.com.br/suporte/pacote/drive/data/SetupChat.zip
 goto menu
 :opcao32
+start https://pcmanager-en.microsoft.com/
 start https://github.com/Sycnex/Windows10Debloater/archive/refs/heads/master.zip
 start https://github.com/hellzerg/optimizer/releases/download/14.5/Optimizer-14.5.exe
 start http://www.inilog.com/drive/data/Clear_5_0.bat
