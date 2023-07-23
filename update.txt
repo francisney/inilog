@@ -49,6 +49,7 @@ echo * 32. Remove Bloatwares
 echo * 33. Dual network script
 echo * 34. MTR
 echo * 35. Cpu-z
+echo * 36. TRIM
 echo * 0. Exit                                   
 echo  _______________________________________
 set /p opcao=    choose the option and hit ENTER: 
@@ -87,6 +88,7 @@ if %opcao% equ 32 goto opcao32
 if %opcao% equ 33 goto opcao33
 if %opcao% equ 34 goto opcao34
 if %opcao% equ 35 goto opcao35
+if %opcao% equ 36 goto opcao36
 if %opcao% equ 0 goto opcao0
 
 :opcao1
@@ -227,8 +229,12 @@ mshta vbscript:Execute("msgbox ""Comando executado!. Abrir como administrador   
 goto menu
 :opcao34
 start https://www.inilog.com.br/suporte/pacote/drive/data/WinMTR.exe
+goto menu
 :opcao35
 start https://download.cpuid.com/cpu-z/cpu-z_2.02-en.zip
+goto menu
+:opcao36
+https://raw.githubusercontent.com/francisney/inilog/main/trim.cmd 
 goto menu
 :opcao0
 del c:\ti\update.cmd
