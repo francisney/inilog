@@ -234,7 +234,7 @@ goto menu
 start https://download.cpuid.com/cpu-z/cpu-z_2.02-en.zip
 goto menu
 :opcao36
-https://raw.githubusercontent.com/francisney/inilog/main/trim.cmd 
+start https://raw.githubusercontent.com/francisney/inilog/main/trim.cmd 
 goto menu
 :opcao0
 del c:\ti\update.cmd
