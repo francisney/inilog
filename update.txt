@@ -118,7 +118,7 @@ goto menu
 start https://inilog.com/suporte/pacote/drive/data/driver-zebra-zd220-e-zd230.zip
 goto menu
 :opcao9
-start https://www.inilog.com.br/suporte/pacote/Drive_4200.exe
+start https://www.inilog.com.br/suporte/pacote/MP-4200.zip
 goto menu
 :opcao10
 start https://download.advanced-ip-scanner.com/download/files/Advanced_IP_Scanner_2.5.4594.1.exe
