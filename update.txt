@@ -50,7 +50,7 @@ echo * 33. Dual network script
 echo * 34. MTR
 echo * 35. Cpu-z
 echo * 36. TRIM
-echo * 37. TRIM
+echo * 37. Mini Tool
 echo * 0. Exit                                   
 echo  _______________________________________
 set /p opcao=    choose the option and hit ENTER: 
