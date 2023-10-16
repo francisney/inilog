@@ -50,6 +50,7 @@ echo * 33. Dual network script
 echo * 34. MTR
 echo * 35. Cpu-z
 echo * 36. TRIM
+echo * 37. TRIM
 echo * 0. Exit                                   
 echo  _______________________________________
 set /p opcao=    choose the option and hit ENTER: 
@@ -89,6 +90,8 @@ if %opcao% equ 33 goto opcao33
 if %opcao% equ 34 goto opcao34
 if %opcao% equ 35 goto opcao35
 if %opcao% equ 36 goto opcao36
+if %opcao% equ 37 goto opcao37
+
 if %opcao% equ 0 goto opcao0
 
 :opcao1
@@ -235,6 +238,9 @@ start https://download.cpuid.com/cpu-z/cpu-z_2.02-en.zip
 goto menu
 :opcao36
 start https://raw.githubusercontent.com/francisney/inilog/main/trim.cmd 
+goto menu
+:opcao37
+start https://cdn2.minitool.com/?p=pw&e=pw-free
 goto menu
 :opcao0
 del c:\ti\update.cmd
