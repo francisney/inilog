@@ -51,6 +51,8 @@ echo * 34. MTR
 echo * 35. Cpu-z
 echo * 36. TRIM
 echo * 37. Mini Tool
+echo * 38. WINTOHD
+echo * 39. REDE8
 echo * 0. Exit                                   
 echo  _______________________________________
 set /p opcao=    choose the option and hit ENTER: 
@@ -241,6 +243,12 @@ start https://raw.githubusercontent.com/francisney/inilog/main/trim.cmd
 goto menu
 :opcao37
 start https://cdn2.minitool.com/?p=pw&e=pw-free
+goto menu
+:opcao38
+start https://www.inilog.com.br/suporte/pacote/WINTOHD_Hasleo.zip
+goto menu
+:opcao39
+start https://www.inilog.com.br/suporte/pacote/rede8.zip
 goto menu
 :opcao0
 del c:\ti\update.cmd
