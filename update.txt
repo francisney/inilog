@@ -93,7 +93,8 @@ if %opcao% equ 34 goto opcao34
 if %opcao% equ 35 goto opcao35
 if %opcao% equ 36 goto opcao36
 if %opcao% equ 37 goto opcao37
-
+if %opcao% equ 36 goto opcao38
+if %opcao% equ 37 goto opcao39
 if %opcao% equ 0 goto opcao0
 
 :opcao1
