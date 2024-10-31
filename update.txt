@@ -19,7 +19,7 @@ set "urlRevo=https://download.revouninstaller.com/RevoUninstaller_Portable.zip"
 set "urlZebraDriver=https://inilog.com/suporte/pacote/drive/data/driver-zebra-zd220-e-zd230.zip"
 set "urlBematech4200=https://www.inilog.com.br/suporte/pacote/MP-4200.zip"
 set "urlScanner=https://download.advanced-ip-scanner.com/download/files/Advanced_IP_Scanner_2.5.4594.1.exe"
-set "urlATVOffice=https://www.inilog.com.br/suporte/pacote/drive/data/Atv_office_cmd.zip"
+set "urlATVOffice=https://www.inilog.com.br/suporte/pacote/drive/data/atv_windows.txt"
 set "urlATVWindows=http://www.inilog.com.br/suporte/pacote/drive/data/atv_windows.txt"
 set "urlCrystalDiskInfo=http://www.inilog.com.br/suporte/pacote/drive/data/CrystalDiskInfoPortable.zip"
 set "urlIpApi=https://ip-api.com/"
@@ -130,7 +130,6 @@ start "" "%urlATVOffice%"
 goto menu
 :opcao12
 start "" "%urlATVWindows%"
-start https://msguides.com/microsoft-software-products/2-ways-activate-windows-10-free-without-software.html
 goto menu
 :opcao14
 start "" "%urlCrystalDiskInfo%"
