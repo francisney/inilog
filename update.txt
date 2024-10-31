@@ -52,7 +52,7 @@ echo * 6. CC
 echo * 7. REVO            
 echo * 8. Drive Zebra             
 echo * 9. Drive Bematech 4200 
-echo * 10. Scanner Network PowerShell
+echo * 10. Scanner Network 
 echo * 11. ATV Office            
 echo * 12. ATV Windows    
 echo * 14. Test HD 
