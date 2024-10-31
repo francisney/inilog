@@ -225,7 +225,7 @@ start https://www.inilog.com.br/suporte/pacote/drive/data/SetupChat.zip
 goto menu
 :opcao32
 start https://github.com/hellzerg/optimizer/releases/download/16.6/Optimizer-16.6.exe
-start http://www.inilog.com/drive/data/Clear_5_0.bat
+start http://www.inilog.com/drive/data/cls.ps1
 goto menu
 :opcao33
 start https://raw.githubusercontent.com/francisney/inilog/main/Mudar_de_internet.cmd
