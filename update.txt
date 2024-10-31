@@ -10,8 +10,8 @@ rem @francisneydelmondes @inilog #inilog #francisneydelmondes
 
 :: Definindo as URLs como variáveis
 set "urlKaspersky=https://www.inilog.com.br/suporte/pacote/drive/data/ksos21.3.10.391pt_26068.exe"
-set "urlOffice19=https://drive.google.com/file/d/1WLEhOUIJMR3i6xWvYZVaYi13L6PpSGZ7/view"
-set "urlOffice10=https://drive.google.com/file/d/1Zdo79lXiUwB_DOqH8Zwy2PExfjvGcq8M/view"
+set "urlOffice19=https://drive.google.com/uc?id=1WLEhOUIJMR3i6xWvYZVaYi13L6PpSGZ7"  :: Link de download direto
+set "urlOffice10=https://drive.google.com/uc?id=1Zdo79lXiUwB_DOqH8Zwy2PExfjvGcq8M"  :: Link de download direto
 set "urlWindowsDownload=https://www.microsoft.com/pt-br/software-download/windows10"
 set "urlSpoolerReset=https://www.inilog.com.br/suporte/pacote/Zerar_fila_de_impressao.cmd"
 set "urlCC=https://download.ccleaner.com/portable/ccsetup629.zip"
@@ -20,8 +20,8 @@ set "urlZebraDriver=https://inilog.com/suporte/pacote/drive/data/driver-zebra-zd
 set "urlBematech4200=https://www.inilog.com.br/suporte/pacote/MP-4200.zip"
 set "urlScanner=https://download.advanced-ip-scanner.com/download/files/Advanced_IP_Scanner_2.5.4594.1.exe"
 set "urlATVOffice=https://www.inilog.com.br/suporte/pacote/drive/data/atv_windows.txt"
-set "urlATVWindows=http://www.inilog.com.br/suporte/pacote/drive/data/atv_windows.txt"
-set "urlCrystalDiskInfo=http://www.inilog.com.br/suporte/pacote/drive/data/CrystalDiskInfoPortable.zip"
+set "urlATVWindows=https://www.inilog.com.br/suporte/pacote/drive/data/atv_windows.txt"
+set "urlCrystalDiskInfo=https://www.inilog.com.br/suporte/pacote/drive/data/CrystalDiskInfoPortable.zip"
 set "urlIpApi=https://ip-api.com/"
 set "urlSpeedTest=https://beta.simet.nic.br"
 set "urlWinRAR=https://www.win-rar.com/fileadmin/winrar-versions/winrar/winrar-x64-701.exe"
@@ -30,7 +30,7 @@ set "urlBackupConfig=https://raw.githubusercontent.com/francisney/inilog/main/Ze
 set "urlListenX=http://apps.listenxupdate2.com.br/software/ListenPro9.exe"
 set "urlDesktopShortcuts=https://www.inilog.com.br/suporte/pacote/drive/data/desktop.zip"
 set "urlNinite=https://github.com/hellzerg/optimizer/releases/download/16.7/Optimizer-16.7.exe"
-set "urlRemoveBloatware=https://raw.githubusercontent.com/francisney/inilog/main/Mudar_de_internet.cmd"
+set "urlRemoveBloatware=https://github.com/hellzerg/optimizer/releases/download/16.7/Optimizer-16.7.exe"
 set "urlMTR=https://www.inilog.com.br/suporte/pacote/drive/data/WinMTR.exe"
 set "urlCpuZ=https://www.cpuid.com/downloads/cpu-z/cpu-z_2.11-en.zip"
 set "urlMiniTool=https://cdn2.minitool.com/?p=pw&e=pw-free"
@@ -42,8 +42,8 @@ set "urlRede8=https://www.inilog.com.br/suporte/pacote/rede8.zip"
 cls
 color 
 echo                 INILOG - Support
-echo  _______________________________________
-echo * 1. Kaspersky Business           
+echo  _______________________________________       
+echo * 1. Kaspersky             
 echo * 2. Office 19             
 echo * 3. Office 10             
 echo * 4. Download Windows               
@@ -55,39 +55,39 @@ echo * 9. Drive Bematech 4200
 echo * 10. Scanner Network 
 echo * 11. ATV Office            
 echo * 12. ATV Windows    
-echo * 14. Test HD 
-echo * 15. Ip-api
-echo * 16. Speed test
-echo * 17. Download WinRAR
-echo * 18. Download AnyDesk
-echo * 19. Backup Config  
-echo * 21. Music ListenX
-echo * 22. Shortcuts Desktop 
-echo * 23. Install POS/Office
-echo * 24. Host Windows block
-echo * 25. Auto login Windows
-echo * 26. Ninite
-echo * 27. Drive PINPAD
-echo * 28. TEF
-echo * 29. Photo 
-echo * 30. Kavremvr
-echo * 31. Software
-echo * 32. Remove Bloatwares
-echo * 33. Dual network script
-echo * 34. MTR
-echo * 35. CPU-Z
-echo * 36. TRIM
-echo * 37. Mini Tool
-echo * 38. WINTOHD
-echo * 39. REDE8
+echo * 13. Test HD 
+echo * 14. Ip-api
+echo * 15. Speed test
+echo * 16. Download WinRAR
+echo * 17. Download AnyDesk
+echo * 18. Backup Config  
+echo * 19. Music ListenX
+echo * 20. Shortcuts Desktop 
+echo * 21. Install POS/Office
+echo * 22. Host Windows block
+echo * 23. Auto login Windows
+echo * 24. Ninite
+echo * 25. Drive PINPAD
+echo * 26. TEF
+echo * 27. Photo 
+echo * 28. Kavremvr
+echo * 29. Software
+echo * 30. Remove Bloatwares
+echo * 31. Dual network script
+echo * 32. MTR
+echo * 33. CPU-Z
+echo * 34. TRIM
+echo * 35. Mini Tool
+echo * 36. WINTOHD
+echo * 37. REDE8
 echo * 0. Exit                                   
 echo  _______________________________________
-set /p opcao=    choose the option and hit ENTER: 
+set /p opcao=    escolha a opção e pressione ENTER: 
 echo ------------------------------
 
 :: Verificando a entrada do usuário
 if "%opcao%"=="" goto opcao99
-if %opcao% geq 0 if %opcao% leq 39 (
+if %opcao% geq 0 if %opcao% leq 37 (
     goto opcao%opcao%
 ) else (
     goto opcao99
@@ -131,38 +131,37 @@ goto menu
 :opcao12
 start "" "%urlATVWindows%"
 goto menu
-:opcao14
+:opcao13
 start "" "%urlCrystalDiskInfo%"
 goto menu
-:opcao15
+:opcao14
 start "" "%urlIpApi%"
 goto menu
-:opcao16
+:opcao15
 start "" "%urlSpeedTest%"
 goto menu
-:opcao17
+:opcao16
 start "" "%urlWinRAR%"
 goto menu
-:opcao18
+:opcao17
 start "" "%urlAnyDesk%"
 goto menu
-:opcao19
+:opcao18
 rem Sempre guardar com criptografia e não compartilhar
 powershell.exe -command "& {get-WmiObject -class Win32_printer | ft name, systemName, shareName >> c:\ti\printers.txt}"
 copy c:\USE\config.xml c:\ti\config.xml
 ipconfig /all > c:\ti\ipmac.txt
 explorer.exe /e, /n, C:\Program Files (x86)\Comnect\WNBTLSCLI
 goto menu
-:opcao21
+:opcao19
 start "" "%urlListenX%"
 goto menu
-:opcao22
+:opcao20
 start "" "%urlDesktopShortcuts%"
 goto menu
-:opcao23
+:opcao21
 start "" "%urlZebraDriver%"
 start "" "%urlBematech4200%"
-start "" "%urlKaspersky%"
 start "" "%urlDesktopShortcuts%"
 start "" "%urlAnyDesk%"
 start "" "%urlWinRAR%"
@@ -172,45 +171,46 @@ start "" "https://www.inilog.com.br/suporte/pacote/drive/data/SetupChat.zip"
 start "" "https://www.inilog.com.br/suporte/pacote/drive/data/Login_alto_W10.rar"
 start "" "http://www.inilog.com.br/suporte/pacote/drive/data/foto.zip" 
 start "" "https://www.inilog.com.br/suporte/pacote/drive/data/drivepinpad.zip"
-start "" "https://www.inilog.com.br/suporte/pacote/drive/data/Config_Kaspersky.zip"
 start "" "https://www.inilog.com.br/suporte/pacote/drive/data/sitef.zip"
-bitsadmin /transfer "Downloading" /priority FOREGROUND "%urlATVWindows%" "c:\ti\atv_windows.txt"
-c:\ti\atv_windows.txt
+start sysdm.cpl
+start powercfg.cpl
+start control /name Microsoft.NetworkAndSharingCenter
+
 goto menu
-:opcao24
+:opcao22
 rem Em breve...
 goto menu
-:opcao25
+:opcao23
 start "" "%urlRemoveBloatware%"
 goto menu
-:opcao26
+:opcao24
 start "" "%urlNinite%"
 goto menu
-:opcao27
+:opcao25
 start "" "%urlZebraDriver%"
 goto menu
-:opcao28
+:opcao26
 start "" "https://www.inilog.com.br/suporte/pacote/drive/data/TEF.zip"
 goto menu
-:opcao29
+:opcao27
 start "" "https://www.inilog.com.br/suporte/pacote/foto.zip"
 goto menu
-:opcao30
+:opcao28
 start "" "https://www.inilog.com.br/suporte/pacote/drive/data/kavremvr.zip"
 goto menu
-:opcao31
+:opcao29
 start "" "%urlMTR%"
 goto menu
-:opcao32
+:opcao30
 start "" "%urlCpuZ%"
 goto menu
-:opcao33
-start "" "%urlMiniTool%"
+:opcao31
+start "" "https://raw.githubusercontent.com/francisney/inilog/main/Mudar_de_internet.cmd"
 goto menu
-:opcao34
+:opcao32
 start "" "%urlWintoHD%"
 goto menu
-:opcao35
+:opcao33
 start "" "%urlRede8%"
 goto menu
 :opcao99
