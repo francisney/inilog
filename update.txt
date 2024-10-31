@@ -32,7 +32,7 @@ set "urlDesktopShortcuts=https://www.inilog.com.br/suporte/pacote/drive/data/des
 set "urlNinite=https://github.com/hellzerg/optimizer/releases/download/16.7/Optimizer-16.7.exe"
 set "urlRemoveBloatware=https://raw.githubusercontent.com/francisney/inilog/main/Mudar_de_internet.cmd"
 set "urlMTR=https://www.inilog.com.br/suporte/pacote/drive/data/WinMTR.exe"
-set "urlCpuZ=https://download.cpuid.com/cpu-z/cpu-z_2.02-en.zip"
+set "urlCpuZ=https://www.cpuid.com/downloads/cpu-z/cpu-z_2.11-en.zip"
 set "urlMiniTool=https://cdn2.minitool.com/?p=pw&e=pw-free"
 set "urlWintoHD=https://www.inilog.com.br/suporte/pacote/WINTOHD_Hasleo.zip"
 set "urlRede8=https://www.inilog.com.br/suporte/pacote/rede8.zip"
