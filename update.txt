@@ -128,14 +128,6 @@ start https://www.inilog.com.br/suporte/pacote/MP-4200.zip
 goto menu
 :opcao10
 start https://download.advanced-ip-scanner.com/download/files/Advanced_IP_Scanner_2.5.4594.1.exe
-
-rem bitsadmin /transfer "Downloading" /priority FOREGROUND https://raw.githubusercontent.com/francisney/inilog/main/scan.ps1  c:\ti\scan.ps1
-rem bitsadmin /transfer "Downloading" /priority FOREGROUND https://raw.githubusercontent.com/francisney/inilog/main/pscmdscan.txt  c:\ti\pscmdscan.txt
-
-rem c:\ti\pscmdscan.txt
-
-
-
 goto menu
 :opcao11
 start https://www.inilog.com.br/suporte/pacote/drive/data/Atv_office_cmd.zip
