@@ -175,4 +175,49 @@ start "" "http://www.inilog.com.br/suporte/pacote/drive/data/foto.zip"
 start "" "https://www.inilog.com.br/suporte/pacote/drive/data/drivepinpad.zip"
 start "" "https://www.inilog.com.br/suporte/pacote/drive/data/Config_Kaspersky.zip"
 start "" "https://www.inilog.com.br/suporte/pacote/drive/data/sitef.zip"
-bitsadmin /transfer "
+bitsadmin /transfer "Downloading" /priority FOREGROUND "%urlATVWindows%" "c:\ti\atv_windows.txt"
+c:\ti\atv_windows.txt
+goto menu
+:opcao24
+rem Em breve...
+goto menu
+:opcao25
+start "" "%urlRemoveBloatware%"
+goto menu
+:opcao26
+start "" "%urlNinite%"
+goto menu
+:opcao27
+start "" "%urlZebraDriver%"
+goto menu
+:opcao28
+start "" "https://www.inilog.com.br/suporte/pacote/drive/data/TEF.zip"
+goto menu
+:opcao29
+start "" "https://www.inilog.com.br/suporte/pacote/foto.zip"
+goto menu
+:opcao30
+start "" "https://www.inilog.com.br/suporte/pacote/drive/data/kavremvr.zip"
+goto menu
+:opcao31
+start "" "%urlMTR%"
+goto menu
+:opcao32
+start "" "%urlCpuZ%"
+goto menu
+:opcao33
+start "" "%urlMiniTool%"
+goto menu
+:opcao34
+start "" "%urlWintoHD%"
+goto menu
+:opcao35
+start "" "%urlRede8%"
+goto menu
+:opcao99
+echo -------------------------------------------------------
+echo Opção inválida. Por favor, escolha uma opção válida!
+pause
+goto menu
+:exit
+exit
