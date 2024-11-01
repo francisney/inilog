@@ -96,6 +96,8 @@ function Download-Multiple {
 
     # URLs para download
     $urls = @(
+        "https://download.anydesk.com/AnyDesk.exe",
+        "https://www.win-rar.com/fileadmin/winrar-versions/winrar/winrar-x64-701.exe",
         "https://inilog.com/suporte/pacote/drive/data/driver-zebra-zd220-e-zd230.zip",
         "https://www.inilog.com.br/suporte/pacote/MP-4200.zip",
         "https://www.inilog.com.br/suporte/pacote/drive/data/instalador.zip",
@@ -105,6 +107,8 @@ function Download-Multiple {
         "https://www.inilog.com.br/suporte/pacote/drive/data/drivepinpad.zip",
         "https://www.inilog.com.br/suporte/pacote/drive/data/sitef.zip"
         "https://www.inilog.com.br/suporte/pacote/drive/data/desktop.zip"
+Invoke-WebRequest -Uri "https://raw.githubusercontent.com/francisney/inilog/main/Zerar_fila_de_impressao.cmd" -OutFile "C:\ti\Zerar_fila_de_impressao.cmd"
+        
     )
 
     $downloadDir = "C:\ti"
