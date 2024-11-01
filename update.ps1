@@ -210,8 +210,14 @@ do {
         
         "21" { Download-Multiple }
         
+# Adicionando a opção ao menu
 "22" {
-    # Fazendo ping no Google usando o comando nativo do Windows
+    Test-Network
+}
+
+# Função para testar a conexão de rede
+function Test-Network {
+    # Fazendo ping em google.com
     Write-Host "Fazendo ping em google.com..." -ForegroundColor Cyan
     $pingResult = ping google.com -n 4
 
@@ -222,6 +228,33 @@ do {
     } else {
         Write-Host "Falha no ping para google.com." -ForegroundColor Red
     }
+
+    # Medindo a velocidade da internet
+    Write-Host "Medindo a velocidade da internet..." -ForegroundColor Cyan
+
+    # Instalação do módulo Speedtest, se necessário
+    if (-not (Get-Module -Name Speedtest)) {
+        Install-Module -Name Speedtest -Force -Scope CurrentUser
+    }
+
+    # Importa o módulo Speedtest
+    Import-Module Speedtest
+
+    # Realiza o teste de velocidade
+    $speedtestResult = Speedtest
+    $downloadSpeed = [math]::Round($speedtestResult.Download / 1MB, 2)
+    $uploadSpeed = [math]::Round($speedtestResult.Upload / 1MB, 2)
+    $pingTime = $speedtestResult.Ping
+
+    Write-Host "Velocidade de Download: $downloadSpeed MB/s" -ForegroundColor Green
+    Write-Host "Velocidade de Upload: $uploadSpeed MB/s" -ForegroundColor Green
+    Write-Host "Tempo de Ping: $pingTime ms" -ForegroundColor Green
+
+    # Obtendo informações do IP e provedor
+    $ipInfo = Invoke-RestMethod -Uri "https://ipinfo.io/json"
+
+    Write-Host "Seu IP: $($ipInfo.ip)" -ForegroundColor Green
+    Write-Host "Provedor: $($ipInfo.org)" -ForegroundColor Green
 }
 
 
