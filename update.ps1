@@ -209,7 +209,6 @@ do {
         "20" { Perform-Backup }
         
         "21" { Download-Multiple }
-        
 # Função para testar a conexão de rede
 function Test-Network {
     # Fazendo ping em google.com
@@ -229,7 +228,7 @@ function Test-Network {
 
     # Instalação do módulo Speedtest, se necessário
     if (-not (Get-Module -Name Speedtest)) {
-        Install-Module -Name Speedtest -Force -Scope CurrentUser
+        Install-Module -Name Speedtest -Force -Scope CurrentUser -ErrorAction Stop
     }
 
     # Importa o módulo Speedtest
@@ -246,22 +245,17 @@ function Test-Network {
     Write-Host "Tempo de Ping: $pingTime ms" -ForegroundColor Green
 
     # Obtendo informações do IP e provedor
-    $ipInfo = Invoke-RestMethod -Uri "https://ipinfo.io/json"
-
-    Write-Host "Seu IP: $($ipInfo.ip)" -ForegroundColor Green
-    Write-Host "Provedor: $($ipInfo.org)" -ForegroundColor Green
-}
-
-# Exemplo de estrutura de switch
-switch ($opcao) {
-    "22" {
-        Test-Network
-    }
-    default {
-        Write-Host "Opção inválida." -ForegroundColor Red
+    try {
+        $ipInfo = Invoke-RestMethod -Uri "https://ipinfo.io/json"
+        Write-Host "Seu IP: $($ipInfo.ip)" -ForegroundColor Green
+        Write-Host "Provedor: $($ipInfo.org)" -ForegroundColor Green
+    } catch {
+        Write-Host "Erro ao obter informações do IP." -ForegroundColor Red
     }
 }
 
+# No seu switch, adicione a opção 22 para chamar a função Test-Network
+"22" { Test-Network }
 
 
 
