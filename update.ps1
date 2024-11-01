@@ -36,7 +36,7 @@ function Show-Menu {
     Write-Host "20. Backup" -ForegroundColor Green
     Write-Host "21. Install PDX" -ForegroundColor Green
     Write-Host "22. CLS" -ForegroundColor Green
-    Write-Host "22. NETWORK" -ForegroundColor Green
+    Write-Host "23. NETWORK" -ForegroundColor Green
     Write-Host "0. Sair" -ForegroundColor Red
     Write-Host "======================" -ForegroundColor Cyan
 }
