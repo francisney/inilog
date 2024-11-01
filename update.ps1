@@ -1,4 +1,12 @@
-# Francisney Delmondes (61)99363-0969 suporte@inilog.com
+# Francisney Delmondes
+(61)99363-0969
+suporte@inilog.com
+$tiDir = "C:\ti"
+if (-Not (Test-Path -Path $tiDir)) {
+    New-Item -ItemType Directory -Path $tiDir | Out-Null
+    Write-Host "Diretório $tiDir criado." -ForegroundColor Green
+}
+
 
 function Show-Menu {
     Clear-Host
