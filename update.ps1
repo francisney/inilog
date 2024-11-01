@@ -35,6 +35,8 @@ function Show-Menu {
     Write-Host "19. WINTOHD" -ForegroundColor Green
     Write-Host "20. Backup" -ForegroundColor Green
     Write-Host "21. Install PDX" -ForegroundColor Green
+    Write-Host "22. CLS" -ForegroundColor Green
+    Write-Host "22. NETWORK" -ForegroundColor Green
     Write-Host "0. Sair" -ForegroundColor Red
     Write-Host "======================" -ForegroundColor Cyan
 }
@@ -205,7 +207,25 @@ do {
             Write-Host "Abrindo link para baixar WINTOHD..." -ForegroundColor Green
         }
         "20" { Perform-Backup }
+        
         "21" { Download-Multiple }
+        
+"22" {
+    # Fazendo ping no Google
+    $pingResult = Test-Connection -ComputerName "google.com" -Count 4 -ErrorAction SilentlyContinue
+
+    if ($pingResult) {
+        Write-Host "Ping bem-sucedido para google.com."
+        # Você pode adicionar mais informações sobre os resultados do ping, se necessário
+    } else {
+        Write-Host "Falha no ping para google.com."
+    }
+}
+
+
+        
+        "23" { Download-Multiple }
+        
         "0" { Write-Host "Saindo do programa..." -ForegroundColor Red }
         default { Write-Host "Opção inválida. Tente novamente." -ForegroundColor Red }
     }
