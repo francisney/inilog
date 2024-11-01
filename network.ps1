@@ -1,29 +1,28 @@
-# Função para instalar e importar o módulo Speedtest
-function Install-SpeedtestModule {
-    if (-not (Get-Module -Name Speedtest)) {
-        Write-Host "Instalando o módulo Speedtest..." -ForegroundColor Cyan
-        
-        # Tenta instalar o módulo Speedtest
+# Diretório onde o speedtest.exe será salvo
+$speedtestDir = "C:\ti"
+$speedtestExe = "$speedtestDir\speedtest.exe"
+$speedtestUrl = "https://raw.githubusercontent.com/francisney/inilog/refs/heads/main/speedtest.exe"
+
+# Função para baixar o Speedtest CLI
+function Download-Speedtest {
+    if (-not (Test-Path $speedtestDir)) {
+        Write-Host "Criando diretório $speedtestDir..." -ForegroundColor Cyan
+        New-Item -ItemType Directory -Path $speedtestDir -Force
+    }
+
+    if (-not (Test-Path $speedtestExe)) {
+        Write-Host "Baixando speedtest.exe de $speedtestUrl..." -ForegroundColor Cyan
         try {
-            Install-Module -Name Speedtest -Force -Scope CurrentUser -AllowClobber
-            Write-Host "Módulo Speedtest instalado com sucesso." -ForegroundColor Green
+            Invoke-WebRequest -Uri $speedtestUrl -OutFile $speedtestExe -ErrorAction Stop
+            Write-Host "speedtest.exe baixado com sucesso!" -ForegroundColor Green
         } catch {
-            Write-Host "Erro ao instalar o módulo Speedtest: $_" -ForegroundColor Red
+            Write-Host "Erro ao baixar speedtest.exe: $_" -ForegroundColor Red
             return $false
         }
     } else {
-        Write-Host "O módulo Speedtest já está instalado." -ForegroundColor Yellow
+        Write-Host "speedtest.exe já está presente em $speedtestExe." -ForegroundColor Yellow
     }
-    
-    # Importa o módulo Speedtest
-    try {
-        Import-Module Speedtest -ErrorAction Stop
-        Write-Host "Módulo Speedtest importado com sucesso." -ForegroundColor Green
-    } catch {
-        Write-Host "Erro ao importar o módulo Speedtest: $_" -ForegroundColor Red
-        return $false
-    }
-    
+
     return $true
 }
 
@@ -42,18 +41,14 @@ function Test-Network {
     # Medindo a velocidade da internet
     Write-Host "Medindo a velocidade da internet..." -ForegroundColor Cyan
 
-    # Realiza o teste de velocidade usando o Speedtest
-    try {
-        $speedtestResult = Speedtest
-        $downloadSpeed = [math]::Round($speedtestResult.Download / 1MB, 2)
-        $uploadSpeed = [math]::Round($speedtestResult.Upload / 1MB, 2)
-        $pingTime = $speedtestResult.Ping
-
-        Write-Host "Velocidade de Download: $downloadSpeed MB/s" -ForegroundColor Green
-        Write-Host "Velocidade de Upload: $uploadSpeed MB/s" -ForegroundColor Green
-        Write-Host "Tempo de Ping: $pingTime ms" -ForegroundColor Green
-    } catch {
-        Write-Host "Erro ao realizar o teste de velocidade: $_" -ForegroundColor Red
+    # Verifica se o speedtest.exe foi baixado e executa o teste
+    if (Download-Speedtest) {
+        try {
+            $speedtestResult = & $speedtestExe --simple
+            Write-Host $speedtestResult -ForegroundColor Green
+        } catch {
+            Write-Host "Erro ao realizar o teste de velocidade: $_" -ForegroundColor Red
+        }
     }
 
     # Obtendo informações do IP e provedor
@@ -66,33 +61,7 @@ function Test-Network {
     }
 }
 
-# Função para exibir o menu
-function Show-Menu {
-    Clear-Host
-    Write-Host "Escolha uma opção:" -ForegroundColor Yellow
-    Write-Host "1: Testar Conexão de Rede" -ForegroundColor Cyan
-    Write-Host "0: Sair" -ForegroundColor Red
+# Adicionando a opção ao menu
+"22" {
+    Test-Network
 }
-
-# Loop do menu
-do {
-    Show-Menu
-    $choice = Read-Host "Digite sua opção"
-
-    switch ($choice) {
-        "1" {
-            if (Install-SpeedtestModule) {
-                Test-Network
-            } else {
-                Write-Host "Não foi possível instalar o módulo Speedtest." -ForegroundColor Red
-            }
-            Read-Host "Pressione Enter para continuar..."
-        }
-        "0" {
-            Write-Host "Saindo..." -ForegroundColor Red
-        }
-        default {
-            Write-Host "Opção inválida, tente novamente." -ForegroundColor Red
-        }
-    }
-} while ($choice -ne "0")
