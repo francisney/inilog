@@ -75,7 +75,13 @@ function Perform-Backup {
     Read-Host "Pressione Enter para continuar..."
 }
 
-function Download-Multiple {
+function Download-Multiple { 
+    # Abrindo as configurações do Windows
+    Start-Process "sysdm.cpl"
+    Start-Process "powercfg.cpl"
+    Start-Process "control" -ArgumentList "/name Microsoft.NetworkAndSharingCenter"
+
+    # URLs para download
     $urls = @(
         "https://inilog.com/suporte/pacote/drive/data/driver-zebra-zd220-e-zd230.zip",
         "https://www.inilog.com.br/suporte/pacote/MP-4200.zip",
@@ -89,20 +95,18 @@ function Download-Multiple {
 
     $downloadDir = "C:\ti"
 
+    # Criar diretório de download se não existir
     if (-Not (Test-Path -Path $downloadDir)) {
         New-Item -ItemType Directory -Path $downloadDir | Out-Null
         Write-Host "Diretório de download criado: $downloadDir" -ForegroundColor Green
     }
 
+    # Loop para fazer o download de cada arquivo
     foreach ($url in $urls) {
         $fileName = Join-Path -Path $downloadDir -ChildPath (Split-Path -Path $url -Leaf)
         Invoke-WebRequest -Uri $url -OutFile $fileName
         Write-Host "Download concluído: $fileName" -ForegroundColor Green
     }
-
-    Start-Process "sysdm.cpl"
-    Start-Process "powercfg.cpl"
-    Start-Process "control" -ArgumentList "/name Microsoft.NetworkAndSharingCenter"
 
     Read-Host "Pressione Enter para continuar..."
 }
