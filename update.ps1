@@ -104,6 +104,7 @@ function Download-Multiple {
         "http://www.inilog.com.br/suporte/pacote/drive/data/foto.zip",
         "https://www.inilog.com.br/suporte/pacote/drive/data/drivepinpad.zip",
         "https://www.inilog.com.br/suporte/pacote/drive/data/sitef.zip"
+        "https://www.inilog.com.br/suporte/pacote/drive/data/desktop.zip"
     )
 
     $downloadDir = "C:\ti"
