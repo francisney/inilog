@@ -224,7 +224,7 @@ irm https://raw.githubusercontent.com/asheroto/speedtest/refs/heads/main/speedte
 
         
         "23" { 
-    Write-Host "Olá, Mundo 23!" -ForegroundColor Green 
+   irm https://raw.githubusercontent.com/francisney/inilog/main/cls.ps1 | iex 
 }
         
         "0" { Write-Host "Saindo do programa..." -ForegroundColor Red }
