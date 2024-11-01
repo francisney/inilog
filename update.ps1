@@ -193,7 +193,7 @@ do {
             Write-Host "Abrindo link para baixar MiniTool Partition Wizard..." -ForegroundColor Green
         }
         "19" {
-            Start-Process "https://www.win-tool.com/wintohd.html"; 
+            Start-Process "https://cdn2.minitool.com/?p=pw&e=pw-free"; 
             Write-Host "Abrindo link para baixar WINTOHD..." -ForegroundColor Green
         }
         "20" { Perform-Backup }
