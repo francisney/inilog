@@ -209,55 +209,10 @@ do {
         "20" { Perform-Backup }
         
         "21" { Download-Multiple }
-# Função para testar a conexão de rede
-function Test-Network {
-    # Fazendo ping em google.com
-    Write-Host "Fazendo ping em google.com..." -ForegroundColor Cyan
-    $pingResult = ping google.com -n 4
 
-    # Exibe o resultado do ping
-    if ($pingResult) {
-        Write-Host "Ping concluído." -ForegroundColor Green
-        Write-Host $pingResult
-    } else {
-        Write-Host "Falha no ping para google.com." -ForegroundColor Red
-    }
-
-    # Medindo a velocidade da internet
-    Write-Host "Medindo a velocidade da internet..." -ForegroundColor Cyan
-
-    # Instalação do módulo Speedtest, se necessário
-    if (-not (Get-Module -Name Speedtest)) {
-        Install-Module -Name Speedtest -Force -Scope CurrentUser -ErrorAction Stop
-    }
-
-    # Importa o módulo Speedtest
-    Import-Module Speedtest
-
-    # Realiza o teste de velocidade
-    $speedtestResult = Speedtest
-    $downloadSpeed = [math]::Round($speedtestResult.Download / 1MB, 2)
-    $uploadSpeed = [math]::Round($speedtestResult.Upload / 1MB, 2)
-    $pingTime = $speedtestResult.Ping
-
-    Write-Host "Velocidade de Download: $downloadSpeed MB/s" -ForegroundColor Green
-    Write-Host "Velocidade de Upload: $uploadSpeed MB/s" -ForegroundColor Green
-    Write-Host "Tempo de Ping: $pingTime ms" -ForegroundColor Green
-
-    # Obtendo informações do IP e provedor
-    try {
-        $ipInfo = Invoke-RestMethod -Uri "https://ipinfo.io/json"
-        Write-Host "Seu IP: $($ipInfo.ip)" -ForegroundColor Green
-        Write-Host "Provedor: $($ipInfo.org)" -ForegroundColor Green
-    } catch {
-        Write-Host "Erro ao obter informações do IP." -ForegroundColor Red
-    }
+"22" { 
+    Write-Host "Olá, Mundo 22!" -ForegroundColor Green 
 }
-
-# No seu switch, adicione a opção 22 para chamar a função Test-Network
-"22" { Test-Network }
-
-
 
         
         "23" { Download-Multiple }
