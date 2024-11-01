@@ -187,17 +187,17 @@ do {
             Write-Host "Baixando Rustdek..." -ForegroundColor Green
         }
         "14" {
-            $listenProFile = "C:\ti\ListenPro9.zip"
+            $listenProFile = "C:\ti\ListenPro9.exe"
             Invoke-WebRequest -Uri "http://apps.listenxupdate2.com.br/software/ListenPro9.exe" -OutFile $listenProFile
             Write-Host "Baixando ListenPro9..." -ForegroundColor Green
         }
         "15" {
-            $optimizerFile = "C:\ti\Optimizer.zip"
+            $optimizerFile = "C:\ti\Optimizer.exe"
             Invoke-WebRequest -Uri "https://github.com/hellzerg/optimizer/releases/download/16.7/Optimizer-16.7.exe" -OutFile $optimizerFile
             Write-Host "Baixando Optimizer..." -ForegroundColor Green
         }
         "16" {
-            $winMtrFile = "C:\ti\WinMTR.zip"
+            $winMtrFile = "C:\ti\WinMTR.exe"
             Invoke-WebRequest -Uri "https://www.inilog.com.br/suporte/pacote/drive/data/WinMTR.exe" -OutFile $winMtrFile
             Write-Host "Baixando WinMTR..." -ForegroundColor Green
         }
