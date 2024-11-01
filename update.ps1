@@ -189,11 +189,11 @@ do {
             Write-Host "Baixando CPU-Z..." -ForegroundColor Green
         }
         "18" {
-            Start-Process "https://www.partitionwizard.com/download/partition-wizard-free-edition.html"; 
+            Start-Process "https://cdn2.minitool.com/?p=pw&e=pw-free"; 
             Write-Host "Abrindo link para baixar MiniTool Partition Wizard..." -ForegroundColor Green
         }
         "19" {
-            Start-Process "https://cdn2.minitool.com/?p=pw&e=pw-free"; 
+            Start-Process "https://www.inilog.com.br/suporte/pacote/WINTOHD_Hasleo.zip"; 
             Write-Host "Abrindo link para baixar WINTOHD..." -ForegroundColor Green
         }
         "20" { Perform-Backup }
