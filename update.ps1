@@ -210,11 +210,6 @@ do {
         
         "21" { Download-Multiple }
         
-# Adicionando a opção ao menu
-"22" {
-    Test-Network
-}
-
 # Função para testar a conexão de rede
 function Test-Network {
     # Fazendo ping em google.com
@@ -256,6 +251,17 @@ function Test-Network {
     Write-Host "Seu IP: $($ipInfo.ip)" -ForegroundColor Green
     Write-Host "Provedor: $($ipInfo.org)" -ForegroundColor Green
 }
+
+# Exemplo de estrutura de switch
+switch ($opcao) {
+    "22" {
+        Test-Network
+    }
+    default {
+        Write-Host "Opção inválida." -ForegroundColor Red
+    }
+}
+
 
 
 
