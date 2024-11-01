@@ -1,4 +1,0 @@
-powershell.exe -command "& {Set-ExecutionPolicy RemoteSigned}"
-powershell.exe -command "& {.\scan.ps1 -StartIPv4Address 10.0.0.1 -EndIPv4Address 10.0.0.254 -EnableMACResolving -ExtendedInformations}"
-
-
