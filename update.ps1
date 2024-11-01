@@ -219,7 +219,7 @@ do {
         "21" { Download-Multiple }
 
 "22" { 
-    Write-Host "Olá, Mundo 22!" -ForegroundColor Green 
+irm https://raw.githubusercontent.com/asheroto/speedtest/refs/heads/main/speedtest.ps1 | iex
 }
 
         
