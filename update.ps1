@@ -1,3 +1,7 @@
+# Francisney Delmondes
+# Telefone: (61) 9933-0969
+# Email: suporte@inilog.com
+
 $tiDir = "C:\ti"
 if (-Not (Test-Path -Path $tiDir)) {
     New-Item -ItemType Directory -Path $tiDir | Out-Null
