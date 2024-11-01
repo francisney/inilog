@@ -1,31 +1,31 @@
-# Francisney Delmondes telefone (61)99363-0969 suporte@inilog.com
+# Francisney Delmondes (61)99363-0969 suporte@inilog.com
 
 function Show-Menu {
     Clear-Host
     Write-Host "======================" -ForegroundColor Cyan
     Write-Host "     MENU DE DOWNLOADS  " -ForegroundColor Yellow
     Write-Host "======================" -ForegroundColor Cyan
-    Write-Host "1. Baixar o Office" -ForegroundColor Green
-    Write-Host "2. Baixar Windows 10" -ForegroundColor Green
-    Write-Host "3. Zerar Fila de Impressão (cmd)" -ForegroundColor Green
-    Write-Host "4. Baixar CCleaner" -ForegroundColor Green
-    Write-Host "5. Baixar Revo Uninstaller" -ForegroundColor Green
-    Write-Host "6. Baixar Driver Zebra ZD220/ZD230" -ForegroundColor Green
-    Write-Host "7. Baixar MP-4200" -ForegroundColor Green
-    Write-Host "8. Baixar Advanced IP Scanner" -ForegroundColor Green
-    Write-Host "9. Ativar Windows" -ForegroundColor Green
-    Write-Host "10. Baixar CrystalDiskInfo" -ForegroundColor Green
-    Write-Host "11. Baixar WinRAR" -ForegroundColor Green
+    Write-Host "1. Office" -ForegroundColor Green
+    Write-Host "2. Windows" -ForegroundColor Green
+    Write-Host "3. Reset spooler" -ForegroundColor Green
+    Write-Host "4. CC" -ForegroundColor Green
+    Write-Host "5. Revo" -ForegroundColor Green
+    Write-Host "6. Zebra" -ForegroundColor Green
+    Write-Host "7. MP-4200" -ForegroundColor Green
+    Write-Host "8. IP Scanner" -ForegroundColor Green
+    Write-Host "9. Atv Windows and Office" -ForegroundColor Green
+    Write-Host "10. CrystalDiskInfo" -ForegroundColor Green
+    Write-Host "11. WinRAR" -ForegroundColor Green
     Write-Host "12. Baixar AnyDesk" -ForegroundColor Green
-    Write-Host "13. Zerar Fila de Impressão (GitHub)" -ForegroundColor Green
-    Write-Host "14. Baixar ListenPro9" -ForegroundColor Green
-    Write-Host "15. Baixar Optimizer" -ForegroundColor Green
-    Write-Host "16. Baixar WinMTR" -ForegroundColor Green
-    Write-Host "17. Baixar CPU-Z" -ForegroundColor Green
-    Write-Host "18. Baixar MiniTool Partition Wizard" -ForegroundColor Green
-    Write-Host "19. Baixar WINTOHD" -ForegroundColor Green
-    Write-Host "20. Fazer Backup" -ForegroundColor Green
-    Write-Host "21. Baixar Vários Drives e Abrir Configurações" -ForegroundColor Green
+    Write-Host "13. ----" -ForegroundColor Green
+    Write-Host "14. Listen" -ForegroundColor Green
+    Write-Host "15. Optimizer" -ForegroundColor Green
+    Write-Host "16. WinMTR" -ForegroundColor Green
+    Write-Host "17. CPU-Z" -ForegroundColor Green
+    Write-Host "18. MiniTool Partition" -ForegroundColor Green
+    Write-Host "19. WINTOHD" -ForegroundColor Green
+    Write-Host "20. Backup" -ForegroundColor Green
+    Write-Host "21. Install PDX" -ForegroundColor Green
     Write-Host "0. Sair" -ForegroundColor Red
     Write-Host "======================" -ForegroundColor Cyan
 }
@@ -39,7 +39,7 @@ function Perform-Backup {
 
     if (-Not (Test-Path -Path $backupDir)) {
         New-Item -ItemType Directory -Path $backupDir | Out-Null
-        Write-Host "Diretório de backup criado: $backupDir" -ForegroundColor Green
+        Write-Host "Dir. de backup criado: $backupDir" -ForegroundColor Green
     }
 
     try {
