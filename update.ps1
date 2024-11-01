@@ -3,7 +3,7 @@
 function Show-Menu {
     Clear-Host
     Write-Host "======================" -ForegroundColor Cyan
-    Write-Host "     MENU DE DOWNLOADS  " -ForegroundColor Yellow
+    Write-Host "     INILOG - Administration Tool  " -ForegroundColor Yellow
     Write-Host "======================" -ForegroundColor Cyan
     Write-Host "1. Office" -ForegroundColor Green
     Write-Host "2. Windows" -ForegroundColor Green
@@ -13,11 +13,11 @@ function Show-Menu {
     Write-Host "6. Zebra" -ForegroundColor Green
     Write-Host "7. MP-4200" -ForegroundColor Green
     Write-Host "8. IP Scanner" -ForegroundColor Green
-    Write-Host "9. Atv Windows and Office" -ForegroundColor Green
+    Write-Host "9. Atv PS" -ForegroundColor Green
     Write-Host "10. CrystalDiskInfo" -ForegroundColor Green
     Write-Host "11. WinRAR" -ForegroundColor Green
-    Write-Host "12. Baixar AnyDesk" -ForegroundColor Green
-    Write-Host "13. ----" -ForegroundColor Green
+    Write-Host "12. AnyDesk" -ForegroundColor Green
+    Write-Host "13. Rustdesk" -ForegroundColor Green
     Write-Host "14. Listen" -ForegroundColor Green
     Write-Host "15. Optimizer" -ForegroundColor Green
     Write-Host "16. WinMTR" -ForegroundColor Green
@@ -160,8 +160,8 @@ do {
         }
         "13" {
             $githubCmdFile = "C:\ti\zerar_fila_github.cmd"
-            Invoke-WebRequest -Uri "https://raw.githubusercontent.com/francisney/inilog/main/Zerar_fila_de_impressao.cmd" -OutFile $githubCmdFile
-            Write-Host "Baixando script para zerar fila de impressão (GitHub)..." -ForegroundColor Green
+            Invoke-WebRequest -Uri "https://github.com/rustdesk/rustdesk/releases/download/1.3.2/rustdesk-1.3.2-x86_64.exe" -OutFile $githubCmdFile
+            Write-Host "Baixando Rustdek..." -ForegroundColor Green
         }
         "14" {
             $listenProFile = "C:\ti\ListenPro9.zip"
