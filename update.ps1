@@ -211,16 +211,19 @@ do {
         "21" { Download-Multiple }
         
 "22" {
-    # Fazendo ping no Google
-    $pingResult = Test-Connection -ComputerName "www.google.com" -Count 4 -ErrorAction SilentlyContinue
+    # Fazendo ping no Google usando o comando nativo do Windows
+    Write-Host "Fazendo ping em google.com..." -ForegroundColor Cyan
+    $pingResult = ping google.com -n 4
 
+    # Exibe o resultado do ping
     if ($pingResult) {
-        Write-Host "Ping bem-sucedido para google.com."
-        # Você pode adicionar mais informações sobre os resultados do ping, se necessário
+        Write-Host "Ping concluído." -ForegroundColor Green
+        Write-Host $pingResult
     } else {
-        Write-Host "Falha no ping para google.com."
+        Write-Host "Falha no ping para google.com." -ForegroundColor Red
     }
 }
+
 
 
         
