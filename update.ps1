@@ -212,7 +212,7 @@ do {
         
 "22" {
     # Fazendo ping no Google
-    $pingResult = Test-Connection -ComputerName "google.com" -Count 4 -ErrorAction SilentlyContinue
+    $pingResult = Test-Connection -ComputerName "www.google.com" -Count 4 -ErrorAction SilentlyContinue
 
     if ($pingResult) {
         Write-Host "Ping bem-sucedido para google.com."
