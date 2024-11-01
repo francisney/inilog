@@ -8,11 +8,19 @@ if (-Not (Test-Path -Path $tiDir)) {
     Write-Host "Diretório $tiDir criado." -ForegroundColor Green
 }
 
+$url = "https://ipinfo.io/json"
+$response = Invoke-RestMethod -Uri $url
+$ip = $response.ip
+$provider = $response.org
+
+
 
 function Show-Menu {
     Clear-Host
     Write-Host "======================" -ForegroundColor Cyan
     Write-Host "     INILOG - Administration Tool  " -ForegroundColor Yellow
+    Write-Host "IP Público: $ip"
+    Write-Host "Nome do Provedor: $provider"
     Write-Host "======================" -ForegroundColor Cyan
     Write-Host "1. Office" -ForegroundColor Green
     Write-Host "2. Windows" -ForegroundColor Green
