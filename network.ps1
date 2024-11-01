@@ -61,7 +61,29 @@ function Test-Network {
     }
 }
 
-# Adicionando a opção ao menu
-"22" {
-    Test-Network
+# Função para exibir o menu
+function Show-Menu {
+    Clear-Host
+    Write-Host "Escolha uma opção:" -ForegroundColor Yellow
+    Write-Host "1: Testar Conexão de Rede" -ForegroundColor Cyan
+    Write-Host "0: Sair" -ForegroundColor Red
 }
+
+# Loop do menu
+do {
+    Show-Menu
+    $choice = Read-Host "Digite sua opção"
+
+    switch ($choice) {
+        "1" {
+            Test-Network
+            Read-Host "Pressione Enter para continuar..."
+        }
+        "0" {
+            Write-Host "Saindo..." -ForegroundColor Red
+        }
+        default {
+            Write-Host "Opção inválida, tente novamente." -ForegroundColor Red
+        }
+    }
+} while ($choice -ne "0")
