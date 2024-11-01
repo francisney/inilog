@@ -185,7 +185,7 @@ do {
         }
         "17" {
             $cpuZFile = "C:\ti\cpu-z.zip"
-            Invoke-WebRequest -Uri "https://www.cpuid.com/downloads/cpu-z/cpu-z-1.97.zip" -OutFile $cpuZFile
+            Invoke-WebRequest -Uri "https://download.cpuid.com/cpu-z/cpu-z_2.11-en.zip" -OutFile $cpuZFile
             Write-Host "Baixando CPU-Z..." -ForegroundColor Green
         }
         "18" {
