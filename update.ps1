@@ -164,7 +164,7 @@ do {
             Write-Host "Baixando AnyDesk..." -ForegroundColor Green
         }
         "13" {
-            $githubCmdFile = "C:\ti\zerar_fila_github.cmd"
+            $githubCmdFile = "C:\ti\rustdesk-1.3.2-x86_64.exe"
             Invoke-WebRequest -Uri "https://github.com/rustdesk/rustdesk/releases/download/1.3.2/rustdesk-1.3.2-x86_64.exe" -OutFile $githubCmdFile
             Write-Host "Baixando Rustdek..." -ForegroundColor Green
         }
