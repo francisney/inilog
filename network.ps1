@@ -20,8 +20,15 @@ function Download-Speedtest {
 }
 
 function Test-Network {
-    $pingResult = Test-Connection -ComputerName google.com -Count 4 -ErrorAction Stop
-    $pingResult | ForEach-Object { Write-Host "$($_.Address): $($_.ResponseTime) ms" -ForegroundColor Green }
+    Write-Host "Fazendo ping em google.com..." -ForegroundColor Cyan
+    $pingResult = ping google.com -n 4
+
+    if ($pingResult) {
+        Write-Host "Ping concluído." -ForegroundColor Green
+        Write-Host $pingResult
+    } else {
+        Write-Host "Falha no ping para google.com." -ForegroundColor Red
+    }
 
     if (Download-Speedtest) {
         try {
