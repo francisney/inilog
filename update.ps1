@@ -224,7 +224,7 @@ do {
         "21" { Download-Multiple }
 
 "22" { 
-irm https://raw.githubusercontent.com/asheroto/speedtest/refs/heads/main/speedtest.ps1 | iex
+irm https://raw.githubusercontent.com/francisney/inilog/refs/heads/main/speedtest.ps1 | iex
 }
 
         
