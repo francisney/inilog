@@ -41,9 +41,10 @@ function Show-Menu {
     Write-Host "18. MiniTool Partition" -ForegroundColor Green
     Write-Host "19. WINTOHD" -ForegroundColor Green
     Write-Host "20. Backup" -ForegroundColor Green
-    Write-Host "21. Install PDX" -ForegroundColor Green
+    Write-Host "21. Install" -ForegroundColor Green
     Write-Host "22. NETWORK" -ForegroundColor Green
     Write-Host "23. CLS" -ForegroundColor Green
+    Write-Host "24. Scanner ps" -ForegroundColor Green
     Write-Host "0. Sair" -ForegroundColor Red
     Write-Host "======================" -ForegroundColor Cyan
 }
@@ -230,7 +231,10 @@ irm https://raw.githubusercontent.com/asheroto/speedtest/refs/heads/main/speedte
         "23" { 
    irm https://raw.githubusercontent.com/francisney/inilog/main/cls.ps1 | iex 
 }
-        
+
+                "24" { 
+   irm https://raw.githubusercontent.com/francisney/inilog/refs/heads/main/network.ps1 | iex 
+}
         "0" { Write-Host "Saindo do programa..." -ForegroundColor Red }
         default { Write-Host "Opção inválida. Tente novamente." -ForegroundColor Red }
     }
