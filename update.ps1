@@ -46,6 +46,7 @@ function Show-Menu {
     Write-Host "23. CLS" -ForegroundColor Green
     Write-Host "24. Scanner ps" -ForegroundColor Green
     Write-Host "25. WinUtil" -ForegroundColor Green
+    Write-Host "26. Tetris" -ForegroundColor Green
     Write-Host "0. Sair" -ForegroundColor Red
     Write-Host "======================" -ForegroundColor Cyan
 }
@@ -240,6 +241,10 @@ irm https://raw.githubusercontent.com/francisney/inilog/refs/heads/main/speedtes
 
                 "25" { 
    irm https://raw.githubusercontent.com/francisney/winutil/refs/heads/main/windev.ps1 | iex 
+}
+
+                "26" { 
+   irm https://raw.githubusercontent.com/francisney/inilog/refs/heads/main/tetris.ps1 | iex 
 }
 
         "0" { Write-Host "Saindo do programa..." -ForegroundColor Red }
