@@ -59,7 +59,7 @@ function Show-Menu {
 function Perform-Backup { 
     if (-Not (Test-Path -Path "C:\ti")) { New-Item -ItemType Directory -Path "C:\ti" | Out-Null }
 
-    "$($env:COMPUTERNAME) - OS: $([System.Environment]::OSVersion.Version.ToString()) - IP: $(Get-NetIPAddress -AddressFamily IPv4 | Where-Object {$_.IPAddress -ne '127.0.0.1'}).IPAddress" | Out-File -FilePath "C:\ti\backup_hostname__print.txt" -Append -Encoding UTF8
+    "$($env:COMPUTERNAME)" | Out-File -FilePath "C:\ti\hostname.txt" -Append -Encoding UTF8
 
     if (Test-Path -Path "C:\USE\config.xml") { Copy-Item -Path "C:\USE\config.xml" -Destination "C:\ti\config.xml" -Force }
 
