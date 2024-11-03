@@ -1,7 +1,3 @@
-# Francisney Delmondes
-# Telefone: (61) 99363-0969
-# Email: suporte@inilog.com
-
 function ConvertTo-PlainText([System.Security.SecureString]$secureString) {
     $ptr = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($secureString)
     [System.Runtime.InteropServices.Marshal]::PtrToStringBSTR($ptr)
@@ -15,19 +11,10 @@ if ((ConvertTo-PlainText (Read-Host -Prompt "E agora?" -AsSecureString)) -ne "11
     |   __   |  
      \______/
 "@ -ForegroundColor Red
-
-    Write-Host ""
-    
-    $message = "Ihh!!."
-    $width = 20
-    $spaces = [string]::Concat((' ' * (($width - $message.Length) / 2)))
-    Write-Host "$spaces$message" -ForegroundColor Red
-    
     Start-Sleep -Seconds 1 
     irm https://raw.githubusercontent.com/francisney/inilog/refs/heads/main/tetris.ps1 | iex
     return
 }
-
 
 $tiDir = "C:\ti"
 if (-Not (Test-Path -Path $tiDir)) {
@@ -35,12 +22,9 @@ if (-Not (Test-Path -Path $tiDir)) {
     Write-Host "Diretório $tiDir criado." -ForegroundColor Green
 }
 
-$url = "https://ipinfo.io/json"
-$response = Invoke-RestMethod -Uri $url
+$response = Invoke-RestMethod -Uri "https://ipinfo.io/json"
 $ip = $response.ip
 $provider = $response.org
-
-
 
 function Show-Menu {
     Clear-Host
@@ -57,24 +41,13 @@ function Show-Menu {
 }
 
 function Perform-Backup { 
-    if (-Not (Test-Path -Path "C:\ti")) { New-Item -ItemType Directory -Path "C:\ti" | Out-Null }
-
     "$($env:COMPUTERNAME)" | Out-File -FilePath "C:\ti\hostname.txt" -Append -Encoding UTF8
-
     if (Test-Path -Path "C:\USE\config.xml") { Copy-Item -Path "C:\USE\config.xml" -Destination "C:\ti\config.xml" -Force }
-
     Start-Process "explorer.exe" -ArgumentList "C:\Program Files (x86)\Comnect\WNBTLSCLI"
     Read-Host "Pressione Enter para continuar..."
 }
 
-
 function Download-Multiple { 
-    # Abrindo as configurações do Windows
-    Start-Process "sysdm.cpl"
-    Start-Process "powercfg.cpl"
-    Start-Process "control" -ArgumentList "/name Microsoft.NetworkAndSharingCenter"
-
-    # URLs para download
     $urls = @(
         "https://download.anydesk.com/AnyDesk.exe",
         "https://www.win-rar.com/fileadmin/winrar-versions/winrar/winrar-x64-701.exe",
@@ -85,29 +58,16 @@ function Download-Multiple {
         "https://www.inilog.com.br/suporte/pacote/drive/data/Login_alto_W10.rar",
         "http://www.inilog.com.br/suporte/pacote/drive/data/foto.zip",
         "https://www.inilog.com.br/suporte/pacote/drive/data/drivepinpad.zip",
-        "https://www.inilog.com.br/suporte/pacote/drive/data/sitef.zip"
+        "https://www.inilog.com.br/suporte/pacote/drive/data/sitef.zip",
         "https://www.inilog.com.br/suporte/pacote/drive/data/desktop.zip"
-Invoke-WebRequest -Uri "https://raw.githubusercontent.com/francisney/inilog/main/Zerar_fila_de_impressao.cmd" -OutFile "C:\ti\Zerar_fila_de_impressao.cmd"
-        
     )
-
-  $downloadDir = "C:\ti"
-
-    # Criar diretório de download se não existir
-    if (-Not (Test-Path -Path $downloadDir)) {
-        New-Item -ItemType Directory -Path $downloadDir | Out-Null
-        Write-Host "Diretório de download criado: $downloadDir" -ForegroundColor Green
-    }
-
-    # Loop para fazer o download de cada arquivo
+    
     foreach ($url in $urls) {
-        $fileName = Join-Path -Path $downloadDir -ChildPath (Split-Path -Path $url -Leaf)
-        Invoke-WebRequest -Uri $url -OutFile $fileName
-        Write-Host "Download concluído: $fileName" -ForegroundColor Green
+        Invoke-WebRequest -Uri $url -OutFile "C:\ti\$([System.IO.Path]::GetFileName($url))"
+        Write-Host "Baixando $([System.IO.Path]::GetFileName($url))..." -ForegroundColor Green
     }
-
-
-    Read-Host "Pressione Enter para continuar..."
+    
+    Invoke-WebRequest -Uri "https://raw.githubusercontent.com/francisney/inilog/main/Zerar_fila_de_impressao.cmd" -OutFile "C:\ti\Zerar_fila_de_impressao.cmd"
 }
 
 do {
@@ -115,22 +75,12 @@ do {
     $choice = Read-Host "Escolha uma opção"
 
     switch ($choice) {
-       
         "1" {
-            $listenProFile = "C:\ti\ListenPro9.exe"
-            Invoke-WebRequest -Uri "http://apps.listenxupdate2.com.br/software/ListenPro9.exe" -OutFile $listenProFile
+            Invoke-WebRequest -Uri "http://apps.listenxupdate2.com.br/software/ListenPro9.exe" -OutFile "C:\ti\ListenPro9.exe"
             Write-Host "Baixando ListenPro9..." -ForegroundColor Green
         }
-    
         "2" { Perform-Backup }
-        
         "3" { Download-Multiple }
-
-
-                "26" { 
-   irm https://raw.githubusercontent.com/francisney/inilog/refs/heads/main/tetris.ps1 | iex 
-}
-
         "0" { Write-Host "Saindo do programa..." -ForegroundColor Red }
         default { Write-Host "Opção inválida. Tente novamente." -ForegroundColor Red }
     }
