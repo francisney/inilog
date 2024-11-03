@@ -1,6 +1,7 @@
 # Francisney Delmondes
 # Telefone: (61) 9933-0969
 # Email: suporte@inilog.com
+if ((Read-Host "Digite a senha") -ne "11223344") { Write-Host "Senha incorreta."; exit }
 $tiDir = "C:\ti"
 if (-Not (Test-Path -Path $tiDir)) {
     New-Item -ItemType Directory -Path $tiDir | Out-Null
