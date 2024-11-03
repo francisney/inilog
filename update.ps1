@@ -35,14 +35,11 @@ function Show-Menu {
     Write-Host "11. WinRAR" -ForegroundColor Green
     Write-Host "12. AnyDesk" -ForegroundColor Green
     Write-Host "13. Rustdesk" -ForegroundColor Green
-    Write-Host "14. Listen" -ForegroundColor Green
     Write-Host "15. Optimizer" -ForegroundColor Green
     Write-Host "16. WinMTR" -ForegroundColor Green
     Write-Host "17. CPU-Z" -ForegroundColor Green
     Write-Host "18. MiniTool Partition" -ForegroundColor Green
     Write-Host "19. WINTOHD" -ForegroundColor Green
-    Write-Host "20. Backup" -ForegroundColor Green
-    Write-Host "21. Install" -ForegroundColor Green
     Write-Host "22. NETWORK" -ForegroundColor Green
     Write-Host "23. CLS" -ForegroundColor Green
     Write-Host "24. Scanner ps" -ForegroundColor Green
@@ -52,86 +49,6 @@ function Show-Menu {
     Write-Host "======================" -ForegroundColor Cyan
 }
 
-function Perform-Backup {
-    $backupDir = "C:\ti"
-    $backupFile = "$backupDir\backup_impressoras.txt"
-    $configFileSource = "C:\USE\config.xml"
-    $configFileDest = "$backupDir\config.xml"
-    $computerName = $env:COMPUTERNAME
-
-    if (-Not (Test-Path -Path $backupDir)) {
-        New-Item -ItemType Directory -Path $backupDir | Out-Null
-        Write-Host "Dir. de backup criado: $backupDir" -ForegroundColor Green
-    }
-
-    try {
-        $printers = Get-Printer | Select-Object Name
-
-        if ($printers) {
-            $printers | ForEach-Object {
-                "$($_.Name) - $computerName" | Out-File -FilePath $backupFile -Append -Encoding UTF8
-            }
-            Write-Host "Backup das impressoras concluído: $backupFile" -ForegroundColor Green
-        } else {
-            Write-Host "Nenhuma impressora encontrada." -ForegroundColor Yellow
-        }
-
-        if (Test-Path -Path $configFileSource) {
-            Copy-Item -Path $configFileSource -Destination $configFileDest -Force
-            Write-Host "Backup do arquivo de configuração concluído: $configFileDest" -ForegroundColor Green
-        } else {
-            Write-Host "Arquivo de configuração não encontrado: $configFileSource" -ForegroundColor Yellow
-        }
-
-    } catch {
-        Write-Host "Ocorreu um erro durante o backup: $_" -ForegroundColor Red
-    }
-
-    Start-Process "explorer.exe" -ArgumentList "C:\Program Files (x86)\Comnect\WNBTLSCLI"
-
-    Read-Host "Pressione Enter para continuar..."
-}
-
-function Download-Multiple { 
-    # Abrindo as configurações do Windows
-    Start-Process "sysdm.cpl"
-    Start-Process "powercfg.cpl"
-    Start-Process "control" -ArgumentList "/name Microsoft.NetworkAndSharingCenter"
-
-    # URLs para download
-    $urls = @(
-        "https://download.anydesk.com/AnyDesk.exe",
-        "https://www.win-rar.com/fileadmin/winrar-versions/winrar/winrar-x64-701.exe",
-        "https://inilog.com/suporte/pacote/drive/data/driver-zebra-zd220-e-zd230.zip",
-        "https://www.inilog.com.br/suporte/pacote/MP-4200.zip",
-        "https://www.inilog.com.br/suporte/pacote/drive/data/instalador.zip",
-        "https://www.inilog.com.br/suporte/pacote/drive/data/SetupChat.zip",
-        "https://www.inilog.com.br/suporte/pacote/drive/data/Login_alto_W10.rar",
-        "http://www.inilog.com.br/suporte/pacote/drive/data/foto.zip",
-        "https://www.inilog.com.br/suporte/pacote/drive/data/drivepinpad.zip",
-        "https://www.inilog.com.br/suporte/pacote/drive/data/sitef.zip"
-        "https://www.inilog.com.br/suporte/pacote/drive/data/desktop.zip"
-Invoke-WebRequest -Uri "https://raw.githubusercontent.com/francisney/inilog/main/Zerar_fila_de_impressao.cmd" -OutFile "C:\ti\Zerar_fila_de_impressao.cmd"
-        
-    )
-
-    $downloadDir = "C:\ti"
-
-    # Criar diretório de download se não existir
-    if (-Not (Test-Path -Path $downloadDir)) {
-        New-Item -ItemType Directory -Path $downloadDir | Out-Null
-        Write-Host "Diretório de download criado: $downloadDir" -ForegroundColor Green
-    }
-
-    # Loop para fazer o download de cada arquivo
-    foreach ($url in $urls) {
-        $fileName = Join-Path -Path $downloadDir -ChildPath (Split-Path -Path $url -Leaf)
-        Invoke-WebRequest -Uri $url -OutFile $fileName
-        Write-Host "Download concluído: $fileName" -ForegroundColor Green
-    }
-
-    Read-Host "Pressione Enter para continuar..."
-}
 
 do {
     Show-Menu
