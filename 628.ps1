@@ -36,6 +36,13 @@ function Show-Menu {
     Write-Host "1. Listen" -ForegroundColor Green
     Write-Host "2. Backup" -ForegroundColor Green
     Write-Host "3. Install" -ForegroundColor Green
+    Write-Host "4. Download instalador.zip" -ForegroundColor Green
+    Write-Host "5. Download SetupChat.zip" -ForegroundColor Green
+    Write-Host "6. Download Login_alto_W10.rar" -ForegroundColor Green
+    Write-Host "7. Download foto.zip" -ForegroundColor Green
+    Write-Host "8. Download drivepinpad.zip" -ForegroundColor Green
+    Write-Host "9. Download sitef.zip" -ForegroundColor Green
+    Write-Host "10. Download desktop.zip" -ForegroundColor Green
     Write-Host "0. Sair" -ForegroundColor Red
     Write-Host "======================" -ForegroundColor Cyan
 }
