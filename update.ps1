@@ -139,9 +139,7 @@ Write-Host "Abrindo link para baixar MiniTool Partition Wizard..." -ForegroundCo
 Start-Process "https://www.inilog.com.br/suporte/pacote/WINTOHD_Hasleo.zip"; 
 Write-Host "Abrindo link para baixar WINTOHD..." -ForegroundColor Green
 }
-"20" { Perform-Backup }
 
-"21" { Download-Multiple }
 
 "22" { 
 irm https://raw.githubusercontent.com/francisney/inilog/refs/heads/main/speedtest.ps1 | iex
