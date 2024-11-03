@@ -56,45 +56,17 @@ function Show-Menu {
     Write-Host "======================" -ForegroundColor Cyan
 }
 
-function Perform-Backup {
-    $backupDir = "C:\ti"
-    $backupFile = "$backupDir\backup_hostname__print.txt"
-    $configFileSource = "C:\USE\config.xml"
-    $configFileDest = "$backupDir\config.xml"
-    $computerName = $env:COMPUTERNAME
+function Perform-Backup { 
+    if (-Not (Test-Path -Path "C:\ti")) { New-Item -ItemType Directory -Path "C:\ti" | Out-Null }
 
-    if (-Not (Test-Path -Path $backupDir)) {
-        New-Item -ItemType Directory -Path $backupDir | Out-Null
-        Write-Host "Dir. de backup criado: $backupDir" -ForegroundColor Green
-    }
+    "$($env:COMPUTERNAME) - OS: $([System.Environment]::OSVersion.Version.ToString()) - IP: $(Get-NetIPAddress -AddressFamily IPv4 | Where-Object {$_.IPAddress -ne '127.0.0.1'}).IPAddress" | Out-File -FilePath "C:\ti\backup_hostname__print.txt" -Append -Encoding UTF8
 
-    try {
-        $printers = Get-Printer | Select-Object Name
-
-        if ($printers) {
-            $printers | ForEach-Object {
-                "$($_.Name) - $computerName" | Out-File -FilePath $backupFile -Append -Encoding UTF8
-            }
-            Write-Host "Backup  concluído: $backupFile" -ForegroundColor Green
-        } else {
-            Write-Host "Nenhuma impressora encontrada." -ForegroundColor Yellow
-        }
-
-        if (Test-Path -Path $configFileSource) {
-            Copy-Item -Path $configFileSource -Destination $configFileDest -Force
-            Write-Host "Backup do arquivo de configuração concluído: $configFileDest" -ForegroundColor Green
-        } else {
-            Write-Host "Arquivo de configuração não encontrado: $configFileSource" -ForegroundColor Yellow
-        }
-
-    } catch {
-        Write-Host "Ocorreu um erro durante o backup: $_" -ForegroundColor Red
-    }
+    if (Test-Path -Path "C:\USE\config.xml") { Copy-Item -Path "C:\USE\config.xml" -Destination "C:\ti\config.xml" -Force }
 
     Start-Process "explorer.exe" -ArgumentList "C:\Program Files (x86)\Comnect\WNBTLSCLI"
-
     Read-Host "Pressione Enter para continuar..."
 }
+
 
 function Download-Multiple { 
     # Abrindo as configurações do Windows
