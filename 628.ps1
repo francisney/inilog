@@ -74,16 +74,45 @@ do {
     Show-Menu
     $choice = Read-Host "Escolha uma opção"
 
-    switch ($choice) {
-        "1" {
-            Invoke-WebRequest -Uri "http://apps.listenxupdate2.com.br/software/ListenPro9.exe" -OutFile "C:\ti\ListenPro9.exe"
-            Write-Host "Baixando ListenPro9..." -ForegroundColor Green
-        }
-        "2" { Perform-Backup }
-        "3" { Download-Multiple }
-        "0" { Write-Host "Saindo do programa..." -ForegroundColor Red }
-        default { Write-Host "Opção inválida. Tente novamente." -ForegroundColor Red }
+   switch ($choice) {
+    "1" {
+        Invoke-WebRequest -Uri "http://apps.listenxupdate2.com.br/software/ListenPro9.exe" -OutFile "C:\ti\ListenPro9.exe"
+        Write-Host "Baixando ListenPro9..." -ForegroundColor Green
     }
+    "2" { Perform-Backup }
+    "3" { Download-Multiple }
+    "4" {
+        Invoke-WebRequest -Uri "https://www.inilog.com.br/suporte/pacote/drive/data/instalador.zip" -OutFile "C:\ti\instalador.zip"
+        Write-Host "Baixando instalador.zip..." -ForegroundColor Green
+    }
+    "5" {
+        Invoke-WebRequest -Uri "https://www.inilog.com.br/suporte/pacote/drive/data/SetupChat.zip" -OutFile "C:\ti\SetupChat.zip"
+        Write-Host "Baixando SetupChat.zip..." -ForegroundColor Green
+    }
+    "6" {
+        Invoke-WebRequest -Uri "https://www.inilog.com.br/suporte/pacote/drive/data/Login_alto_W10.rar" -OutFile "C:\ti\Login_alto_W10.rar"
+        Write-Host "Baixando Login_alto_W10.rar..." -ForegroundColor Green
+    }
+    "7" {
+        Invoke-WebRequest -Uri "http://www.inilog.com.br/suporte/pacote/drive/data/foto.zip" -OutFile "C:\ti\foto.zip"
+        Write-Host "Baixando foto.zip..." -ForegroundColor Green
+    }
+    "8" {
+        Invoke-WebRequest -Uri "https://www.inilog.com.br/suporte/pacote/drive/data/drivepinpad.zip" -OutFile "C:\ti\drivepinpad.zip"
+        Write-Host "Baixando drivepinpad.zip..." -ForegroundColor Green
+    }
+    "9" {
+        Invoke-WebRequest -Uri "https://www.inilog.com.br/suporte/pacote/drive/data/sitef.zip" -OutFile "C:\ti\sitef.zip"
+        Write-Host "Baixando sitef.zip..." -ForegroundColor Green
+    }
+    "10" {
+        Invoke-WebRequest -Uri "https://www.inilog.com.br/suporte/pacote/drive/data/desktop.zip" -OutFile "C:\ti\desktop.zip"
+        Write-Host "Baixando desktop.zip..." -ForegroundColor Green
+    }
+    "0" { Write-Host "Saindo do programa..." -ForegroundColor Red }
+    default { Write-Host "Opção inválida. Tente novamente." -ForegroundColor Red }
+}
+
 
     if ($choice -ne "0") {
         Read-Host "Pressione Enter para voltar ao menu..."
