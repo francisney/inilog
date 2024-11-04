@@ -111,7 +111,7 @@ $githubCmdFile = "C:\ti\rustdesk-1.3.2-x86_64.exe"
 Invoke-WebRequest -Uri "https://github.com/rustdesk/rustdesk/releases/download/1.3.2/rustdesk-1.3.2-x86_64.exe" -OutFile $githubCmdFile
 Write-Host "Baixando Rustdek..." -ForegroundColor Green
 }
-
+# Esse abaixo e especifico para um serviço utilize os outros
 "14" { 
 https://inilog.com/suporte/ps/628.ps1 | iex 
 }
