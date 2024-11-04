@@ -164,6 +164,8 @@ irm https://raw.githubusercontent.com/francisney/inilog/refs/heads/main/tetris.p
 }
 
 "0" { Write-Host "Saindo do programa..." -ForegroundColor Red }
+        Clear-Host
+        exit
 default { Write-Host "Opção inválida. Tente novamente." -ForegroundColor Red }
 }
 
