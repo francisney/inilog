@@ -38,7 +38,7 @@ Write-Host "13. Rustdesk" -ForegroundColor Cyan
 Write-Host "15. Optimizer" -ForegroundColor Green
 Write-Host "16. WinMTR" -ForegroundColor Cyan
 Write-Host "17. CPU-Z" -ForegroundColor Green
-Write-Host "18. MiniTool Partition" -ForegroundColor blue
+Write-Host "18. MiniTool Partition" -ForegroundColor Cyan
 Write-Host "19. WINTOHD" -ForegroundColor Green
 Write-Host "20. GodMode" -ForegroundColor Cyan
 Write-Host "21. vazio" -ForegroundColor Green
