@@ -52,7 +52,7 @@ Write-Host "======================" -ForegroundColor Cyan
 
 do {
 Show-Menu
-$choice = Read-Host "Escolha uma opção"
+$choice = Read-Host "Choose an Option"
 
 switch ($choice) {
 "1" { Start-Process "https://drive.google.com/file/d/1WLEhOUIJMR3i6xWvYZVaYi13L6PpSGZ7/view"; Write-Host "Abrindo link para baixar o Office..." -ForegroundColor Green }
