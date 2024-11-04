@@ -1,5 +1,5 @@
 # Francisney Delmondes
-# Telefone: (61) 9933-0969
+# Telefone: (61) 99363-0969
 # Email: suporte@inilog.com
 
 Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process -Force
