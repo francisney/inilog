@@ -46,7 +46,7 @@ Write-Host "22. NETWORK" -ForegroundColor blue
 Write-Host "23. CLS" -ForegroundColor Green
 Write-Host "24. Scanner ps" -ForegroundColor blue
 Write-Host "25. WinUtil" -ForegroundColor Green
-Write-Host "26. Tetris" -ForegroundColor Chartreuse
+Write-Host "26. Tetris" -ForegroundColor blue
 Write-Host "0. Sair" -ForegroundColor Red
 Write-Host "======================" -ForegroundColor Cyan
 }
