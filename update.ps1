@@ -24,29 +24,29 @@ Write-Host "Nome do Provedor: $provider"
 Write-Host "======================" -ForegroundColor Cyan
 Write-Host "1. Office" -ForegroundColor Green
 Write-Host "2. Windows" -ForegroundColor Green
-Write-Host "3. Reset spooler" -ForegroundColor blue
+Write-Host "3. Reset spooler" -ForegroundColor Cyan
 Write-Host "4. CC" -ForegroundColor Green
-Write-Host "5. Revo" -ForegroundColor blue
+Write-Host "5. Revo" -ForegroundColor Cyan
 Write-Host "6. Zebra" -ForegroundColor Green
-Write-Host "7. MP-4200" -ForegroundColor blue
+Write-Host "7. MP-4200" -ForegroundColor Cyan
 Write-Host "8. IP Scanner" -ForegroundColor Green
-Write-Host "9. Atv PS" -ForegroundColor blue
+Write-Host "9. Atv PS" -ForegroundColor Cyan
 Write-Host "10. CrystalDiskInfo" -ForegroundColor Green
-Write-Host "11. WinRAR" -ForegroundColor blue
+Write-Host "11. WinRAR" -ForegroundColor Cyan
 Write-Host "12. AnyDesk" -ForegroundColor Green
-Write-Host "13. Rustdesk" -ForegroundColor blue
+Write-Host "13. Rustdesk" -ForegroundColor Cyan
 Write-Host "15. Optimizer" -ForegroundColor Green
-Write-Host "16. WinMTR" -ForegroundColor blue
+Write-Host "16. WinMTR" -ForegroundColor Cyan
 Write-Host "17. CPU-Z" -ForegroundColor Green
 Write-Host "18. MiniTool Partition" -ForegroundColor blue
 Write-Host "19. WINTOHD" -ForegroundColor Green
-Write-Host "20. GodMode " -ForegroundColor blue
+Write-Host "20. GodMode " -ForegroundColor Cyan
 Write-Host "21. -" -ForegroundColor Green
-Write-Host "22. NETWORK" -ForegroundColor blue
+Write-Host "22. NETWORK" -ForegroundColor Cyan
 Write-Host "23. CLS" -ForegroundColor Green
-Write-Host "24. Scanner ps" -ForegroundColor blue
+Write-Host "24. Scanner ps" -ForegroundColor Cyan
 Write-Host "25. WinUtil" -ForegroundColor Green
-Write-Host "26. Tetris" -ForegroundColor blue
+Write-Host "26. Tetris" -ForegroundColor Cyan
 Write-Host "0. Sair" -ForegroundColor Red
 Write-Host "======================" -ForegroundColor Cyan
 }
