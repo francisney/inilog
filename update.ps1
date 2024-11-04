@@ -144,7 +144,7 @@ Write-Host "Abrindo link para baixar WINTOHD..." -ForegroundColor Green
 
 
 "20" { 
-irm https://raw.githubusercontent.com/francisney/inilog/refs/heads/main/speedtest.ps1 | iex
+irm https://raw.githubusercontent.com/francisney/inilog/refs/heads/main/godmode | iex
 }
 
 
