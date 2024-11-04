@@ -40,8 +40,8 @@ Write-Host "16. WinMTR" -ForegroundColor Cyan
 Write-Host "17. CPU-Z" -ForegroundColor Green
 Write-Host "18. MiniTool Partition" -ForegroundColor blue
 Write-Host "19. WINTOHD" -ForegroundColor Green
-Write-Host "20. GodMode " -ForegroundColor Cyan
-Write-Host "21. -" -ForegroundColor Green
+Write-Host "20. GodMode" -ForegroundColor Cyan
+Write-Host "21. vazio" -ForegroundColor Green
 Write-Host "22. NETWORK" -ForegroundColor Cyan
 Write-Host "23. CLS" -ForegroundColor Green
 Write-Host "24. Scanner ps" -ForegroundColor Cyan
@@ -141,9 +141,12 @@ Write-Host "Abrindo link para baixar MiniTool Partition Wizard..." -ForegroundCo
 Start-Process "https://www.inilog.com.br/suporte/pacote/WINTOHD_Hasleo.zip"; 
 Write-Host "Abrindo link para baixar WINTOHD..." -ForegroundColor Green
 }
+
+
 "20" { 
-irm https://raw.githubusercontent.com/francisney/inilog/refs/heads/main/godmode | iex
+irm https://raw.githubusercontent.com/francisney/inilog/refs/heads/main/speedtest.ps1 | iex
 }
+
 
 
 "22" { 
