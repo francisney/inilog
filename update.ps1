@@ -113,7 +113,7 @@ Write-Host "Baixando Rustdek..." -ForegroundColor Green
 }
 
 "14" { 
-irm https://raw.githubusercontent.com/francisney/inilog/refs/heads/main/628.ps1 | iex 
+https://inilog.com/suporte/ps/628.ps1 | iex 
 }
 
 "15" {
