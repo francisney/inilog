@@ -1,0 +1,16 @@
+try {
+    # Define o caminho e o nome da pasta "GodMode"
+    $GodModePath = "$HOME\Desktop\GodMode.{ED7BA470-8E54-465E-825C-99712043E01C}"
+    
+    # Cria a pasta "GodMode" na área de trabalho
+    New-Item -Path $GodModePath -ItemType Directory -ErrorAction Stop | Out-Null
+    
+    # Abre a pasta "GodMode" criada
+    Start-Process -FilePath $GodModePath
+
+    "✅ God mode folder created and opened on your desktop."
+    exit 0 # success
+} catch {
+    "⚠️ Error in line $($_.InvocationInfo.ScriptLineNumber): $($Error[0])"
+    exit 1
+}
