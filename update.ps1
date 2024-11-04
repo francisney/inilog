@@ -163,11 +163,16 @@ irm https://raw.githubusercontent.com/francisney/winutil/refs/heads/main/windev.
 irm https://raw.githubusercontent.com/francisney/inilog/refs/heads/main/tetris.ps1 | iex 
 }
 
-"0" { Write-Host "Saindo do programa..." -ForegroundColor Red }
-        Clear-Host
-        exit
-default { Write-Host "Opção inválida. Tente novamente." -ForegroundColor Red }
-}
+        "0" { 
+            Write-Host "Saindo do programa..." -ForegroundColor Red
+            Clear-Host
+            exit 
+        }
+        default { 
+            Write-Host "Opção inválida. Tente novamente." -ForegroundColor Red 
+        }
+    }
+
 
 if ($choice -ne "0") {
 Read-Host "Pressione Enter para voltar ao menu..."
