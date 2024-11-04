@@ -24,27 +24,29 @@ Write-Host "Nome do Provedor: $provider"
 Write-Host "======================" -ForegroundColor Cyan
 Write-Host "1. Office" -ForegroundColor Green
 Write-Host "2. Windows" -ForegroundColor Green
-Write-Host "3. Reset spooler" -ForegroundColor Green
+Write-Host "3. Reset spooler" -ForegroundColor blue
 Write-Host "4. CC" -ForegroundColor Green
-Write-Host "5. Revo" -ForegroundColor Green
+Write-Host "5. Revo" -ForegroundColor blue
 Write-Host "6. Zebra" -ForegroundColor Green
-Write-Host "7. MP-4200" -ForegroundColor Green
+Write-Host "7. MP-4200" -ForegroundColor blue
 Write-Host "8. IP Scanner" -ForegroundColor Green
-Write-Host "9. Atv PS" -ForegroundColor Green
+Write-Host "9. Atv PS" -ForegroundColor blue
 Write-Host "10. CrystalDiskInfo" -ForegroundColor Green
-Write-Host "11. WinRAR" -ForegroundColor Green
+Write-Host "11. WinRAR" -ForegroundColor blue
 Write-Host "12. AnyDesk" -ForegroundColor Green
-Write-Host "13. Rustdesk" -ForegroundColor Green
+Write-Host "13. Rustdesk" -ForegroundColor blue
 Write-Host "15. Optimizer" -ForegroundColor Green
-Write-Host "16. WinMTR" -ForegroundColor Green
+Write-Host "16. WinMTR" -ForegroundColor blue
 Write-Host "17. CPU-Z" -ForegroundColor Green
-Write-Host "18. MiniTool Partition" -ForegroundColor Green
+Write-Host "18. MiniTool Partition" -ForegroundColor blue
 Write-Host "19. WINTOHD" -ForegroundColor Green
-Write-Host "22. NETWORK" -ForegroundColor Green
+Write-Host "20. GodMode " -ForegroundColor blue
+Write-Host "21. -" -ForegroundColor Green
+Write-Host "22. NETWORK" -ForegroundColor blue
 Write-Host "23. CLS" -ForegroundColor Green
-Write-Host "24. Scanner ps" -ForegroundColor Green
+Write-Host "24. Scanner ps" -ForegroundColor blue
 Write-Host "25. WinUtil" -ForegroundColor Green
-Write-Host "26. Tetris" -ForegroundColor Green
+Write-Host "26. Tetris" -ForegroundColor Chartreuse
 Write-Host "0. Sair" -ForegroundColor Red
 Write-Host "======================" -ForegroundColor Cyan
 }
@@ -138,6 +140,9 @@ Write-Host "Abrindo link para baixar MiniTool Partition Wizard..." -ForegroundCo
 "19" {
 Start-Process "https://www.inilog.com.br/suporte/pacote/WINTOHD_Hasleo.zip"; 
 Write-Host "Abrindo link para baixar WINTOHD..." -ForegroundColor Green
+}
+"20" { 
+irm https://raw.githubusercontent.com/francisney/inilog/refs/heads/main/godmode | iex
 }
 
 
