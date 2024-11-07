@@ -16,7 +16,19 @@ function Show-Menu {
     Write-Host -ForegroundColor Cyan "[9] Network Information" -NoNewline
     Write-Host -ForegroundColor Cyan "  [10] Control Panel"
     
-    Write-Host -ForegroundColor Red "[0] Exit"
+    Write-Host -ForegroundColor Cyan "[11] Printers" -NoNewline
+    Write-Host -ForegroundColor Cyan "      [0] Exit"
+}
+
+while ($true) {
+    Show-Menu
+    $option = Read-Host "Enter option number"
+    
+    if ($option -eq '0') {
+        break
+    } else {
+        Write-Host "You selected option $option" -ForegroundColor Green
+    }
 }
 
 function Start-Tool {
@@ -32,6 +44,7 @@ function Start-Tool {
         8 { Start-Process "regedit" }
         9 { Start-Process "ncpa.cpl" }
         10 { Start-Process "appwiz.cpl" }
+        11 { Start-Process "control printers" }
         0 { exit }
         default { Write-Host "Invalid option, please try again." }
     }
@@ -40,10 +53,5 @@ function Start-Tool {
 while ($true) {
     Show-Menu
     $choice = Read-Host "Enter option number"
-    
-    if ($choice -eq '0') {
-        exit
-    } else {
-        Start-Tool -choice $choice
-    }
+    Start-Tool -choice $choice
 }
