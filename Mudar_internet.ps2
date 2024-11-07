@@ -63,37 +63,10 @@ switch ($opcao) {
 
 
 3 {
-    try {
-        $tempPath = [System.IO.Path]::Combine($env:TEMP, "dhcp.cmd")
-
-        $cmdContent = @"
-@echo off
-Title INILOG - Support
-cls
-color 79
-mode 45,15
 
 netsh interface ip set address name="Ethernet" dhcp
 netsh interface ip set dnsservers name="Ethernet" dhcp
-mshta vbscript:Execute("msgbox ""Comando executado!. Configurado para conectar via [DHCP]    https://inilog.com/hesk "":close")
-cls
-echo Comando executado!. Configurado para conectar via [DHCP] 
-exit
-goto menu
-:opcao0
-exit
-goto menu
-exit
-"@
 
-        $cmdContent | Out-File -FilePath $tempPath -Encoding UTF8
-
-        Start-Process "cmd.exe" -ArgumentList "/c $tempPath" -Verb RunAs
-
-    }
-    catch {
-        Write-Host "Erro ao executar o script. Detalhes do erro: $_" -ForegroundColor $corErro
-    }
     Read-Host "Pressione [Enter] para sair"
 }
 
