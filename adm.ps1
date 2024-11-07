@@ -1,7 +1,7 @@
 function Show-Menu {
     Write-Host -ForegroundColor White "Choose an option:"
     
-    Write-Host -ForegroundColor Cyan "[1] Power Options" -NoNewline
+    Write-Host -ForegroundColor Cyan "[1] 999Power Options" -NoNewline
     Write-Host -ForegroundColor Cyan "      [2] Computer Name"
     
     Write-Host -ForegroundColor Cyan "[3] Advanced Sharing" -NoNewline
