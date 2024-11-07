@@ -68,12 +68,15 @@ switch ($opcao) {
 
 3 {
     try {
-        # Remover configuração estática de IP e DNS
+        # Primeiro, remover a configuração de IP estático
         & netsh interface ip set address name="Ethernet" static 0.0.0.0 255.255.255.0 0.0.0.0
+        
+        # Remover servidores DNS estáticos
         & netsh interface ip delete dns name="Ethernet" all
 
         # Configurar para obter IP automaticamente via DHCP
         & netsh interface ip set address name="Ethernet" source=dhcp
+        
         # Configurar para obter DNS automaticamente via DHCP
         & netsh interface ip set dnsservers name="Ethernet" source=dhcp
 
