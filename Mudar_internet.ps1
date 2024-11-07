@@ -20,7 +20,7 @@ Write-Host ""
 Write-Host "1. Conectar na rede da [Vivo ADSL (cabo)]" -ForegroundColor $corOpcao
 Write-Host "2. Conectar na rede da [4G Vivo Box]" -ForegroundColor $corOpcao
 Write-Host ""
-Write-Host "3. Redefinir para Obter IP e DNS Automaticamente" -ForegroundColor $corOpcao
+Write-Host "3. Exibir Olá, Mundo" -ForegroundColor $corOpcao
 Write-Host ""
 Write-Host "0. Sair [EXIT]" -ForegroundColor $corOpcao
 Exibir-Linha
@@ -56,16 +56,7 @@ switch ($opcao) {
         Read-Host "Pressione [Enter] para sair"
     }
     3 {
-        try {
-            Write-Host "Redefinindo configurações para obter IP e DNS automaticamente..." -ForegroundColor $corPadrao
-            & netsh interface ip set address name="Ethernet" dhcp
-            & netsh interface ip set dnsservers name="Ethernet" dhcp
-            Write-Host "Configuração alterada para obter IP e DNS automaticamente!" -ForegroundColor $corSucesso
-            Write-Host "Para mais ajuda, visite: https://inilog.com/hesk" -ForegroundColor $corPadrao
-        }
-        catch {
-            Write-Host "Erro ao configurar para obtenção automática. Detalhes do erro: $_" -ForegroundColor $corErro
-        }
+        Write-Host "Olá, Mundo" -ForegroundColor $corSucesso
         Read-Host "Pressione [Enter] para sair"
     }
     0 {
