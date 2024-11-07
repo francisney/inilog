@@ -20,9 +20,8 @@ Write-Host "---------------------------------------------------"
 switch ($opcao) {
     1 {
         try {
-            Set-NetIPInterface -InterfaceAlias "Ethernet" -Dhcp Disabled
-            New-NetIPAddress -InterfaceAlias "Ethernet" -IPAddress "192.168.15.112" -PrefixLength 24 -DefaultGateway "192.168.15.1"
-            Set-DnsClientServerAddress -InterfaceAlias "Ethernet" -ServerAddresses "8.8.8.8"
+            & netsh interface ip set address name="Ethernet" static 192.168.15.112 255.255.255.0 192.168.15.1
+            & netsh interface ip set dns name="Ethernet" static 8.8.8.8 primary
             Write-Host "Comando executado! Conectado [Vivo ADSL (cabo)] https://inilog.com/hesk"
         }
         catch {
@@ -33,9 +32,8 @@ switch ($opcao) {
     }
     2 {
         try {
-            Set-NetIPInterface -InterfaceAlias "Ethernet" -Dhcp Disabled
-            New-NetIPAddress -InterfaceAlias "Ethernet" -IPAddress "192.168.1.112" -PrefixLength 24 -DefaultGateway "192.168.1.1"
-            Set-DnsClientServerAddress -InterfaceAlias "Ethernet" -ServerAddresses "8.8.8.8"
+            & netsh interface ip set address name="Ethernet" static 192.168.1.112 255.255.255.0 192.168.1.1
+            & netsh interface ip set dns name="Ethernet" static 8.8.8.8 primary
             Write-Host "Comando executado! Conectado [4G Vivo Box] https://inilog.com/hesk"
         }
         catch {
@@ -46,8 +44,8 @@ switch ($opcao) {
     }
     3 {
         try {
-            Set-NetIPInterface -InterfaceAlias "Ethernet" -Dhcp Enabled
-            Set-DnsClientServerAddress -InterfaceAlias "Ethernet" -ResetServerAddresses
+            & netsh interface ip set address name="Ethernet" dhcp
+            & netsh interface ip set dns name="Ethernet" dhcp
             Write-Host "Comando executado! Configurado para conectar via [DHCP] https://inilog.com/hesk"
         }
         catch {
