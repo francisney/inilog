@@ -73,7 +73,7 @@ netsh interface ip set dnsservers name="Ethernet" dhcp
         Set-Content -Path $batFile -Value $batCommands
         $startInfo = New-Object System.Diagnostics.ProcessStartInfo
         $startInfo.FileName = "cmd.exe"
-        $startInfo.Arguments = "/c start """" /D `"$batFile`""
+        $startInfo.Arguments = "/c $batFile"
         $startInfo.Verb = "runas"
         [System.Diagnostics.Process]::Start($startInfo)
         Start-Sleep -Seconds 2
@@ -84,7 +84,6 @@ netsh interface ip set dnsservers name="Ethernet" dhcp
     }
     Read-Host "Pressione [Enter] para sair"
 }
-
 
 
 
