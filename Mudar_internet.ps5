@@ -60,14 +60,35 @@ switch ($opcao) {
         }
         Read-Host "Pressione [Enter] para sair"
     }
-    3 {
-   Start-Process "cmd.exe" -ArgumentList "/c netsh interface ip set address name='Ethernet' dhcp"
-   Start-Process "cmd.exe" -ArgumentList "/c netsh interface ip set dns name='Ethernet' dhcp"
 
 
-        Read-Host "Pressione [Enter] para sair"
+
+3 {
+    try {
+        $batFile = "C:\ti\configurarDHCP.bat"
+        $batCommands = @"
+netsh interface ip set address name="Ethernet" dhcp
+netsh interface ip set dnsservers name="Ethernet" dhcp
+"@
+        Set-Content -Path $batFile -Value $batCommands
+        $startInfo = New-Object System.Diagnostics.ProcessStartInfo
+        $startInfo.FileName = "cmd.exe"
+        $startInfo.Arguments = "/c start """" /D `"$batFile`""
+        $startInfo.Verb = "runas"
+        [System.Diagnostics.Process]::Start($startInfo)
+        Start-Sleep -Seconds 2
+        Remove-Item -Path $batFile -Force
     }
-    0 {
+    catch {
+        Write-Host "Erro ao configurar automaticamente. Detalhes do erro: $_" -ForegroundColor $corErro
+    }
+    Read-Host "Pressione [Enter] para sair"
+}
+
+
+
+
+0 {
         Write-Host "Saindo do programa..." -ForegroundColor $corPadrao
         exit
     }
