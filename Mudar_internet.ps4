@@ -64,13 +64,22 @@ switch ($opcao) {
     }
 
 
+
+
 3 {
-
-netsh interface ip set address name="Ethernet" dhcp
-netsh interface ip set dnsservers name="Ethernet" dhcp
-
+    try {
+        # Configura o IP para obter automaticamente via DHCP
+        & netsh interface ip set address name="Ethernet" source=dhcp
+        # Configura o DNS para obter automaticamente via DHCP
+        & netsh interface ip set dnsservers name="Ethernet" source=dhcp
+        Write-Host "Configuração de rede alterada para DHCP (IP e DNS)" -ForegroundColor $corSucesso
+    }
+    catch {
+        Write-Host "Erro ao configurar DHCP. Detalhes do erro: $_" -ForegroundColor $corErro
+    }
     Read-Host "Pressione [Enter] para sair"
 }
+
 
 
 
