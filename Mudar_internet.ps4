@@ -1,0 +1,82 @@
+$host.UI.RawUI.WindowTitle = "MUDAR DE INTERNET [INILOG - Support]"
+
+# Definição de cores para modernizar o layout
+$corPadrao = "Gray"
+$corTitulo = "Yellow"
+$corOpcao = "Cyan"
+$corAlerta = "Red"
+$corSucesso = "Green"
+$corErro = "DarkRed"
+
+# Função para exibir separadores com estilo
+function Exibir-Linha {
+    Write-Host ("-" * 65) -ForegroundColor $corPadrao
+}
+
+Clear-Host
+
+# Título e cabeçalho
+Write-Host "MUDAR DE INTERNET" -ForegroundColor $corTitulo
+Exibir-Linha
+Write-Host "Selecione a rede para se conectar:" -ForegroundColor $corPadrao
+Write-Host ""
+Write-Host "1. Conectar na rede da [Vivo ADSL (cabo)]" -ForegroundColor $corOpcao
+Write-Host "2. Conectar na rede da [4G Vivo Box]" -ForegroundColor $corOpcao
+Write-Host ""
+Write-Host "3. Redefinir para Conexão Automática [DHCP]" -ForegroundColor $corOpcao
+Write-Host ""
+Write-Host "0. Sair [EXIT]" -ForegroundColor $corOpcao
+Exibir-Linha
+
+# Alerta ao usuário
+Write-Host "ALERTA: Certifique-se de que todos os computadores estejam na mesma rede." -ForegroundColor $corAlerta
+Exibir-Linha
+$opcao = Read-Host "Escolha uma opção e pressione [ENTER]"
+Exibir-Linha
+
+switch ($opcao) {
+    1 {
+        try {
+            & netsh interface ip set address name="Ethernet" static 192.168.15.112 255.255.255.0 192.168.15.1
+            & netsh interface ip set dns name="Ethernet" static 8.8.8.8 primary
+            Write-Host "Conectado com sucesso à rede [Vivo ADSL (cabo)]" -ForegroundColor $corSucesso
+            Write-Host "Para mais ajuda, visite: https://inilog.com/hesk" -ForegroundColor $corPadrao
+        }
+        catch {
+            Write-Host "Erro ao conectar à rede Vivo ADSL. Detalhes do erro: $_" -ForegroundColor $corErro
+        }
+        Read-Host "Pressione [Enter] para sair"
+    }
+    2 {
+        try {
+            & netsh interface ip set address name="Ethernet" static 192.168.1.112 255.255.255.0 192.168.1.1
+            & netsh interface ip set dns name="Ethernet" static 8.8.8.8 primary
+            Write-Host "Conectado com sucesso à rede [4G Vivo Box]" -ForegroundColor $corSucesso
+            Write-Host "Para mais ajuda, visite: https://inilog.com/hesk" -ForegroundColor $corPadrao
+        }
+        catch {
+            Write-Host "Erro ao conectar à rede 4G Vivo Box. Detalhes do erro: $_" -ForegroundColor $corErro
+        }
+        Read-Host "Pressione [Enter] para sair"
+    }
+    3 {
+        try {
+            & netsh interface ip set address name="Ethernet" dhcp
+            & netsh interface ip set dns name="Ethernet" dhcp
+            Write-Host "Configuração alterada para DHCP automático com sucesso!" -ForegroundColor $corSucesso
+            Write-Host "Para mais ajuda, visite: https://inilog.com/hesk" -ForegroundColor $corPadrao
+        }
+        catch {
+            Write-Host "Erro ao configurar DHCP. Detalhes do erro: $_" -ForegroundColor $corErro
+        }
+        Read-Host "Pressione [Enter] para sair"
+    }
+    0 {
+        Write-Host "Saindo do programa..." -ForegroundColor $corPadrao
+        exit
+    }
+    default {
+        Write-Host "Opção inválida. Por favor, tente novamente." -ForegroundColor $corErro
+        Read-Host "Pressione [Enter] para continuar"
+    }
+}
