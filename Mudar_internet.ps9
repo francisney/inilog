@@ -64,31 +64,10 @@ switch ($opcao) {
 
 3 {
     try {
-        $batFile = "C:\ti\configurarDHCP.bat"
-        $batCommands = @"
-netsh interface ip set address name="Ethernet" dhcp
-netsh interface ip set dnsservers name="Ethernet" dhcp
-"@
-        Set-Content -Path $batFile -Value $batCommands
-
-        # Executa o arquivo .bat como administrador
-        $startInfo = New-Object System.Diagnostics.ProcessStartInfo
-        $startInfo.FileName = "cmd.exe"
-        $startInfo.Arguments = "/c $batFile"
-        $startInfo.Verb = "runas"
-        $startInfo.WindowStyle = [System.Diagnostics.ProcessWindowStyle]::Hidden  # Esconde a janela do cmd
-        $process = [System.Diagnostics.Process]::Start($startInfo)
-
-        # Aguarda o processo terminar
-        $process.WaitForExit()
-
-        # Remove o arquivo temporário
-        Remove-Item -Path $batFile -Force
-
-        Write-Host "Configuração automática (DHCP) aplicada com sucesso." -ForegroundColor $corSucesso
+        Write-Host "Olá, Mundo" -ForegroundColor $corSucesso
     }
     catch {
-        Write-Host "Erro ao configurar automaticamente. Detalhes do erro: $_" -ForegroundColor $corErro
+        Write-Host "Erro ao exibir mensagem. Detalhes do erro: $_" -ForegroundColor $corErro
     }
     Read-Host "Pressione [Enter] para sair"
 }
