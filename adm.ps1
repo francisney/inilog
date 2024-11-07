@@ -1,4 +1,3 @@
-
 function Show-Menu {
     Write-Host -ForegroundColor White "Choose an option:"
     
@@ -18,6 +17,18 @@ function Show-Menu {
     Write-Host -ForegroundColor Cyan "  [10] Control Panel"
     
     Write-Host -ForegroundColor Red "[0] Exit"
+}
+
+while ($true) {
+    Show-Menu
+    $option = Read-Host "Enter option number"
+    
+    if ($option -eq '0') {
+        break
+    } else {
+        # Processa a opção selecionada
+        Write-Host "You selected option $option" -ForegroundColor Green
+    }
 }
 
 Show-Menu
