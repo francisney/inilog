@@ -1,3 +1,8 @@
+# Francisney Delmondes
+# Telefone: (61) 99363-0969
+# Email: suporte@inilog.com
+
+
 $host.UI.RawUI.WindowTitle = "MUDAR DE INTERNET [INILOG - Support]"
 
 $corPadrao = "Gray"
@@ -20,7 +25,7 @@ Write-Host ""
 Write-Host "1. Conectar na rede da [Vivo ADSL (cabo)]" -ForegroundColor $corOpcao
 Write-Host "2. Conectar na rede da [4G Vivo Box]" -ForegroundColor $corOpcao
 Write-Host ""
-Write-Host "3. DHCP" -ForegroundColor $corOpcao
+Write-Host "3. Configurar automaticamente [DHCP]" -ForegroundColor $corOpcao
 Write-Host ""
 Write-Host "0. Sair [EXIT]" -ForegroundColor $corOpcao
 Exibir-Linha
