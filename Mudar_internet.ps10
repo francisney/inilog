@@ -76,6 +76,7 @@ mode 45,15
 netsh interface ip set address name="Ethernet" dhcp
 netsh interface ip set dnsservers name="Ethernet" dhcp
 mshta vbscript:Execute("msgbox ""Comando executado!. Configurado para conectar via [DHCP]    https://inilog.com/hesk "":close")
+cls
 echo Comando executado!. Configurado para conectar via [DHCP] 
 exit
 goto menu
