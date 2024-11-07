@@ -19,21 +19,6 @@ function Show-Menu {
     Write-Host -ForegroundColor Red "[0] Exit"
 }
 
-while ($true) {
-    Show-Menu
-    $option = Read-Host "Enter option number"
-    
-    if ($option -eq '0') {
-        break
-    } else {
-        # Processa a opção selecionada
-        Write-Host "You selected option $option" -ForegroundColor Green
-    }
-}
-
-Show-Menu
-
-
 function Start-Tool {
     param ($choice)
     switch ($choice) {
@@ -48,12 +33,17 @@ function Start-Tool {
         9 { Start-Process "ncpa.cpl" }
         10 { Start-Process "appwiz.cpl" }
         0 { exit }
-        default { Write-Host "Opção inválida, tente novamente." }
+        default { Write-Host "Invalid option, please try again." }
     }
 }
 
 while ($true) {
     Show-Menu
-    $choice = Read-Host "Digite o número da opção"
-    Start-Tool -choice $choice
+    $choice = Read-Host "Enter option number"
+    
+    if ($choice -eq '0') {
+        exit
+    } else {
+        Start-Tool -choice $choice
+    }
 }
