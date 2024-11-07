@@ -1,18 +1,19 @@
 
 function Show-Menu {
-    Write-Host "Escolha uma opção:"
-    Write-Host "1 - Opções de energia"
-    Write-Host "2 - Nome do computador"
-    Write-Host "3 - Compartilhamento avançado"
-    Write-Host "4 - Gerenciador de dispositivos"
-    Write-Host "5 - Contas de usuário"
-    Write-Host "6 - Sistema"
-    Write-Host "7 - Gerenciador de tarefas"
-    Write-Host "8 - Editor de registro"
-    Write-Host "9 - Informações de rede"
-    Write-Host "10 - Desinstalar programas"
-    Write-Host "0 - Sair"
+    Write-Host "Choose an option:"
+    Write-Host "1 - Power Options"
+    Write-Host "2 - Computer Name"
+    Write-Host "3 - Advanced Sharing"
+    Write-Host "4 - Device Manager"
+    Write-Host "5 - User Accounts"
+    Write-Host "6 - System"
+    Write-Host "7 - Task Manager"
+    Write-Host "8 - Registry Editor"
+    Write-Host "9 - Network Information"
+    Write-Host "10 - Control Panel"
+    Write-Host "0 - Exit"
 }
+
 
 function Start-Tool {
     param ($choice)
