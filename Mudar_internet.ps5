@@ -61,6 +61,8 @@ switch ($opcao) {
     }
     3 {
         try {
+            # Configura o IP e DNS para DHCP
+            Write-Host "Configurando para DHCP..." -ForegroundColor $corPadrao
             & netsh interface ip set address name="Ethernet" dhcp
             & netsh interface ip set dns name="Ethernet" dhcp
             Write-Host "Configuração alterada para DHCP automático com sucesso!" -ForegroundColor $corSucesso
