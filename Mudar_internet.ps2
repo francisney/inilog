@@ -56,8 +56,9 @@ switch ($opcao) {
         Read-Host "Pressione [Enter] para sair"
     }
     3 {
-        netsh interface ip set address name="Ethernet" dhcp
-        netsh interface ip set dnsservers name="Ethernet" dhcp
+   Start-Process "netsh.exe" -ArgumentList "interface ip set address name='Ethernet' dhcp"
+    Start-Process "netsh.exe" -ArgumentList "interface ip set dnsservers name='Ethernet' dhcp"
+
 
         Read-Host "Pressione [Enter] para sair"
     }
