@@ -12,8 +12,7 @@ Write-Host "----"
 Write-Host "---- 3. REDEFINIR REDE [CONECTA AUTOMATICO] [DHCP]"
 Write-Host "----"
 Write-Host "---- 0. SAIR [EXIT]"
-[System.Windows.Forms.MessageBox]::Show("ALERTA! Deixe todos computadores na mesma rede.", "Atenção", [System.Windows.Forms.MessageBoxButtons]::OK)
-
+Write-Host "ALERTA! Deixe todos computadores na mesma rede."
 Write-Host "__________________________________________________"
 $opcao = Read-Host "Escolha e tecle [ENTER]:"
 Write-Host "---------------------------------------------------"
@@ -23,20 +22,20 @@ switch ($opcao) {
         Set-NetIPInterface -InterfaceAlias "Ethernet" -Dhcp Disabled
         New-NetIPAddress -InterfaceAlias "Ethernet" -IPAddress "192.168.15.112" -PrefixLength 24 -DefaultGateway "192.168.15.1"
         Set-DnsClientServerAddress -InterfaceAlias "Ethernet" -ServerAddresses "8.8.8.8"
-        [System.Windows.Forms.MessageBox]::Show("Comando executado! Conectado [Vivo ADSL (cabo)] https://inilog.com/hesk", "Sucesso", [System.Windows.Forms.MessageBoxButtons]::OK)
+        Write-Host "Comando executado! Conectado [Vivo ADSL (cabo)] https://inilog.com/hesk"
         exit
     }
     2 {
         Set-NetIPInterface -InterfaceAlias "Ethernet" -Dhcp Disabled
         New-NetIPAddress -InterfaceAlias "Ethernet" -IPAddress "192.168.1.112" -PrefixLength 24 -DefaultGateway "192.168.1.1"
         Set-DnsClientServerAddress -InterfaceAlias "Ethernet" -ServerAddresses "8.8.8.8"
-        [System.Windows.Forms.MessageBox]::Show("Comando executado! Conectado [4G Vivo Box] https://inilog.com/hesk", "Sucesso", [System.Windows.Forms.MessageBoxButtons]::OK)
+        Write-Host "Comando executado! Conectado [4G Vivo Box] https://inilog.com/hesk"
         exit
     }
     3 {
         Set-NetIPInterface -InterfaceAlias "Ethernet" -Dhcp Enabled
         Set-DnsClientServerAddress -InterfaceAlias "Ethernet" -ResetServerAddresses
-        [System.Windows.Forms.MessageBox]::Show("Comando executado! Configurado para conectar via [DHCP] https://inilog.com/hesk", "Sucesso", [System.Windows.Forms.MessageBoxButtons]::OK)
+        Write-Host "Comando executado! Configurado para conectar via [DHCP] https://inilog.com/hesk"
         exit
     }
     0 {
