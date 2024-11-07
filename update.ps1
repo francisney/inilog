@@ -41,7 +41,7 @@ Write-Host "17. CPU-Z" -ForegroundColor Green
 Write-Host "18. MiniTool Partition" -ForegroundColor Cyan
 Write-Host "19. WINTOHD" -ForegroundColor Green
 Write-Host "20. GodMode" -ForegroundColor Cyan
-Write-Host "21. Adm Tools" -ForegroundColor Green
+Write-Host "21. Adm Tools" -ForegroundColor Cyan
 Write-Host "22. NETWORK" -ForegroundColor Cyan
 Write-Host "23. CLS" -ForegroundColor Green
 Write-Host "24. Scanner ps" -ForegroundColor Cyan
@@ -147,7 +147,7 @@ Write-Host "Abrindo link para baixar WINTOHD..." -ForegroundColor Green
 irm https://raw.githubusercontent.com/francisney/inilog/refs/heads/main/godmode | iex
 }
 
-"20" { 
+"21" { 
 irm https://raw.githubusercontent.com/francisney/inilog/refs/heads/main/adm.ps1 | iex
 }
 
