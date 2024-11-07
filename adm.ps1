@@ -1,23 +1,18 @@
 function Show-Menu {
-    Write-Host -ForegroundColor White "Choose an option:"
-    
-    Write-Host -ForegroundColor Cyan "[1] Power Options" -NoNewline
-    Write-Host -ForegroundColor Cyan "      [2] Computer Name"
-    
-    Write-Host -ForegroundColor Cyan "[3] Advanced Sharing" -NoNewline
-    Write-Host -ForegroundColor Cyan "      [4] Device Manager"
-    
-    Write-Host -ForegroundColor Cyan "[5] User Accounts" -NoNewline
-    Write-Host -ForegroundColor Cyan "      [6] System"
-    
-    Write-Host -ForegroundColor Cyan "[7] Task Manager" -NoNewline
-    Write-Host -ForegroundColor Cyan "       [8] Registry Editor"
-    
-    Write-Host -ForegroundColor Cyan "[9] Network Information" -NoNewline
-    Write-Host -ForegroundColor Cyan "  [10] Control Panel"
-    
-    Write-Host -ForegroundColor Red "[0] Exit"
+    Write-Host "Choose an option:"
+    Write-Host "1 - Power Options"
+    Write-Host "2 - Computer Name"
+    Write-Host "3 - Advanced Sharing"
+    Write-Host "4 - Device Manager"
+    Write-Host "5 - User Accounts"
+    Write-Host "6 - System"
+    Write-Host "7 - Task Manager"
+    Write-Host "8 - Registry Editor"
+    Write-Host "9 - Network Information"
+    Write-Host "10 - Uninstall Programs"
+    Write-Host "0 - Exit"
 }
+
 
 function Start-Tool {
     param ($choice)
