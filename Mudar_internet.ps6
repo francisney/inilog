@@ -68,12 +68,15 @@ switch ($opcao) {
 
 3 {
     try {
-        # Configura o IP para obter automaticamente via DHCP
-        & netsh interface ip set address name="Ethernet" source=dhcp
-        # Configura os DNS para obter automaticamente via DHCP
-        & netsh interface ip set dnsservers name="Ethernet" source=dhcp
-        # Limpa qualquer DNS adicional
+        # Remover configuração estática de IP e DNS
+        & netsh interface ip set address name="Ethernet" static 0.0.0.0 255.255.255.0 0.0.0.0
         & netsh interface ip delete dns name="Ethernet" all
+
+        # Configurar para obter IP automaticamente via DHCP
+        & netsh interface ip set address name="Ethernet" source=dhcp
+        # Configurar para obter DNS automaticamente via DHCP
+        & netsh interface ip set dnsservers name="Ethernet" source=dhcp
+
         Write-Host "Configuração de rede alterada para DHCP (IP e DNS)" -ForegroundColor $corSucesso
     }
     catch {
@@ -81,7 +84,6 @@ switch ($opcao) {
     }
     Read-Host "Pressione [Enter] para sair"
 }
-
 
 
 
