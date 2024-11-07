@@ -40,6 +40,7 @@ switch ($opcao) {
         try {
             & netsh interface ip set address name="Ethernet" static 192.168.15.112 255.255.255.0 192.168.15.1
             & netsh interface ip set dns name="Ethernet" static 8.8.8.8 primary
+            & netsh interface ip add dns name="Ethernet" 1.1.1.1 index=2
             Write-Host "Conectado com sucesso à rede [Vivo ADSL (cabo)]" -ForegroundColor $corSucesso
             Write-Host "Para mais ajuda, visite: https://inilog.com/hesk" -ForegroundColor $corPadrao
         }
@@ -52,6 +53,7 @@ switch ($opcao) {
         try {
             & netsh interface ip set address name="Ethernet" static 192.168.1.112 255.255.255.0 192.168.1.1
             & netsh interface ip set dns name="Ethernet" static 8.8.8.8 primary
+            & netsh interface ip add dns name="Ethernet" 1.1.1.1 index=2
             Write-Host "Conectado com sucesso à rede [4G Vivo Box]" -ForegroundColor $corSucesso
             Write-Host "Para mais ajuda, visite: https://inilog.com/hesk" -ForegroundColor $corPadrao
         }
