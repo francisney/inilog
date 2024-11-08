@@ -1,10 +1,7 @@
-# Francisney Delmondes
-# Telefone: (61) 99363-0969
-# Email: suporte@inilog.com
-
-
+# Definindo título da janela
 $host.UI.RawUI.WindowTitle = "MUDAR DE INTERNET [INILOG - Support]"
 
+# Definindo cores
 $corPadrao = "Gray"
 $corTitulo = "Yellow"
 $corOpcao = "Cyan"
@@ -12,12 +9,15 @@ $corAlerta = "Red"
 $corSucesso = "Green"
 $corErro = "DarkRed"
 
+# Função para exibir linha
 function Exibir-Linha {
     Write-Host ("-" * 65) -ForegroundColor $corPadrao
 }
 
+# Limpa o console
 Clear-Host
 
+# Exibe o título e opções
 Write-Host "MUDAR DE INTERNET" -ForegroundColor $corTitulo
 Exibir-Linha
 Write-Host "Selecione a rede para se conectar:" -ForegroundColor $corPadrao
@@ -30,11 +30,15 @@ Write-Host ""
 Write-Host "0. Sair [EXIT]" -ForegroundColor $corOpcao
 Exibir-Linha
 
+# Mensagem de alerta
 Write-Host "ALERTA: Certifique-se de que todos os computadores estejam na mesma rede." -ForegroundColor $corAlerta
 Exibir-Linha
+
+# Leitura da opção do usuário
 $opcao = Read-Host "Escolha uma opção e pressione [ENTER]"
 Exibir-Linha
 
+# Bloco Switch para opções
 switch ($opcao) {
     1 {
         try {
@@ -62,21 +66,19 @@ switch ($opcao) {
         }
         Read-Host "Pressione [Enter] para sair"
     }
-
-
-
-3 {
-    try {
-        $adaptador = "Ethernet"
-        Set-NetIPInterface -InterfaceAlias $adaptador -Dhcp Enabled
-        Remove-NetIPAddress -InterfaceAlias $adaptador -Confirm:$false
-
+    3 {
+        try {
+            $adaptador = "Ethernet"
+            Set-NetIPInterface -InterfaceAlias $adaptador -Dhcp Enabled
+            Remove-NetIPAddress -InterfaceAlias $adaptador -Confirm:$false
+            Write-Host "Configuração de rede [DHCP] aplicada com sucesso!" -ForegroundColor $corSucesso
+        }
+        catch {
+            Write-Host "Erro ao configurar o DHCP. Detalhes do erro: $_" -ForegroundColor $corErro
+        }
         Read-Host "Pressione [Enter] para sair"
     }
-}
-
-
-0 {
+    0 {
         Write-Host "Saindo do programa..." -ForegroundColor $corPadrao
         exit
     }
