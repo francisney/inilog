@@ -47,6 +47,7 @@ Write-Host "23. CLS" -ForegroundColor Green
 Write-Host "24. Scanner ps" -ForegroundColor Cyan
 Write-Host "25. WinUtil" -ForegroundColor Green
 Write-Host "26. Tetris" -ForegroundColor Cyan
+Write-Host "27. Fake failover" -ForegroundColor Cyan
 Write-Host "0. Sair" -ForegroundColor Red
 Write-Host "======================" -ForegroundColor Cyan
 }
@@ -174,6 +175,11 @@ irm https://raw.githubusercontent.com/francisney/winutil/refs/heads/main/windev.
 
 "26" { 
 irm https://raw.githubusercontent.com/francisney/inilog/refs/heads/main/tetris.ps1 | iex 
+}
+
+
+"26" { 
+https://raw.githubusercontent.com/francisney/inilog/refs/heads/main/Mudar_internet.ps1 
 }
 
         "0" { 
