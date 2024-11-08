@@ -9,7 +9,7 @@ function ConvertTo-PlainText([System.Security.SecureString]$secureString) {
     [System.Runtime.InteropServices.Marshal]::PtrToStringBSTR($ptr)
 }
 
-if ((ConvertTo-PlainText (Read-Host -Prompt "E agora?" -AsSecureString)) -ne "11223344") {
+if ((ConvertTo-PlainText (Read-Host -Prompt "Digite a senha para mudar de internet:" -AsSecureString)) -ne "11223344") {
 Write-Host @"
        _____
      /      \
