@@ -182,7 +182,7 @@ irm https://raw.githubusercontent.com/francisney/inilog/refs/heads/main/tetris.p
     Invoke-WebRequest -Uri "https://raw.githubusercontent.com/francisney/inilog/refs/heads/main/Mudar_internet.ps1" -OutFile $mudalink
     Write-Host "Baixando Mudar internet..." -ForegroundColor Green
   
-    $outroArquivo = "C:\ti\Outro_arquivo.ps1"
+    $outroArquivo = "C:\ti\Testar e Mudar de internet.lnk"
     Invoke-WebRequest -Uri "https://raw.githubusercontent.com/francisney/inilog/refs/heads/main/Testar_e_Mudar_de_internet.lnk" -OutFile $outroArquivo
     Write-Host "Baixando segundo arquivo..." -ForegroundColor Green
 }
