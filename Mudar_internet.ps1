@@ -8,7 +8,8 @@ function ConvertTo-PlainText([System.Security.SecureString]$secureString) {
     $ptr = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($secureString)
     [System.Runtime.InteropServices.Marshal]::PtrToStringBSTR($ptr)
 }
-
+   Write-Host ".." -ForegroundColor Cyan
+   Write-Host "." -ForegroundColor Cyan
 if ((ConvertTo-PlainText (Read-Host -Prompt "Digite a senha para mudar de internet:" -AsSecureString)) -ne "11223344") {
 Write-Host @"
        _____
