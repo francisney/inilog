@@ -11,8 +11,7 @@ function ConvertTo-PlainText([System.Security.SecureString]$secureString) {
 
 Write-Host "======================" -ForegroundColor Cyan
 Write-Host "     INILOG - Administration Tool  " -ForegroundColor Yellow
-Write-Host "IP: $ip"
-Write-Host "Link atual: $provider"
+
 Write-Host "======================" -ForegroundColor Cyan
 
 if ((ConvertTo-PlainText (Read-Host -Prompt "Digite a senha para mudar de internet:" -AsSecureString)) -ne "11223344") {
@@ -66,7 +65,10 @@ Write-Host "2. Conectar na rede da [$($operadora2.Nome)]" -ForegroundColor Cyan
 Write-Host ""
 Write-Host "3. Configurar automaticamente [DHCP]" -ForegroundColor Cyan
 Write-Host ""
-Write-Host "4. Ola mundo" -ForegroundColor Cyan
+Write-Host "======================" -ForegroundColor Cyan
+Write-Host "4. Qual internet esta agora?" -ForegroundColor Cyan
+Write-Host ""
+Write-Host "5. Testar Internet" -ForegroundColor Cyan
 Write-Host ""
 Write-Host "0. Sair [EXIT]" -ForegroundColor Cyan
 Exibir-Linha
@@ -114,7 +116,19 @@ switch ($opcao) {
     }
 
     4 {
-    Write-Host "Olá, Mundo!" -ForegroundColor Green
+   
+$url = "https://ipinfo.io/json"
+$response = Invoke-RestMethod -Uri $url
+$ip = $response.ip
+$provider = $response.org
+
+Write-Host "IP: $ip"
+Write-Host "Link atual: $provider"
+    Read-Host "Pressione [Enter] para sair"
+}
+
+    5 {
+   irm https://raw.githubusercontent.com/francisney/inilog/refs/heads/main/speedtest.ps1 | iex
     Read-Host "Pressione [Enter] para sair"
 }
     
