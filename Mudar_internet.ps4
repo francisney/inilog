@@ -14,12 +14,12 @@ Write-Host "." -ForegroundColor Cyan
 
 if ((ConvertTo-PlainText (Read-Host -Prompt "Digite a senha para mudar de internet:" -AsSecureString)) -ne "11223344") {
     Write-Host @"
-           _____
-         /      \
-        |  O  O  |
-        |   __   |
-         \______/
-    "@ -ForegroundColor red
+       _____
+     /      \
+    |  O  O  |
+    |   __   |
+     \______/
+"@ -ForegroundColor red
     Write-Host "" 
     Write-Host "      Ihiii!" -ForegroundColor red
     Start-Sleep -Seconds 1 
