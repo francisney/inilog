@@ -54,8 +54,7 @@ $operadora2 = @{
 
 Write-Host "======================" -ForegroundColor Cyan
 Write-Host "     Mudar de Internet  " -ForegroundColor Yellow
-Write-Host "IP: $ip"
-Write-Host "Link atual: $provider"
+
 Write-Host "======================" -ForegroundColor Cyan
 
 Write-Host "Selecione a rede para se conectar:" -ForegroundColor Gray
@@ -66,7 +65,7 @@ Write-Host ""
 Write-Host "3. Configurar automaticamente [DHCP]" -ForegroundColor Cyan
 Write-Host ""
 Write-Host "======================" -ForegroundColor Cyan
-Write-Host "4. Qual internet esta agora?" -ForegroundColor Cyan
+Write-Host "4. Ver em qual rede de internet esta conectado" -ForegroundColor Cyan
 Write-Host ""
 Write-Host "5. Testar Internet" -ForegroundColor Cyan
 Write-Host ""
