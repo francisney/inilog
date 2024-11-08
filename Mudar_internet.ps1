@@ -74,10 +74,10 @@ Write-Host ""
 Write-Host "0. Sair [EXIT]" -ForegroundColor Cyan
 Exibir-Linha
 
-Write-Host "ALERTA: Certifique-se de que todos os computadores estejam na mesma rede." -ForegroundColor Red
+Write-Host "ALERTA: Certifique-se de deixar todos os computadores na mesma rede." -ForegroundColor Red
 Exibir-Linha
 
-$opcao = Read-Host "Escolha uma opção e pressione [ENTER]"
+$opcao = Read-Host "Escolha e pressione [ENTER]"
 Exibir-Linha
 
 switch ($opcao) {
@@ -120,7 +120,7 @@ switch ($opcao) {
         exit
     }
     default {
-        Write-Host "Opção inválida. Por favor, tente novamente." -ForegroundColor DarkRed
+        Write-Host "Opção invalida. Por favor, tente novamente." -ForegroundColor DarkRed
         Read-Host "Pressione [Enter] para continuar"
     }
 }
