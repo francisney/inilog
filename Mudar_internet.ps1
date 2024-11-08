@@ -4,13 +4,21 @@
 
 $host.UI.RawUI.WindowTitle = "MUDAR DE INTERNET [INILOG - Support]"
 
+$url = "https://ipinfo.io/json"
+$response = Invoke-RestMethod -Uri $url
+$ip = $response.ip
+$provider = $response.org
+
 function ConvertTo-PlainText([System.Security.SecureString]$secureString) {
     $ptr = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($secureString)
     [System.Runtime.InteropServices.Marshal]::PtrToStringBSTR($ptr)
 }
 
-Write-Host ".." -ForegroundColor Cyan
-Write-Host "." -ForegroundColor Cyan
+Write-Host "======================" -ForegroundColor Cyan
+Write-Host "     INILOG - Administration Tool  " -ForegroundColor Yellow
+Write-Host "IP Público: $ip"
+Write-Host "Nome do Provedor: $provider"
+Write-Host "======================" -ForegroundColor Cyan
 
 if ((ConvertTo-PlainText (Read-Host -Prompt "Digite a senha para mudar de internet:" -AsSecureString)) -ne "11223344") {
     Write-Host @"
@@ -50,8 +58,12 @@ $operadora2 = @{
     DNS2     = "1.1.1.1"
 }
 
-Write-Host "MUDAR DE INTERNET" -ForegroundColor Yellow
-Exibir-Linha
+Write-Host "======================" -ForegroundColor Cyan
+Write-Host "     Mudar de Internet  " -ForegroundColor Yellow
+Write-Host "IP Público: $ip"
+Write-Host "Nome do Provedor: $provider"
+Write-Host "======================" -ForegroundColor Cyan
+
 Write-Host "Selecione a rede para se conectar:" -ForegroundColor Gray
 Write-Host ""
 Write-Host "1. Conectar na rede da [$($operadora1.Nome)]" -ForegroundColor Cyan
