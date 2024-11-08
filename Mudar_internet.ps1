@@ -68,17 +68,10 @@ switch ($opcao) {
 
 3 {
     try {
-        & netsh interface ip set address name="Ethernet" static 0.0.0.0 255.255.255.0 0.0.0.0
-        & netsh interface ip delete dns name="Ethernet" all
-        & netsh interface ip set address name="Ethernet" source=dhcp
-        & netsh interface ip set dnsservers name="Ethernet" source=dhcp
-        & ipconfig /release "Ethernet"
-        & ipconfig /renew "Ethernet"
-        Write-Host "Configuração de rede alterada para DHCP (IP e DNS)" -ForegroundColor $corSucesso
-    }
-    catch {
-        Write-Host "Erro ao configurar DHCP. Detalhes do erro: $_" -ForegroundColor $corErro
-    }
+    $adaptador = "Ethernet"
+   Set-NetIPInterface -InterfaceAlias $adaptador -Dhcp Enabled
+  Remove-NetIPAddress -InterfaceAlias $adaptador -Confirm:$false
+
     Read-Host "Pressione [Enter] para sair"
 }
 
