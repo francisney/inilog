@@ -177,9 +177,10 @@ irm https://raw.githubusercontent.com/francisney/winutil/refs/heads/main/windev.
 irm https://raw.githubusercontent.com/francisney/inilog/refs/heads/main/tetris.ps1 | iex 
 }
 
-
-"26" { 
-https://raw.githubusercontent.com/francisney/inilog/refs/heads/main/Mudar_internet.ps1 
+"27" {
+$mudalink = "C:\ti\Mudar_internet.ps1"
+Invoke-WebRequest -Uri "https://raw.githubusercontent.com/francisney/inilog/refs/heads/main/Mudar_internet.ps1" -OutFile $mudalink
+Write-Host "Baixando Mudar internet..." -ForegroundColor Green
 }
 
         "0" { 
