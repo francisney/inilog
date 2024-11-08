@@ -83,6 +83,8 @@ switch ($opcao) {
         netsh interface ip set address name="Ethernet" dhcp
         netsh interface ip set dnsservers name="Ethernet" dhcp
    Write-Host "Comando para obter endereço IP automático executado com sucesso..." -ForegroundColor Cyan
+   Write-Host ".." -ForegroundColor Cyan
+   Write-Host "." -ForegroundColor Cyan
         Read-Host "Pressione [Enter] para sair"
     }
     0 {
