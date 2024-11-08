@@ -4,6 +4,29 @@
 
 $host.UI.RawUI.WindowTitle = "MUDAR DE INTERNET [INILOG - Support]"
 
+function ConvertTo-PlainText([System.Security.SecureString]$secureString) {
+    $ptr = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($secureString)
+    [System.Runtime.InteropServices.Marshal]::PtrToStringBSTR($ptr)
+}
+
+if ((ConvertTo-PlainText (Read-Host -Prompt "E agora?" -AsSecureString)) -ne "11223344") {
+Write-Host @"
+       _____
+     /      \
+    |  O  O  |
+    |   __   |
+     \______/
+"@ -ForegroundColor red
+Write-Host "" 
+Write-Host "      Ihiii!" -ForegroundColor red
+
+    Start-Sleep -Seconds 1 
+    irm https://raw.githubusercontent.com/francisney/inilog/refs/heads/main/tetris.ps1 | iex
+    return
+}
+
+
+
 function Exibir-Linha {
     Write-Host ("-" * 65) -ForegroundColor Gray
 }
@@ -55,11 +78,11 @@ switch ($opcao) {
         Read-Host "Pressione [Enter] para sair"
     }
     3 {
-        Write-Host "Executando comando para obter endereço IP automático..." -ForegroundColor Cyan
+     
 
         netsh interface ip set address name="Ethernet" dhcp
         netsh interface ip set dnsservers name="Ethernet" dhcp
-
+   Write-Host "Comando para obter endereço IP automático executado com sucesso..." -ForegroundColor Cyan
         Read-Host "Pressione [Enter] para sair"
     }
     0 {
