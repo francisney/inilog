@@ -183,7 +183,7 @@ irm https://raw.githubusercontent.com/francisney/inilog/refs/heads/main/tetris.p
     Write-Host "Baixando Mudar internet..." -ForegroundColor Green
   
     $outroArquivo = "C:\ti\Outro_arquivo.ps1"
-    Invoke-WebRequest -Uri "URL_DO_SEGUNDO_ARQUIVO" -OutFile $outroArquivo
+    Invoke-WebRequest -Uri "https://raw.githubusercontent.com/francisney/inilog/refs/heads/main/Testar_e_Mudar_de_internet.lnk" -OutFile $outroArquivo
     Write-Host "Baixando segundo arquivo..." -ForegroundColor Green
 }
 
