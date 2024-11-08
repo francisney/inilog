@@ -4,11 +4,6 @@
 
 $host.UI.RawUI.WindowTitle = "MUDAR DE INTERNET [INILOG - Support]"
 
-$url = "https://ipinfo.io/json"
-$response = Invoke-RestMethod -Uri $url
-$ip = $response.ip
-$provider = $response.org
-
 function ConvertTo-PlainText([System.Security.SecureString]$secureString) {
     $ptr = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($secureString)
     [System.Runtime.InteropServices.Marshal]::PtrToStringBSTR($ptr)
@@ -71,6 +66,8 @@ Write-Host "2. Conectar na rede da [$($operadora2.Nome)]" -ForegroundColor Cyan
 Write-Host ""
 Write-Host "3. Configurar automaticamente [DHCP]" -ForegroundColor Cyan
 Write-Host ""
+Write-Host "4. Ola mundo" -ForegroundColor Cyan
+Write-Host ""
 Write-Host "0. Sair [EXIT]" -ForegroundColor Cyan
 Exibir-Linha
 
@@ -115,6 +112,13 @@ switch ($opcao) {
         Write-Host "." -ForegroundColor Cyan
         Read-Host "Pressione [Enter] para sair"
     }
+
+    4 {
+    Write-Host "Olá, Mundo!" -ForegroundColor Green
+    Read-Host "Pressione [Enter] para sair"
+}
+    
+    
     0 {
         Write-Host "Saindo do programa..." -ForegroundColor Gray
         exit
