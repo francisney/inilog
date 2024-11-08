@@ -65,18 +65,15 @@ switch ($opcao) {
 
 
 
-
 3 {
     try {
-    $adaptador = "Ethernet"
-   Set-NetIPInterface -InterfaceAlias $adaptador -Dhcp Enabled
-  Remove-NetIPAddress -InterfaceAlias $adaptador -Confirm:$false
+        $adaptador = "Ethernet"
+        Set-NetIPInterface -InterfaceAlias $adaptador -Dhcp Enabled
+        Remove-NetIPAddress -InterfaceAlias $adaptador -Confirm:$false
 
-    Read-Host "Pressione [Enter] para sair"
+        Read-Host "Pressione [Enter] para sair"
+    }
 }
-
-
-
 
 
 0 {
