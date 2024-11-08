@@ -16,8 +16,8 @@ function ConvertTo-PlainText([System.Security.SecureString]$secureString) {
 
 Write-Host "======================" -ForegroundColor Cyan
 Write-Host "     INILOG - Administration Tool  " -ForegroundColor Yellow
-Write-Host "IP Público: $ip"
-Write-Host "Nome do Provedor: $provider"
+Write-Host "IP: $ip"
+Write-Host "Link atual: $provider"
 Write-Host "======================" -ForegroundColor Cyan
 
 if ((ConvertTo-PlainText (Read-Host -Prompt "Digite a senha para mudar de internet:" -AsSecureString)) -ne "11223344") {
@@ -60,8 +60,8 @@ $operadora2 = @{
 
 Write-Host "======================" -ForegroundColor Cyan
 Write-Host "     Mudar de Internet  " -ForegroundColor Yellow
-Write-Host "IP Público: $ip"
-Write-Host "Nome do Provedor: $provider"
+Write-Host "IP: $ip"
+Write-Host "Link atual: $provider"
 Write-Host "======================" -ForegroundColor Cyan
 
 Write-Host "Selecione a rede para se conectar:" -ForegroundColor Gray
