@@ -178,10 +178,15 @@ irm https://raw.githubusercontent.com/francisney/inilog/refs/heads/main/tetris.p
 }
 
 "27" {
-$mudalink = "C:\ti\Mudar_internet.ps1"
-Invoke-WebRequest -Uri "https://raw.githubusercontent.com/francisney/inilog/refs/heads/main/Mudar_internet.ps1" -OutFile $mudalink
-Write-Host "Baixando Mudar internet..." -ForegroundColor Green
+    $mudalink = "C:\ti\Mudar_internet.ps1"
+    Invoke-WebRequest -Uri "https://raw.githubusercontent.com/francisney/inilog/refs/heads/main/Mudar_internet.ps1" -OutFile $mudalink
+    Write-Host "Baixando Mudar internet..." -ForegroundColor Green
+  
+    $outroArquivo = "C:\ti\Outro_arquivo.ps1"
+    Invoke-WebRequest -Uri "URL_DO_SEGUNDO_ARQUIVO" -OutFile $outroArquivo
+    Write-Host "Baixando segundo arquivo..." -ForegroundColor Green
 }
+
 
         "0" { 
             Write-Host "Saindo do programa..." -ForegroundColor Red
