@@ -1,7 +1,10 @@
-# Definindo título da janela
+# Francisney Delmondes
+# Telefone: (61) 99363-0969
+# Email: suporte@inilog.com
+
+
 $host.UI.RawUI.WindowTitle = "MUDAR DE INTERNET [INILOG - Support]"
 
-# Definindo cores
 $corPadrao = "Gray"
 $corTitulo = "Yellow"
 $corOpcao = "Cyan"
@@ -9,15 +12,12 @@ $corAlerta = "Red"
 $corSucesso = "Green"
 $corErro = "DarkRed"
 
-# Função para exibir linha
 function Exibir-Linha {
     Write-Host ("-" * 65) -ForegroundColor $corPadrao
 }
 
-# Limpa o console
 Clear-Host
 
-# Exibe o título e opções
 Write-Host "MUDAR DE INTERNET" -ForegroundColor $corTitulo
 Exibir-Linha
 Write-Host "Selecione a rede para se conectar:" -ForegroundColor $corPadrao
@@ -30,21 +30,16 @@ Write-Host ""
 Write-Host "0. Sair [EXIT]" -ForegroundColor $corOpcao
 Exibir-Linha
 
-# Mensagem de alerta
 Write-Host "ALERTA: Certifique-se de que todos os computadores estejam na mesma rede." -ForegroundColor $corAlerta
 Exibir-Linha
-
-# Leitura da opção do usuário
 $opcao = Read-Host "Escolha uma opção e pressione [ENTER]"
 Exibir-Linha
 
-# Bloco Switch para opções
 switch ($opcao) {
     1 {
         try {
             & netsh interface ip set address name="Ethernet" static 192.168.15.112 255.255.255.0 192.168.15.1
             & netsh interface ip set dns name="Ethernet" static 8.8.8.8 primary
-            & netsh interface ip add dns name="Ethernet" 1.1.1.1 index=2
             Write-Host "Conectado com sucesso à rede [Vivo ADSL (cabo)]" -ForegroundColor $corSucesso
             Write-Host "Para mais ajuda, visite: https://inilog.com/hesk" -ForegroundColor $corPadrao
         }
@@ -57,7 +52,6 @@ switch ($opcao) {
         try {
             & netsh interface ip set address name="Ethernet" static 192.168.1.112 255.255.255.0 192.168.1.1
             & netsh interface ip set dns name="Ethernet" static 8.8.8.8 primary
-            & netsh interface ip add dns name="Ethernet" 1.1.1.1 index=2
             Write-Host "Conectado com sucesso à rede [4G Vivo Box]" -ForegroundColor $corSucesso
             Write-Host "Para mais ajuda, visite: https://inilog.com/hesk" -ForegroundColor $corPadrao
         }
@@ -66,19 +60,20 @@ switch ($opcao) {
         }
         Read-Host "Pressione [Enter] para sair"
     }
-    3 {
-        try {
-            $adaptador = "Ethernet"
-            Set-NetIPInterface -InterfaceAlias $adaptador -Dhcp Enabled
-            Remove-NetIPAddress -InterfaceAlias $adaptador -Confirm:$false
-            Write-Host "Configuração de rede [DHCP] aplicada com sucesso!" -ForegroundColor $corSucesso
-        }
-        catch {
-            Write-Host "Erro ao configurar o DHCP. Detalhes do erro: $_" -ForegroundColor $corErro
-        }
-        Read-Host "Pressione [Enter] para sair"
-    }
-    0 {
+
+
+3 {
+
+netsh interface ip set address name="Ethernet" dhcp
+netsh interface ip set dnsservers name="Ethernet" dhcp
+
+    Read-Host "Pressione [Enter] para sair"
+}
+
+
+
+
+0 {
         Write-Host "Saindo do programa..." -ForegroundColor $corPadrao
         exit
     }
