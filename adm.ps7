@@ -37,7 +37,7 @@ function Start-Tool {
         8 { Start-Process "regedit" }
         9 { Start-Process "ncpa.cpl" }
         10 { Start-Process "appwiz.cpl" }
-       11 { Start-Process "control.exe" -ArgumentList "printers" }
+        11 { Start-Process "control.exe" -ArgumentList "printers" }
 
         0 { exit }
         default { Write-Host "Invalid option, please try again." }
@@ -54,6 +54,13 @@ while ($true) {
         Start-Tool -choice $choice
     }
     
-    # Optional: Wait for a key press before showing the menu again
+    # Limpar a tela e voltar ao início após a escolha
+    Clear-Host
+    Write-Host "======================" -ForegroundColor Cyan
+    Write-Host "     INILOG - Administration Tool  " -ForegroundColor Yellow
+    Write-Host "======================" -ForegroundColor Cyan
+    Write-Host "Returning to the main menu..." -ForegroundColor Green
+
+    # Esperar o usuário pressionar Enter para continuar
     Read-Host "Press Enter to continue..."
 }
