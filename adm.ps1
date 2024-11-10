@@ -21,7 +21,7 @@ function Show-Menu {
     Write-Host -ForegroundColor Cyan "[9] Network NCPA.CPL"
     Write-Host -ForegroundColor Cyan "[10] Control Panel"
     Write-Host -ForegroundColor Cyan "[11] Printers"
-    Write-Host -ForegroundColor Cyan "[12] PasswordNeverExpires"
+    Write-Host -ForegroundColor Cyan "[12] Password Never Expires"
     Write-Host -ForegroundColor Cyan "[0] Exit"
 }
 
