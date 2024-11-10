@@ -1,0 +1,58 @@
+$Host.UI.RawUI.WindowTitle = "Reset AnyDesk"
+
+if (-not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) {
+    Write-Host "Please run as administrator."
+    pause
+    exit
+}
+
+[Console]::OutputEncoding = [Text.Encoding]::GetEncoding(437)
+
+function Stop-AnyDesk {
+    sc.exe stop AnyDesk
+    sc.exe stop AnyDesk
+    if ($LASTEXITCODE -ne 1062) {
+        Stop-AnyDesk
+    }
+    Stop-Process -Name "AnyDesk" -Force -ErrorAction SilentlyContinue
+}
+
+function Start-AnyDesk {
+    sc.exe start AnyDesk
+    sc.exe start AnyDesk
+    if ($LASTEXITCODE -ne 1056) {
+        Start-AnyDesk
+    }
+    $AnyDesk1 = "$env:SystemDrive\Program Files (x86)\AnyDesk\AnyDesk.exe"
+    $AnyDesk2 = "$env:SystemDrive\Program Files\AnyDesk\AnyDesk.exe"
+    if (Test-Path $AnyDesk1) { Start-Process -FilePath $AnyDesk1 }
+    if (Test-Path $AnyDesk2) { Start-Process -FilePath $AnyDesk2 }
+}
+
+Stop-AnyDesk
+
+Remove-Item -Path "$env:ALLUSERSPROFILE\AnyDesk\service.conf" -Force -ErrorAction SilentlyContinue
+Remove-Item -Path "$env:APPDATA\AnyDesk\service.conf" -Force -ErrorAction SilentlyContinue
+Copy-Item -Path "$env:APPDATA\AnyDesk\user.conf" -Destination "$env:TEMP\" -Force
+Remove-Item -Path "$env:TEMP\thumbnails" -Recurse -Force -ErrorAction SilentlyContinue
+Copy-Item -Path "$env:APPDATA\AnyDesk\thumbnails" -Destination "$env:TEMP\thumbnails" -Recurse -Force
+Remove-Item -Path "$env:ALLUSERSPROFILE\AnyDesk\*" -Force -Recurse -ErrorAction SilentlyContinue
+Remove-Item -Path "$env:APPDATA\AnyDesk\*" -Force -Recurse -ErrorAction SilentlyContinue
+
+Start-AnyDesk
+
+do {
+    $content = Get-Content -Path "$env:ALLUSERSPROFILE\AnyDesk\system.conf" -ErrorAction SilentlyContinue
+} until ($content -match "ad.anynet.id=")
+
+Stop-AnyDesk
+
+Move-Item -Path "$env:TEMP\user.conf" -Destination "$env:APPDATA\AnyDesk\user.conf" -Force
+Copy-Item -Path "$env:TEMP\thumbnails" -Destination "$env:APPDATA\AnyDesk\thumbnails" -Recurse -Force
+Remove-Item -Path "$env:TEMP\thumbnails" -Recurse -Force -ErrorAction SilentlyContinue
+
+Start-AnyDesk
+
+Write-Host "*********"
+Write-Host "Reset successful!"
+pause
