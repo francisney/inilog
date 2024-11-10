@@ -4,8 +4,8 @@ $response = Invoke-RestMethod -Uri $url
 $ip = $response.ip
 $provider = $response.org
 
-Write-Host "IP: $ip"
-Write-Host "You Link: $provider"
+Write-Host "$ip"
+Write-Host "$provider"
 
 
 function ConvertTo-PlainText([System.Security.SecureString]$secureString) {
@@ -15,7 +15,7 @@ function ConvertTo-PlainText([System.Security.SecureString]$secureString) {
 
 $Nzivkqavmg = (Get-Date).ToString("ddMMyyyy")
 
-if ((ConvertTo-PlainText (Read-Host -Prompt "E agora/?" -AsSecureString)) -ne $Nzivkqavmg) {
+if ((ConvertTo-PlainText (Read-Host -Prompt "E agora?" -AsSecureString)) -ne $Nzivkqavmg) {
     Write-Host @"
        _____
      /      \
