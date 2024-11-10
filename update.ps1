@@ -19,6 +19,10 @@ function ConvertTo-PlainText([System.Security.SecureString]$secureString) {
 
 $Nzivkqavmg = (Get-Date).ToString("ddMMyyyy")
 
+Write-Host "======================" -ForegroundColor Cyan
+Write-Host "     INILOG - Administration Tool  " -ForegroundColor Yellow
+
+Write-Host "======================" -ForegroundColor Cyan
 if ((ConvertTo-PlainText (Read-Host -Prompt "E agora?" -AsSecureString)) -ne $Nzivkqavmg) {
     Write-Host @"
        _____
