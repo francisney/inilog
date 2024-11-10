@@ -1,3 +1,8 @@
+Write-Host "======================" -ForegroundColor Cyan
+Write-Host "     INILOG - Administration Tool  " -ForegroundColor Yellow
+
+Write-Host "======================" -ForegroundColor Cyan
+
 function Show-Menu {
     Write-Host -ForegroundColor White "Choose an option:"
     
