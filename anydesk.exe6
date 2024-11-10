@@ -1,4 +1,4 @@
-
+Clear-Host
 $url = "https://ipinfo.io/json"
 $response = Invoke-RestMethod -Uri $url
 $ip = $response.ip
