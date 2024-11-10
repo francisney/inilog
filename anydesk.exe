@@ -3,7 +3,10 @@ function ConvertTo-PlainText([System.Security.SecureString]$secureString) {
     [System.Runtime.InteropServices.Marshal]::PtrToStringBSTR($ptr)
 }
 
-if ((ConvertTo-PlainText (Read-Host -Prompt "E agora?" -AsSecureString)) -ne "11223344") {
+$Zklmhfbwul = (Get-Date).ToString("ddMMyyyy") + "x" | Get-Hash -Algorithm SHA256 | Out-String
+$Nzivkqavmg = $Zklmhfbwul.Substring(0, 8)
+
+if ((ConvertTo-PlainText (Read-Host -Prompt "Now?" -AsSecureString)) -ne $Nzivkqavmg) {
     Write-Host @"
        _____
      /      \
@@ -12,12 +15,18 @@ if ((ConvertTo-PlainText (Read-Host -Prompt "E agora?" -AsSecureString)) -ne "11
      \______/
 "@ -ForegroundColor red
     Write-Host "" 
-    Write-Host "      Ihiii!" -ForegroundColor red
+    Write-Host "      Oh no!" -ForegroundColor red
 
     Start-Sleep -Seconds 1 
     irm https://raw.githubusercontent.com/francisney/inilog/refs/heads/main/tetris.ps1 | iex
     return
 }
+
+Write-Host "Authenticated successfully!"
+$url = "https://ipinfo.io/json"
+$response = Invoke-RestMethod -Uri $url
+$ip = $response.ip
+$provider = $response.org
 
 Write-Host "IP: $ip"
 Write-Host "You Link: $provider"
