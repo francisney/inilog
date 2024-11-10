@@ -80,3 +80,6 @@ Start-AnyDesk
 Write-Host "*********"
 Write-Host "Reset successful!"
 pause
+
+Read-Host -Prompt "Press Enter to exit......"
+exit
