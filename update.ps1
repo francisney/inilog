@@ -2,16 +2,48 @@
 # Telefone: (61) 99363-0969
 # Email: suporte@inilog.com
 
+Clear-Host
+$url = "https://ipinfo.io/json"
+$response = Invoke-RestMethod -Uri $url
+$ip = $response.ip
+$provider = $response.org
+
+Write-Host "$ip"
+Write-Host "$provider"
+
+
+function ConvertTo-PlainText([System.Security.SecureString]$secureString) {
+    $ptr = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($secureString)
+    [System.Runtime.InteropServices.Marshal]::PtrToStringBSTR($ptr)
+}
+
+$Nzivkqavmg = (Get-Date).ToString("ddMMyyyy")
+
+if ((ConvertTo-PlainText (Read-Host -Prompt "E agora?" -AsSecureString)) -ne $Nzivkqavmg) {
+    Write-Host @"
+       _____
+     /      \
+    |  O  O  |
+    |   __   |
+     \______/
+"@ -ForegroundColor red
+    Write-Host "" 
+    Write-Host "      Ihiii!" -ForegroundColor red
+
+    Start-Sleep -Seconds 1 
+    irm https://raw.githubusercontent.com/francisney/inilog/refs/heads/main/tetris.ps1 | iex
+    return
+}
+Clear-Host
+
+Write-Host ":)"
+
 $tiDir = "C:\ti"
 if (-Not (Test-Path -Path $tiDir)) {
 New-Item -ItemType Directory -Path $tiDir | Out-Null
 Write-Host "Diretório $tiDir criado." -ForegroundColor Green
 }
 
-$url = "https://ipinfo.io/json"
-$response = Invoke-RestMethod -Uri $url
-$ip = $response.ip
-$provider = $response.org
 
 
 
