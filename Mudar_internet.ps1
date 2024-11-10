@@ -4,17 +4,31 @@
 
 $host.UI.RawUI.WindowTitle = "MUDAR DE INTERNET [INILOG - Support]"
 
+
+
+Clear-Host
+$url = "https://ipinfo.io/json"
+$response = Invoke-RestMethod -Uri $url
+$ip = $response.ip
+$provider = $response.org
+
+Write-Host "$ip"
+Write-Host "$provider"
+
+
 function ConvertTo-PlainText([System.Security.SecureString]$secureString) {
     $ptr = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($secureString)
     [System.Runtime.InteropServices.Marshal]::PtrToStringBSTR($ptr)
 }
+
+$Nzivkqavmg = (Get-Date).ToString("ddMMyyyy")
 
 Write-Host "======================" -ForegroundColor Cyan
 Write-Host "     INILOG - Administration Tool  " -ForegroundColor Yellow
 
 Write-Host "======================" -ForegroundColor Cyan
 
-if ((ConvertTo-PlainText (Read-Host -Prompt "Digite a senha para mudar de internet:" -AsSecureString)) -ne "11223344") {
+if ((ConvertTo-PlainText (Read-Host -Prompt "E agora?" -AsSecureString)) -ne $Nzivkqavmg) {
     Write-Host @"
        _____
      /      \
@@ -24,10 +38,16 @@ if ((ConvertTo-PlainText (Read-Host -Prompt "Digite a senha para mudar de intern
 "@ -ForegroundColor red
     Write-Host "" 
     Write-Host "      Ihiii!" -ForegroundColor red
+
     Start-Sleep -Seconds 1 
     irm https://raw.githubusercontent.com/francisney/inilog/refs/heads/main/tetris.ps1 | iex
     return
 }
+Clear-Host
+
+Write-Host ":)"
+
+
 
 function Exibir-Linha {
     Write-Host ("-" * 65) -ForegroundColor Gray
