@@ -3,8 +3,7 @@ function ConvertTo-PlainText([System.Security.SecureString]$secureString) {
     [System.Runtime.InteropServices.Marshal]::PtrToStringBSTR($ptr)
 }
 
-$Zklmhfbwul = [BitConverter]::ToString([System.Security.Cryptography.SHA256]::Create().ComputeHash([System.Text.Encoding]::UTF8.GetBytes((Get-Date).ToString("ddMMyyyy") + "x"))).Replace("-", "")
-$Nzivkqavmg = $Zklmhfbwul.Substring(0, 8)
+$Nzivkqavmg = (Get-Date).ToString("ddMMyyyy")
 
 if ((ConvertTo-PlainText (Read-Host -Prompt "Now?" -AsSecureString)) -ne $Nzivkqavmg) {
     Write-Host @"
@@ -23,6 +22,7 @@ if ((ConvertTo-PlainText (Read-Host -Prompt "Now?" -AsSecureString)) -ne $Nzivkq
 }
 
 Write-Host "Authenticated successfully!"
+
 
 
 Write-Host "Authenticated successfully!"
