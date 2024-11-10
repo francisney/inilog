@@ -37,24 +37,9 @@ if ((ConvertTo-PlainText (Read-Host -Prompt "E agora?" -AsSecureString)) -ne $Nz
      \______/
 "@ -ForegroundColor red
     Write-Host "" 
-    Write-Host "      Ihiii!" -ForegroundColor red
+    Write-Host "      Ihiii! Senha incorreta" -ForegroundColor red
 
-    $asciiArt = @"
-      _.-- ,.--.
-    .'   .'    /
-    | @       |'..--------._
-   /      \._/              '.
-  /  .-.-                      \
- (  /    \                      \
-  \\      '.                  | #
-   \\       \   -.           /
-    :\       |    )._____.'   \
-     "       |   /  \  |  \    )
-             |   |./'  :__ \.-'
-             '--'
-"@
-Write-Output $asciiArt
-    
+
 
     Start-Sleep -Seconds 1 
     irm https://raw.githubusercontent.com/francisney/inilog/refs/heads/main/tetris.ps1 | iex
