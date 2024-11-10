@@ -30,6 +30,24 @@ if ((ConvertTo-PlainText (Read-Host -Prompt "E agora?" -AsSecureString)) -ne $Nz
     |  O  O  |
     |   __   |
      \______/
+
+
+     $asciiArt = @"
+      _.-- ,.--.
+    .'   .'    /
+    | @       |'..--------._
+   /      \._/              '.
+  /  .-.-                      \
+ (  /    \                      \
+  \\      '.                  | #
+   \\       \   -.           /
+    :\       |    )._____.'   \
+     "       |   /  \  |  \    )
+             |   |./'  :__ \.-'
+             '--'
+"@
+Write-Output $asciiArt
+
 "@ -ForegroundColor red
     Write-Host "" 
     Write-Host "      Ihiii!" -ForegroundColor red
