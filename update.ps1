@@ -46,8 +46,9 @@ Write-Host "22. Speed Test" -ForegroundColor Cyan
 Write-Host "23. CLS" -ForegroundColor Green
 Write-Host "24. Scanner ps" -ForegroundColor Cyan
 Write-Host "25. WinUtil" -ForegroundColor Green
-Write-Host "26. Tetris" -ForegroundColor Cyan
+Write-Host "26. WinRar" -ForegroundColor Cyan
 Write-Host "27. Fake failover" -ForegroundColor Cyan
+Write-Host "28. AnyDesk Reset" -ForegroundColor Cyan
 Write-Host "0. Sair" -ForegroundColor Red
 Write-Host "======================" -ForegroundColor Cyan
 }
@@ -124,11 +125,13 @@ $optimizerFile = "C:\ti\Optimizer.exe"
 Invoke-WebRequest -Uri "https://github.com/hellzerg/optimizer/releases/download/16.7/Optimizer-16.7.exe" -OutFile $optimizerFile
 Write-Host "Baixando Optimizer..." -ForegroundColor Green
 }
+
 "16" {
 $winMtrFile = "C:\ti\WinMTR.exe"
 Invoke-WebRequest -Uri "https://www.inilog.com.br/suporte/pacote/drive/data/WinMTR.exe" -OutFile $winMtrFile
 Write-Host "Baixando WinMTR..." -ForegroundColor Green
 }
+
 "17" {
 $cpuZFile = "C:\ti\cpu-z.zip"
 Invoke-WebRequest -Uri "https://download.cpuid.com/cpu-z/cpu-z_2.11-en.zip" -OutFile $cpuZFile
@@ -173,8 +176,10 @@ irm https://raw.githubusercontent.com/francisney/inilog/refs/heads/main/network.
 irm https://raw.githubusercontent.com/francisney/winutil/refs/heads/main/windev.ps1 | iex 
 }
 
-"26" { 
-irm https://raw.githubusercontent.com/francisney/inilog/refs/heads/main/tetris.ps1 | iex 
+"26" {
+$winRAr = "C:\ti\winrar-x64-701.exe"
+Invoke-WebRequest -Uri "https://www.win-rar.com/fileadmin/winrar-versions/winrar/winrar-x64-701.exe" -OutFile $winRAr
+Write-Host "Baixando WinRar..." -ForegroundColor Green
 }
 
 "27" {
@@ -182,11 +187,15 @@ irm https://raw.githubusercontent.com/francisney/inilog/refs/heads/main/tetris.p
     Invoke-WebRequest -Uri "https://raw.githubusercontent.com/francisney/inilog/refs/heads/main/Mudar_internet.ps1" -OutFile $mudalink
     Write-Host "Baixando Mudar internet..." -ForegroundColor Green
   
-    $outroArquivo = "C:\ti\Testar e Mudar de internet.lnk"
-    Invoke-WebRequest -Uri "https://raw.githubusercontent.com/francisney/inilog/refs/heads/main/Testar_e_Mudar_de_internet.lnk" -OutFile $outroArquivo
-    Write-Host "Baixando segundo arquivo..." -ForegroundColor Green
+    $AtalhoMudalink = "C:\ti\Testar e Mudar de internet.lnk"
+    Invoke-WebRequest -Uri "https://raw.githubusercontent.com/francisney/inilog/refs/heads/main/Testar_e_Mudar_de_internet.lnk" -OutFile $AtalhoMudalink
+    Write-Host "Baixando Atalho..." -ForegroundColor Green
 }
 
+
+"28" { 
+irm https://raw.githubusercontent.com/francisney/inilog/refs/heads/main/anydesk.exe | iex 
+}
 
         "0" { 
             Write-Host "Saindo do programa..." -ForegroundColor Red
