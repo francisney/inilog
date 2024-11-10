@@ -21,6 +21,7 @@ function Show-Menu {
     Write-Host -ForegroundColor Cyan "[9] Network NCPA.CPL"
     Write-Host -ForegroundColor Cyan "[10] Control Panel"
     Write-Host -ForegroundColor Cyan "[11] Printers"
+    Write-Host -ForegroundColor Cyan "[12] PasswordNeverExpires"
     Write-Host -ForegroundColor Cyan "[0] Exit"
 }
 
@@ -38,7 +39,8 @@ function Start-Tool {
         9 { Start-Process "ncpa.cpl" }
         10 { Start-Process "appwiz.cpl" }
         11 { Start-Process "control.exe" -ArgumentList "printers" }
-
+        12 { Get-LocalUser -Name ([System.Security.Principal.WindowsIdentity]::GetCurrent().Name.Split("\")[-1]) | Set-LocalUser -PasswordNeverExpires $true }
+        
         0 { exit }
         default { Write-Host "Invalid option, please try again." }
     }
