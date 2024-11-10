@@ -5,23 +5,18 @@ Write-Host "======================" -ForegroundColor Cyan
 function Show-Menu {
     Write-Host -ForegroundColor White "Choose an option:"
     
-    Write-Host -ForegroundColor Cyan "[1] Power Options" -NoNewline
-    Write-Host -ForegroundColor Cyan "      [2] Computer Name"
-    
-    Write-Host -ForegroundColor Cyan "[3] Advanced Sharing" -NoNewline
-    Write-Host -ForegroundColor Cyan "      [4] Device Manager"
-    
-    Write-Host -ForegroundColor Cyan "[5] User Accounts" -NoNewline
-    Write-Host -ForegroundColor Cyan "      [6] System"
-    
-    Write-Host -ForegroundColor Cyan "[7] Task Manager" -NoNewline
-    Write-Host -ForegroundColor Cyan "       [8] Registry Editor"
-    
-    Write-Host -ForegroundColor Cyan "[9] Network Information" -NoNewline
-    Write-Host -ForegroundColor Cyan "  [10] Control Panel"
-    
-    Write-Host -ForegroundColor Cyan "[11] Printers" -NoNewline
-    Write-Host -ForegroundColor Cyan "      [0] Exit"
+    Write-Host -ForegroundColor Cyan "[1] Power Options"
+    Write-Host -ForegroundColor Cyan "[2] Computer Name"
+    Write-Host -ForegroundColor Cyan "[3] Advanced Sharing"
+    Write-Host -ForegroundColor Cyan "[4] Device Manager"
+    Write-Host -ForegroundColor Cyan "[5] User Accounts"
+    Write-Host -ForegroundColor Cyan "[6] System"
+    Write-Host -ForegroundColor Cyan "[7] Task Manager"
+    Write-Host -ForegroundColor Cyan "[8] Registry Editor"
+    Write-Host -ForegroundColor Cyan "[9] Network Information"
+    Write-Host -ForegroundColor Cyan "[10] Control Panel"
+    Write-Host -ForegroundColor Cyan "[11] Printers"
+    Write-Host -ForegroundColor Cyan "[0] Exit"
 }
 
 function Start-Tool {
