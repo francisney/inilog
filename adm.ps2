@@ -1,6 +1,5 @@
 Write-Host "======================" -ForegroundColor Cyan
 Write-Host "     INILOG - Administration Tool  " -ForegroundColor Yellow
-
 Write-Host "======================" -ForegroundColor Cyan
 
 function Show-Menu {
@@ -25,17 +24,6 @@ function Show-Menu {
     Write-Host -ForegroundColor Cyan "      [0] Exit"
 }
 
-while ($true) {
-    Show-Menu
-    $option = Read-Host "Enter option number"
-    
-    if ($option -eq '0') {
-        break
-    } else {
-        Write-Host "You selected option $option" -ForegroundColor Green
-    }
-}
-
 function Start-Tool {
     param ($choice)
     switch ($choice) {
@@ -58,5 +46,13 @@ function Start-Tool {
 while ($true) {
     Show-Menu
     $choice = Read-Host "Enter option number"
-    Start-Tool -choice $choice
+    
+    if ($choice -eq '0') {
+        exit
+    } else {
+        Start-Tool -choice $choice
+    }
+    
+    # Optional: Wait for a key press before showing the menu again
+    Read-Host "Press Enter to continue..."
 }
