@@ -1,3 +1,8 @@
+# Francisney Delmondes
+# Telefone: (61) 99363-0969
+# Email: suporte@inilog.com
+
+Clear-Host
 Write-Host "======================" -ForegroundColor Cyan
 Write-Host "     INILOG - Administration Tool  " -ForegroundColor Yellow
 Write-Host "======================" -ForegroundColor Cyan
