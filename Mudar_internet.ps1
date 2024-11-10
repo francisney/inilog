@@ -159,5 +159,6 @@ Write-Host "Link atual: $provider"
     default {
         Write-Host "Opção invalida. Por favor, tente novamente." -ForegroundColor DarkRed
         Read-Host "Pressione [Enter] para continuar"
+        exit
     }
 }
