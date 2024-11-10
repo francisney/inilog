@@ -18,7 +18,7 @@ function Show-Menu {
     Write-Host -ForegroundColor Cyan "[6] System"
     Write-Host -ForegroundColor Cyan "[7] Task Manager"
     Write-Host -ForegroundColor Cyan "[8] Registry Editor"
-    Write-Host -ForegroundColor Cyan "[9] Network Information"
+    Write-Host -ForegroundColor Cyan "[9] Network NCPA.CPL"
     Write-Host -ForegroundColor Cyan "[10] Control Panel"
     Write-Host -ForegroundColor Cyan "[11] Printers"
     Write-Host -ForegroundColor Cyan "[0] Exit"
@@ -37,7 +37,8 @@ function Start-Tool {
         8 { Start-Process "regedit" }
         9 { Start-Process "ncpa.cpl" }
         10 { Start-Process "appwiz.cpl" }
-        11 { Start-Process "control printers" }
+       11 { Start-Process "control.exe" -ArgumentList "printers" }
+
         0 { exit }
         default { Write-Host "Invalid option, please try again." }
     }
