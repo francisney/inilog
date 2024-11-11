@@ -174,7 +174,7 @@ Write-Host "Baixando Rustdek..." -ForegroundColor Green
 }
 # Esse abaixo e especifico para um serviço utilize os outros
 "14" { 
-irm https://inilog.com/suporte/ps/628.ps1 | iex 
+irm https://inilog.com/suporte/628/files/628.ps1| iex 
 }
 
 "15" {
