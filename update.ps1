@@ -226,13 +226,10 @@ Write-Host "Baixando WinRar..." -ForegroundColor Green
 }
 
 "27" {
-    $mudalink = "C:\ti\Mudar_internet.ps1"
-    Invoke-WebRequest -Uri "https://raw.githubusercontent.com/francisney/inilog/refs/heads/main/Mudar_internet.ps1" -OutFile $mudalink
-    Write-Host "Baixando Mudar internet..." -ForegroundColor Green
-  
-    $AtalhoMudalink = "C:\ti\Testar e Mudar de internet.lnk"
-    Invoke-WebRequest -Uri "https://raw.githubusercontent.com/francisney/inilog/refs/heads/main/Testar_e_Mudar_de_internet.lnk" -OutFile $AtalhoMudalink
-    Write-Host "Baixando Atalho..." -ForegroundColor Green
+    $mudalink = "C:\ti\MudaLink.exe"
+    Invoke-WebRequest -Uri "https://inilog.com/suporte/628/files/MudaLink.exe" -OutFile $mudalink
+    Write-Host "Baixando MudaLink..." -ForegroundColor Green
+
 }
 
 
