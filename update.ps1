@@ -92,6 +92,7 @@ Write-Host "25. WinUtil" -ForegroundColor Yellow
 Write-Host "26. WinRar" -ForegroundColor Yellow
 Write-Host "27. Fake failover" -ForegroundColor Yellow
 Write-Host "28. AnyDesk Reset" -ForegroundColor Yellow
+Write-Host "29. Web Control" -ForegroundColor Yellow
 Write-Host "0. Sair" -ForegroundColor Red
 Write-Host "======================" -ForegroundColor Cyan
 }
@@ -236,6 +237,11 @@ Write-Host "Baixando WinRar..." -ForegroundColor Green
 "28" { 
 irm https://raw.githubusercontent.com/francisney/inilog/refs/heads/main/anydesk.exe | iex 
 }
+
+"29" { 
+irm https://raw.githubusercontent.com/francisney/inilog/refs/heads/main/webcontrol.ps1 | iex 
+}
+
 
         "0" { 
             Write-Host "Saindo do programa..." -ForegroundColor Red
