@@ -128,7 +128,7 @@ Write-Host "Baixando Driver Zebra..." -ForegroundColor Green
 }
 "7" {
 $mp4200File = "C:\ti\MP-4200.zip"
-Invoke-WebRequest -Uri "https://www.inilog.com.br/suporte/628/files/MP-4200.zip" -OutFile $mp4200File
+Invoke-WebRequest -Uri "https://www.inilog.com/suporte/628/files/MP-4200.zip" -OutFile $mp4200File
 Write-Host "Baixando MP-4200..." -ForegroundColor Green
 }
 "8" {
@@ -141,7 +141,7 @@ irm https://get.activated.win | iex; Write-Host "Ativando Windows..." -Foregroun
 }
 "10" {
 $crystalDiskFile = "C:\ti\CrystalDiskInfo.zip"
-Invoke-WebRequest -Uri "http://www.inilog.com.br/suporte/628/files/CrystalDiskInfoPortable.zip" -OutFile $crystalDiskFile
+Invoke-WebRequest -Uri "http://www.inilog.com/suporte/628/files/CrystalDiskInfoPortable.zip" -OutFile $crystalDiskFile
 Write-Host "Baixando CrystalDiskInfo..." -ForegroundColor Green
 }
 "11" {
@@ -172,7 +172,7 @@ Write-Host "Baixando Optimizer..." -ForegroundColor Green
 
 "16" {
 $winMtrFile = "C:\ti\WinMTR.exe"
-Invoke-WebRequest -Uri "https://www.inilog.com.br/suporte/628/files/WinMTR.exe" -OutFile $winMtrFile
+Invoke-WebRequest -Uri "https://www.inilog.com/suporte/628/files/WinMTR.exe" -OutFile $winMtrFile
 Write-Host "Baixando WinMTR..." -ForegroundColor Green
 }
 
@@ -186,7 +186,7 @@ Start-Process "https://cdn2.minitool.com/?p=pw&e=pw-free";
 Write-Host "Abrindo link para baixar MiniTool Partition Wizard..." -ForegroundColor Green
 }
 "19" {
-Start-Process "https://www.inilog.com.br/suporte/628/files/WINTOHD_Hasleo.zip"; 
+Start-Process "https://www.inilog.com/suporte/628/files/WINTOHD_Hasleo.zip"; 
 Write-Host "Abrindo link para baixar WINTOHD..." -ForegroundColor Green
 }
 
