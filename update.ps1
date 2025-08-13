@@ -93,6 +93,7 @@ Write-Host "26. WinRar" -ForegroundColor Yellow
 Write-Host "27. Fake failover" -ForegroundColor Yellow
 Write-Host "28. AnyDesk Reset" -ForegroundColor Yellow
 Write-Host "29. Web Control" -ForegroundColor Yellow
+Write-Host "30. HWiNFO64" -ForegroundColor Yellow
 Write-Host "0. Sair" -ForegroundColor Red
 Write-Host "======================" -ForegroundColor Cyan
 }
@@ -240,6 +241,11 @@ irm https://raw.githubusercontent.com/francisney/inilog/refs/heads/main/anydesk.
 
 "29" { 
 irm https://raw.githubusercontent.com/francisney/inilog/refs/heads/main/webcontrol.ps1 | iex 
+}
+"30" { 
+    $mudalink = "C:\ti\HWiNFO64.exe"
+    Invoke-WebRequest -Uri "https://raw.githubusercontent.com/francisney/inilog/refs/heads/main/HWiNFO64.exe" -OutFile $mudalink
+    Write-Host "Baixando HWiNFO64..." -ForegroundColor Green
 }
 
 
