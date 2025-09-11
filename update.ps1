@@ -94,6 +94,7 @@ Write-Host "27. Fake failover" -ForegroundColor Yellow
 Write-Host "28. AnyDesk Reset" -ForegroundColor Yellow
 Write-Host "29. Web Control" -ForegroundColor Yellow
 Write-Host "30. HWiNFO64" -ForegroundColor Yellow
+Write-Host "31. Snappy-Driver" -ForegroundColor Yellow
 Write-Host "0. Sair" -ForegroundColor Red
 Write-Host "======================" -ForegroundColor Cyan
 }
@@ -247,6 +248,9 @@ irm https://raw.githubusercontent.com/francisney/inilog/refs/heads/main/webcontr
     Invoke-WebRequest -Uri "https://raw.githubusercontent.com/francisney/inilog/refs/heads/main/HWiNFO64.exe" -OutFile $mudalink
     Write-Host "Baixando HWiNFO64..." -ForegroundColor Green
 }
+
+"31" { Start-Process "https://www.glenn.delahoy.com/snappy-driver-installer-origin/"; Write-Host "Abrindo link para baixar o Office..." -ForegroundColor Green }
+
 
 
         "0" { 
