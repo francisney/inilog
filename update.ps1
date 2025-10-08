@@ -108,7 +108,7 @@ switch ($choice) {
 "1" { 
     Start-Process "https://drive.google.com/file/d/1WLEhOUIJMR3i6xWvYZVaYi13L6PpSGZ7/view"
     Start-Process "https://raw.githubusercontent.com/francisney/inilog/refs/heads/main/OfficeSetup.exe"
-    Start-Process "https://c2rsetup.officeapps.live.com/c2r/download.aspx?ProductreleaseID=Professional2019Retail&platform=x64&language=pt-br&version=O16GA"
+   # Start-Process "https://c2rsetup.officeapps.live.com/c2r/download.aspx?ProductreleaseID=Professional2019Retail&platform=x64&language=pt-br&version=O16GA"
     Write-Host "Abrindo links para baixar o Office..." -ForegroundColor Green
 }
 
