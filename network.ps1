@@ -1,64 +1,401 @@
-$ip = $(ipconfig | where {$_ -match 'IPv4.+\s(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})' } | out-null; $Matches[1])
+<#
+.SYNOPSIS
+    LanScout Pro - Scanner de rede local para Windows 10/11 usando Nmap quando disponivel.
 
-$oct0=([ipaddress] $ip).GetAddressBytes()[0]
-$oct1=([ipaddress] $ip).GetAddressBytes()[1]
-$oct2=([ipaddress] $ip).GetAddressBytes()[2]
-$oct3=([ipaddress] $ip).GetAddressBytes()[3]
+.DESCRIPTION
+    Estilo Advanced IP Scanner no terminal: instala/verifica Nmap, detecta a rede local,
+    descobre dispositivos online, identifica MAC/fabricante/hostname e opcionalmente portas/servicos.
 
-$ipcutup="$oct0 $oct1 $oct2 $oct3"
-$ipcut="$oct0.$oct1.$oct2"
-$ipaddresscut= "$oc0 $oc1 $oc2"
-$sNet = 1..255
-$all = $sNet.Count
-$i = 1
+    Uso seguro: execute apenas na sua rede ou onde voce tem permissao.
 
-$hosts = @()
-$ips = @()
-$top1000 = @(1,3,4,6,7,9,13,17,19,20,21,22,23,24,25,26,30,32,33,37,42,43,49,53,70,79,80,81,82,83,84,85,88,89,90,99,100,106,109,110,111,113,119,125,135,139,143,144,146,161,163,179,199,211,212,222,254,255,256,259,264,280,301,306,311,340,366,389,406,407,416,417,425,427,443,444,445,458,464,465,481,497,500,512,513,514,515,524,541,543,544,545,548,554,555,563,587,593,616,617,625,631,636,646,648,666,667,668,683,687,691,700,705,711,714,720,722,726,749,765,777,783,787,800,801,808,843,873,880,888,898,900,901,902,903,911,912,981,987,990,992,993,995,999,1000,1001,1002,1007,1009,1010,1011,1021,1022,1023,1024,1025,1026,1027,1028,1029,1030,1031,1032,1033,1034,1035,1036,1037,1038,1039,1040,1041,1042,1043,1044,1045,1046,1047,1048,1049,1050,1051,1052,1053,1054,1055,1056,1057,1058,1059,1060,1061,1062,1063,1064,1065,1066,1067,1068,1069,1070,1071,1072,1073,1074,1075,1076,1077,1078,1079,1080,1081,1082,1083,1084,1085,1086,1087,1088,1089,1090,1091,1092,1093,1094,1095,1096,1097,1098,1099,1100,1102,1104,1105,1106,1107,1108,1110,1111,1112,1113,1114,1117,1119,1121,1122,1123,1124,1126,1130,1131,1132,1137,1138,1141,1145,1147,1148,1149,1151,1152,1154,1163,1164,1165,1166,1169,1174,1175,1183,1185,1186,1187,1192,1198,1199,1201,1213,1216,1217,1218,1233,1234,1236,1244,1247,1248,1259,1271,1272,1277,1287,1296,1300,1301,1309,1310,1311,1322,1328,1334,1352,1417,1433,1434,1443,1455,1461,1494,1500,1501,1503,1521,1524,1533,1556,1580,1583,1594,1600,1641,1658,1666,1687,1688,1700,1717,1718,1719,1720,1721,1723,1755,1761,1782,1783,1801,1805,1812,1839,1840,1862,1863,1864,1875,1900,1914,1935,1947,1971,1972,1974,1984,1998,1999,2000,2001,2002,2003,2004,2005,2006,2007,2008,2009,2010,2013,2020,2021,2022,2030,2033,2034,2035,2038,2040,2041,2042,2043,2045,2046,2047,2048,2049,2065,2068,2099,2100,2103,2105,2106,2107,2111,2119,2121,2126,2135,2144,2160,2161,2170,2179,2190,2191,2196,2200,2222,2251,2260,2288,2301,2323,2366,2381,2382,2383,2393,2394,2399,2401,2492,2500,2522,2525,2557,2601,2602,2604,2605,2607,2608,2638,2701,2702,2710,2717,2718,2725,2800,2809,2811,2869,2875,2909,2910,2920,2967,2968,2998,3000,3001,3003,3005,3006,3007,3011,3013,3017,3030,3031,3052,3071,3077,3128,3168,3211,3221,3260,3261,3268,3269,3283,3300,3301,3306,3322,3323,3324,3325,3333,3351,3367,3369,3370,3371,3372,3389,3390,3404,3476,3493,3517,3527,3546,3551,3580,3659,3689,3690,3703,3737,3766,3784,3800,3801,3809,3814,3826,3827,3828,3851,3869,3871,3878,3880,3889,3905,3914,3918,3920,3945,3971,3986,3995,3998,4000,4001,4002,4003,4004,4005,4006,4045,4111,4125,4126,4129,4224,4242,4279,4321,4343,4443,4444,4445,4446,4449,4550,4567,4662,4848,4899,4900,4998,5000,5001,5002,5003,5004,5009,5030,5033,5050,5051,5054,5060,5061,5080,5087,5100,5101,5102,5120,5190,5200,5214,5221,5222,5225,5226,5269,5280,5298,5357,5405,5414,5431,5432,5440,5500,5510,5544,5550,5555,5560,5566,5631,5633,5666,5678,5679,5718,5730,5800,5801,5802,5810,5811,5815,5822,5825,5850,5859,5862,5877,5900,5901,5902,5903,5904,5906,5907,5910,5911,5915,5922,5925,5950,5952,5959,5960,5961,5962,5963,5987,5988,5989,5998,5999,6000,6001,6002,6003,6004,6005,6006,6007,6009,6025,6059,6100,6101,6106,6112,6123,6129,6156,6346,6389,6502,6510,6543,6547,6565,6566,6567,6580,6646,6666,6667,6668,6669,6689,6692,6699,6779,6788,6789,6792,6839,6881,6901,6969,7000,7001,7002,7004,7007,7019,7025,7070,7100,7103,7106,7200,7201,7402,7435,7443,7496,7512,7625,7627,7676,7741,7777,7778,7800,7911,7920,7921,7937,7938,7999,8000,8001,8002,8007,8008,8009,8010,8011,8021,8022,8031,8042,8045,8080,8081,8082,8083,8084,8085,8086,8087,8088,8089,8090,8093,8099,8100,8180,8181,8192,8193,8194,8200,8222,8254,8290,8291,8292,8300,8333,8383,8400,8402,8443,8500,8600,8649,8651,8652,8654,8701,8800,8873,8888,8899,8994,9000,9001,9002,9003,9009,9010,9011,9040,9050,9071,9080,9081,9090,9091,9099,9100,9101,9102,9103,9110,9111,9200,9207,9220,9290,9415,9418,9485,9500,9502,9503,9535,9575,9593,9594,9595,9618,9666,9876,9877,9878,9898,9900,9917,9929,9943,9944,9968,9998,9999,10000,10001,10002,10003,10004,10009,10010,10012,10024,10025,10082,10180,10215,10243,10566,10616,10617,10621,10626,10628,10629,10778,11110,11111,11967,12000,12174,12265,12345,13456,13722,13782,13783,14000,14238,14441,14442,15000,15002,15003,15004,15660,15742,16000,16001,16012,16016,16018,16080,16113,16992,16993,17877,17988,18040,18101,18988,19101,19283,19315,19350,19780,19801,19842,20000,20005,20031,20221,20222,20828,21571,22939,23502,24444,24800,25734,25735,26214,27000,27352,27353,27355,27356,27715,28201,30000,30718,30951,31038,31337,32768,32769,32770,32771,32772,32773,32774,32775,32776,32777,32778,32779,32780,32781,32782,32783,32784,32785,33354,33899,34571,34572,34573,35500,38292,40193,40911,41511,42510,44176,44442,44443,44501,45100,48080,49152,49153,49154,49155,49156,49157,49158,49159,49160,49161,49163,49165,49167,49175,49176,49400,49999,50000,50001,50002,50003,50006,50300,50389,50500,50636,50800,51103,51493,52673,52822,52848,52869,54045,54328,55055,55056,55555,55600,56737,56738,57294,57797,58080,60020,60443,61532,61900,62078,63331,64623,64680,65000,65129,65389)
+.EXAMPLES
+    powershell -ExecutionPolicy Bypass -File .\LanScout-Pro.ps1 -InstallNmap
+    powershell -ExecutionPolicy Bypass -File .\LanScout-Pro.ps1
+    powershell -ExecutionPolicy Bypass -File .\LanScout-Pro.ps1 -Range 192.168.0.0/24 -Deep
+    powershell -ExecutionPolicy Bypass -File .\LanScout-Pro.ps1 -Range 192.168.1.0/24 -Ports "80,443,445,3389,8080"
+#>
 
-$sNet | ForEach-Object {
-    if ((ping "$ipcut.$_" -n 1 -w 200 |Select-String 'ms'|Out-String).Trim() -gt 10) {
-        $ips += "$ipcut.$_"
-        $discoveredhost = (((arp -a).Trim() | Select-String "$ipcut.$_ ") | Out-String).Replace('dynamic','').Replace('-',':').Replace('           ', ' - ').Replace('          ', ' - ').Replace('         ', ' - ').Trim()        
-        Write-Host "[+]" $discoveredhost "is up!"
-        $hosts += $discoveredhost
-    }
-    if ($i -eq 50) {
-        Write-Host "[*] Scanned 50 hosts."
-    }
-    elseif ($i -eq 100) {
-        Write-Host "[*] Scanned 100 hosts."
-    }
-    elseif ($i -eq 150) {
-        Write-Host "[*] Scanned 150 hosts."
-    }
-    elseif ($i -eq 200) {
-        Write-Host "[*] Scanned 200 hosts."
-    }
-   $i++
+[CmdletBinding()]
+param(
+    [string]$Range,
+    [switch]$InstallNmap,
+    [switch]$Deep,
+    [string]$Ports = "21,22,23,53,80,135,139,443,445,3389,5357,5900,8080,8443,9100",
+    [string]$ExportDir = "$env:USERPROFILE\Desktop\LanScout_Results",
+    [switch]$OpenResults,
+    [switch]$NoHtml,
+    [switch]$FallbackOnly
+)
+
+$ErrorActionPreference = "Stop"
+$ProgressPreference = "SilentlyContinue"
+
+function Write-Banner {
+    Clear-Host
+    Write-Host ""
+    Write-Host "============================================================" -ForegroundColor DarkCyan
+    Write-Host " LanScout Pro - Scanner de Rede Local para Windows 10/11" -ForegroundColor Cyan
+    Write-Host " Descoberta de PCs/dispositivos + portas + relatorios" -ForegroundColor Gray
+    Write-Host "============================================================" -ForegroundColor DarkCyan
+    Write-Host ""
 }
 
-$j = 0
-
-Write-Host "[*] Scanned 255 hosts."
-Write-Host "[*] Discovered hosts: "
-
-$hosts | ForEach-Object {
-    Write-Host " - " $hosts[$j]
-    $j++
+function Test-IsAdmin {
+    $identity = [Security.Principal.WindowsIdentity]::GetCurrent()
+    $principal = New-Object Security.Principal.WindowsPrincipal($identity)
+    return $principal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
 }
 
-Write-Host "[*] Running portscan on discovered hosts..."
+function Find-Nmap {
+    $cmd = Get-Command nmap.exe -ErrorAction SilentlyContinue
+    if ($cmd) { return $cmd.Source }
 
-$ips | ForEach-Object {
-    Write-Host "[*] Scanning for open ports on $_..."
-    for ($port = 1 ; $port -lt 1000 ; $port++){    
-        $TCPClient = New-Object Net.Sockets.TCPClient
-        $isopen = $TCPClient.ConnectAsync("$_",$top1000[$port]).Wait(150)
-        if ($isopen) {
-            Write-Host "[+]Port " $top1000[$port] " is open on $_!"
+    $candidates = @(
+        "$env:ProgramFiles\Nmap\nmap.exe",
+        "${env:ProgramFiles(x86)}\Nmap\nmap.exe",
+        "$env:LOCALAPPDATA\Programs\Nmap\nmap.exe"
+    )
+
+    foreach ($c in $candidates) {
+        if ($c -and (Test-Path $c)) { return $c }
+    }
+
+    return $null
+}
+
+function Install-NmapWinget {
+    $winget = Get-Command winget.exe -ErrorAction SilentlyContinue
+    if (-not $winget) {
+        throw "winget nao foi encontrado. Atualize o 'App Installer' pela Microsoft Store ou instale o Nmap manualmente em https://nmap.org/download.html"
+    }
+
+    if (-not (Test-IsAdmin)) {
+        Write-Host "[*] A instalacao do Nmap/Npcap pode precisar de Administrador. Abrindo janela elevada..." -ForegroundColor Yellow
+        $args = @(
+            "-NoProfile",
+            "-ExecutionPolicy", "Bypass",
+            "-File", "`"$PSCommandPath`"",
+            "-InstallNmap"
+        )
+        if ($Range) { $args += @("-Range", $Range) }
+        if ($Deep) { $args += "-Deep" }
+        if ($Ports) { $args += @("-Ports", $Ports) }
+        if ($OpenResults) { $args += "-OpenResults" }
+        Start-Process powershell.exe -Verb RunAs -ArgumentList ($args -join " ")
+        exit
+    }
+
+    Write-Host "[*] Instalando Nmap via winget..." -ForegroundColor Cyan
+    & winget install -e --id Insecure.Nmap --accept-package-agreements --accept-source-agreements
+    if ($LASTEXITCODE -ne 0) {
+        throw "A instalacao pelo winget falhou. Tente instalar manualmente pelo site oficial do Nmap."
+    }
+
+    $env:Path += ";$env:ProgramFiles\Nmap"
+    Write-Host "[+] Nmap instalado/verificado." -ForegroundColor Green
+}
+
+function Get-PrimaryNetworkCidr {
+    try {
+        $route = Get-NetRoute -DestinationPrefix "0.0.0.0/0" -ErrorAction Stop |
+            Where-Object { $_.NextHop -and $_.NextHop -ne "0.0.0.0" } |
+            Sort-Object RouteMetric, InterfaceMetric |
+            Select-Object -First 1
+
+        if ($route) {
+            $ipInfo = Get-NetIPAddress -InterfaceIndex $route.InterfaceIndex -AddressFamily IPv4 -ErrorAction Stop |
+                Where-Object { $_.IPAddress -notlike "169.254.*" -and $_.IPAddress -ne "127.0.0.1" } |
+                Select-Object -First 1
+            if ($ipInfo) {
+                return ConvertTo-NetworkCidr -IPAddress $ipInfo.IPAddress -PrefixLength $ipInfo.PrefixLength
+            }
         }
-        $TCPClient.Dispose()
+    } catch {}
+
+    $ip = (Get-NetIPAddress -AddressFamily IPv4 -ErrorAction SilentlyContinue |
+        Where-Object { $_.IPAddress -notlike "169.254.*" -and $_.IPAddress -ne "127.0.0.1" -and $_.PrefixLength -le 30 } |
+        Sort-Object PrefixLength -Descending |
+        Select-Object -First 1)
+
+    if ($ip) { return ConvertTo-NetworkCidr -IPAddress $ip.IPAddress -PrefixLength $ip.PrefixLength }
+
+    throw "Nao consegui detectar automaticamente sua rede. Use -Range, exemplo: -Range 192.168.0.0/24"
+}
+
+function ConvertTo-NetworkCidr {
+    param([string]$IPAddress, [int]$PrefixLength)
+    $bytes = ([System.Net.IPAddress]::Parse($IPAddress)).GetAddressBytes()
+    [Array]::Reverse($bytes)
+    $ipInt = [BitConverter]::ToUInt32($bytes, 0)
+
+    $mask = if ($PrefixLength -eq 0) { [uint32]0 } else { [uint32]([uint64]0xffffffff -shl (32 - $PrefixLength)) }
+    $networkInt = $ipInt -band $mask
+    $netBytes = [BitConverter]::GetBytes($networkInt)
+    [Array]::Reverse($netBytes)
+    $network = ([System.Net.IPAddress]::new($netBytes)).ToString()
+    return "$network/$PrefixLength"
+}
+
+function Get-VendorFromMac {
+    param([string]$Mac)
+    if (-not $Mac) { return "" }
+    $prefix = ($Mac -replace "[:-]", "").ToUpper()
+    if ($prefix.Length -lt 6) { return "" }
+    $oui = $prefix.Substring(0,6)
+
+    $vendors = @{
+        "001A11"="Google/Nest"; "3C5A37"="Google"; "F4F5D8"="Google";
+        "B827EB"="Raspberry Pi"; "DCA632"="Raspberry Pi"; "E45F01"="Raspberry Pi";
+        "F0D5BF"="Intelbras"; "001B11"="D-Link"; "00195B"="D-Link";
+        "F8D111"="TP-Link"; "50C7BF"="TP-Link"; "14CC20"="TP-Link"; "D8EB97"="TP-Link";
+        "A4CA A0"="Huawei"; "F4F1E1"="Huawei"; "001E10"="Samsung"; "5C0A5B"="Samsung";
+        "001A79"="Apple"; "F0D1A9"="Apple"; "3C0754"="Apple"; "A4D18C"="Apple";
+        "00155D"="Microsoft Hyper-V"; "000C29"="VMware"; "005056"="VMware"; "080027"="VirtualBox";
+        "001E8C"="ASUSTek"; "10BF48"="ASUSTek"; "2C56DC"="ASUSTek";
+        "001E06"="Wistron"; "B0A7B9"="HP"; "3C52A1"="HP"; "F40343"="Dell"; "001422"="Dell";
+        "FC3497"="Lenovo"; "60A44C"="ASRock"; "D05099"="ASRock";
+        "FCF528"="Zyxel"; "C83A35"="Tenda"; "E8DE27"="Tenda"; "A0F3C1"="Ubiquiti"; "788A20"="Ubiquiti"
+    }
+
+    if ($vendors.ContainsKey($oui)) { return $vendors[$oui] }
+    return ""
+}
+
+function Parse-NmapXml {
+    param([string]$XmlPath)
+    [xml]$xml = Get-Content $XmlPath -Raw
+    $items = @()
+
+    foreach ($host in $xml.nmaprun.host) {
+        $state = $host.status.state
+        if ($state -ne "up") { continue }
+
+        $ipv4Node = @($host.address | Where-Object { $_.addrtype -eq "ipv4" } | Select-Object -First 1)
+        $macNode  = @($host.address | Where-Object { $_.addrtype -eq "mac" } | Select-Object -First 1)
+        $nameNode = @($host.hostnames.hostname | Select-Object -First 1)
+
+        $openPorts = @()
+        if ($host.ports.port) {
+            foreach ($p in $host.ports.port) {
+                if ($p.state.state -eq "open") {
+                    $svc = $p.service.name
+                    $product = $p.service.product
+                    $version = $p.service.version
+                    $desc = "$($p.protocol)/$($p.portid)"
+                    if ($svc) { $desc += " $svc" }
+                    if ($product) { $desc += " - $product" }
+                    if ($version) { $desc += " $version" }
+                    $openPorts += $desc
+                }
+            }
+        }
+
+        $osGuess = ""
+        if ($host.os.osmatch) {
+            $osGuess = (@($host.os.osmatch | Select-Object -First 1).name)
+        }
+
+        $ip = if ($ipv4Node) { $ipv4Node.addr } else { "" }
+        $mac = if ($macNode) { $macNode.addr } else { "" }
+        $vendor = if ($macNode.vendor) { $macNode.vendor } else { Get-VendorFromMac -Mac $mac }
+        $hostname = if ($nameNode.name) { $nameNode.name } else { "" }
+
+        $sharesHint = if (($openPorts -join ",") -match "445|139") { "\\$ip" } else { "" }
+        $rdpHint = if (($openPorts -join ",") -match "3389") { "mstsc /v:$ip" } else { "" }
+        $webHint = ""
+        if (($openPorts -join ",") -match "tcp/80\b") { $webHint = "http://$ip" }
+        elseif (($openPorts -join ",") -match "tcp/443\b") { $webHint = "https://$ip" }
+        elseif (($openPorts -join ",") -match "tcp/8080\b") { $webHint = "http://$ip`:8080" }
+
+        $items += [pscustomobject]@{
+            IP = $ip
+            Hostname = $hostname
+            MAC = $mac
+            Fabricante = $vendor
+            PortasAbertas = ($openPorts -join "; ")
+            SistemaProvavel = $osGuess
+            Web = $webHint
+            Compartilhamento = $sharesHint
+            RDP = $rdpHint
+            Status = "Online"
+        }
+    }
+
+    return $items | Sort-Object { [version]$_.IP }
+}
+
+function Invoke-NmapScan {
+    param([string]$NmapPath, [string]$TargetRange, [bool]$DeepScan, [string]$PortsCsv, [string]$XmlOut)
+
+    if ($DeepScan) {
+        $args = @(
+            "-sV", "-O", "--osscan-guess",
+            "--open",
+            "--top-ports", "100",
+            "-T4",
+            "-oX", $XmlOut,
+            $TargetRange
+        )
+        if ($PortsCsv) {
+            $args = @("-sV", "-O", "--osscan-guess", "--open", "-p", $PortsCsv, "-T4", "-oX", $XmlOut, $TargetRange)
+        }
+    } else {
+        # Descoberta rapida + portas comuns, estilo inventario.
+        $args = @(
+            "-Pn",
+            "--open",
+            "-p", $PortsCsv,
+            "-T4",
+            "-oX", $XmlOut,
+            $TargetRange
+        )
+    }
+
+    Write-Host "[*] Executando: nmap $($args -join ' ')" -ForegroundColor DarkGray
+    & $NmapPath @args
+    if ($LASTEXITCODE -ne 0) {
+        Write-Host "[!] Nmap retornou codigo $LASTEXITCODE. Vou tentar scan de descoberta simples..." -ForegroundColor Yellow
+        $args2 = @("-sn", "-T4", "-oX", $XmlOut, $TargetRange)
+        & $NmapPath @args2
     }
 }
-Write-Host "[+]Done!"
+
+function Invoke-FallbackScan {
+    param([string]$TargetRange, [string]$PortsCsv)
+
+    Write-Host "[*] Modo fallback PowerShell puro. Mais simples/lento que Nmap." -ForegroundColor Yellow
+    if ($TargetRange -notmatch '^(\d+\.\d+\.\d+)\.0/24$') {
+        throw "Fallback puro aceita apenas /24 simples, exemplo 192.168.0.0/24. Instale Nmap para ranges diferentes."
+    }
+
+    $base = $Matches[1]
+    $ports = $PortsCsv.Split(',') | ForEach-Object { [int]$_.Trim() } | Where-Object { $_ -gt 0 -and $_ -le 65535 }
+    $results = [System.Collections.Concurrent.ConcurrentBag[object]]::new()
+
+    1..254 | ForEach-Object -Parallel {
+        $base = $using:base
+        $ports = $using:ports
+        $results = $using:results
+        $ip = "$base.$_"
+        $up = Test-Connection -ComputerName $ip -Count 1 -Quiet -TimeoutSeconds 1
+        if ($up) {
+            $open = @()
+            foreach ($port in $ports) {
+                try {
+                    $client = [Net.Sockets.TcpClient]::new()
+                    $task = $client.ConnectAsync($ip, $port)
+                    if ($task.Wait(250) -and $client.Connected) { $open += "tcp/$port" }
+                    $client.Dispose()
+                } catch {}
+            }
+            $hostname = ""
+            try { $hostname = ([System.Net.Dns]::GetHostEntry($ip)).HostName } catch {}
+            $results.Add([pscustomobject]@{
+                IP = $ip; Hostname = $hostname; MAC = ""; Fabricante = "";
+                PortasAbertas = ($open -join "; "); SistemaProvavel = ""; Web = "";
+                Compartilhamento = ""; RDP = ""; Status = "Online"
+            })
+        }
+    } -ThrottleLimit 64
+
+    return @($results) | Sort-Object { [version]$_.IP }
+}
+
+function New-HtmlReport {
+    param([array]$Data, [string]$Path, [string]$TargetRange)
+    $rows = foreach ($d in $Data) {
+        $web = if ($d.Web) { "<a href='$($d.Web)'>$($d.Web)</a>" } else { "" }
+        $share = if ($d.Compartilhamento) { $d.Compartilhamento } else { "" }
+        "<tr><td>$($d.IP)</td><td>$($d.Hostname)</td><td>$($d.MAC)</td><td>$($d.Fabricante)</td><td>$($d.PortasAbertas)</td><td>$($d.SistemaProvavel)</td><td>$web</td><td>$share</td><td>$($d.RDP)</td></tr>"
+    }
+
+    $html = @"
+<!doctype html>
+<html lang="pt-br">
+<head>
+<meta charset="utf-8">
+<title>LanScout Pro - Relatorio</title>
+<style>
+body{font-family:Segoe UI,Arial,sans-serif;background:#0f172a;color:#e5e7eb;margin:24px}
+h1{color:#67e8f9}.card{background:#111827;border:1px solid #334155;border-radius:12px;padding:16px;margin-bottom:16px}
+table{border-collapse:collapse;width:100%;background:#020617;border-radius:12px;overflow:hidden}
+th,td{border-bottom:1px solid #1f2937;padding:10px;text-align:left;font-size:13px;vertical-align:top}
+th{background:#164e63;color:#ecfeff;position:sticky;top:0}tr:hover{background:#111827}a{color:#93c5fd}
+.badge{display:inline-block;background:#065f46;color:#d1fae5;border-radius:999px;padding:4px 10px}
+</style>
+</head>
+<body>
+<h1>LanScout Pro</h1>
+<div class="card">
+<span class="badge">Rede: $TargetRange</span>
+<span class="badge">Dispositivos online: $($Data.Count)</span>
+<span class="badge">Gerado: $(Get-Date -Format 'dd/MM/yyyy HH:mm:ss')</span>
+</div>
+<table>
+<thead><tr><th>IP</th><th>Hostname</th><th>MAC</th><th>Fabricante</th><th>Portas abertas</th><th>Sistema provavel</th><th>Web</th><th>Compartilhamento</th><th>RDP</th></tr></thead>
+<tbody>
+$($rows -join "`n")
+</tbody>
+</table>
+</body>
+</html>
+"@
+    Set-Content -Path $Path -Value $html -Encoding UTF8
+}
+
+Write-Banner
+
+if ($InstallNmap) { Install-NmapWinget }
+
+if (-not $Range) {
+    $Range = Get-PrimaryNetworkCidr
+    Write-Host "[*] Rede detectada automaticamente: $Range" -ForegroundColor Cyan
+} else {
+    Write-Host "[*] Rede informada: $Range" -ForegroundColor Cyan
+}
+
+New-Item -ItemType Directory -Force -Path $ExportDir | Out-Null
+$stamp = Get-Date -Format "yyyyMMdd_HHmmss"
+$xmlPath  = Join-Path $ExportDir "lanscout_$stamp.xml"
+$csvPath  = Join-Path $ExportDir "lanscout_$stamp.csv"
+$jsonPath = Join-Path $ExportDir "lanscout_$stamp.json"
+$htmlPath = Join-Path $ExportDir "lanscout_$stamp.html"
+
+$nmap = if ($FallbackOnly) { $null } else { Find-Nmap }
+
+if (-not $nmap) {
+    Write-Host "[!] Nmap nao encontrado." -ForegroundColor Yellow
+    Write-Host "    Para instalar e escanear automaticamente: .\LanScout-Pro.ps1 -InstallNmap" -ForegroundColor Yellow
+    $data = Invoke-FallbackScan -TargetRange $Range -PortsCsv $Ports
+} else {
+    Write-Host "[+] Nmap encontrado: $nmap" -ForegroundColor Green
+    Invoke-NmapScan -NmapPath $nmap -TargetRange $Range -DeepScan ([bool]$Deep) -PortsCsv $Ports -XmlOut $xmlPath
+    $data = Parse-NmapXml -XmlPath $xmlPath
+}
+
+if (-not $data -or $data.Count -eq 0) {
+    Write-Host "[!] Nenhum dispositivo encontrado. Tente executar como Administrador ou use -Deep/-Range." -ForegroundColor Yellow
+} else {
+    Write-Host ""
+    Write-Host "[+] Dispositivos encontrados: $($data.Count)" -ForegroundColor Green
+    $data | Format-Table IP, Hostname, MAC, Fabricante, PortasAbertas, Web, Compartilhamento, RDP -AutoSize
+}
+
+$data | Export-Csv -Path $csvPath -NoTypeInformation -Encoding UTF8
+$data | ConvertTo-Json -Depth 6 | Set-Content -Path $jsonPath -Encoding UTF8
+if (-not $NoHtml) { New-HtmlReport -Data $data -Path $htmlPath -TargetRange $Range }
+
+Write-Host ""
+Write-Host "[+] CSV : $csvPath" -ForegroundColor Green
+Write-Host "[+] JSON: $jsonPath" -ForegroundColor Green
+if (-not $NoHtml) { Write-Host "[+] HTML: $htmlPath" -ForegroundColor Green }
+Write-Host ""
+Write-Host "Dicas:" -ForegroundColor Cyan
+Write-Host "  Scan rapido:  .\LanScout-Pro.ps1" -ForegroundColor Gray
+Write-Host "  Instalar+scan: .\LanScout-Pro.ps1 -InstallNmap" -ForegroundColor Gray
+Write-Host "  Profundo:     .\LanScout-Pro.ps1 -Deep" -ForegroundColor Gray
+Write-Host "  Rede manual:  .\LanScout-Pro.ps1 -Range 192.168.0.0/24" -ForegroundColor Gray
+
+if ($OpenResults -and (Test-Path $htmlPath)) {
+    Start-Process $htmlPath
+}
