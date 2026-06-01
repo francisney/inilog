@@ -1,323 +1,272 @@
 <#
-.SYNOPSIS
-  LanScout Pro - Scanner de rede local para Windows 10/11 usando Nmap.
-
-.DESCRIPTION
-  - Detecta automaticamente a rede local ativa.
-  - Instala Nmap via winget se solicitado.
-  - Faz descoberta de dispositivos online.
-  - Opcionalmente faz scan de portas comuns/servicos.
-  - Exporta CSV, JSON e HTML para a Area de Trabalho.
-
-.USO
-  powershell -ExecutionPolicy Bypass -File .\LanScout-Pro-Win10-11.ps1 -InstallNmap -OpenResults
-  .\LanScout-Pro-Win10-11.ps1
-  .\LanScout-Pro-Win10-11.ps1 -Range 192.168.0.0/24 -Deep -OpenResults
+LanScout SpeedStyle - Windows 10/11
+Baixa o instalador oficial do Nmap com barra de progresso, executa a instalação e faz scan da rede local.
+Use somente em redes onde você tem permissão.
 #>
 
-[CmdletBinding()]
 param(
-    [string]$Range,
-    [string]$Ports = "21,22,23,25,53,80,110,135,139,143,443,445,554,587,631,993,995,1433,3306,3389,5000,5432,5900,5985,8000,8080,8443,9100",
+    [string]$Range = "",
+    [string]$Ports = "21,22,23,53,80,135,139,443,445,3389,8080,8443,9100",
     [switch]$Deep,
-    [switch]$InstallNmap,
+    [switch]$DownloadNmap,
     [switch]$OpenResults,
-    [switch]$NoInstallPrompt
+    [switch]$SkipInstall
 )
 
 $ErrorActionPreference = "Stop"
+$ProgressPreference = "SilentlyContinue"
 
 function Write-Title {
     Clear-Host
     Write-Host "============================================================" -ForegroundColor Cyan
-    Write-Host " LanScout Pro - Scanner de Rede Local para Windows 10/11" -ForegroundColor Cyan
-    Write-Host " Descoberta de PCs/dispositivos + portas + relatorios" -ForegroundColor Cyan
+    Write-Host " LanScout SpeedStyle - Scanner de Rede Local Windows 10/11" -ForegroundColor Cyan
+    Write-Host " Baixa Nmap com porcentagem + scan + relatorios" -ForegroundColor Cyan
     Write-Host "============================================================" -ForegroundColor Cyan
     Write-Host ""
 }
 
-function Test-IsAdmin {
-    $identity = [Security.Principal.WindowsIdentity]::GetCurrent()
-    $principal = New-Object Security.Principal.WindowsPrincipal($identity)
+function Test-Admin {
+    $currentIdentity = [Security.Principal.WindowsIdentity]::GetCurrent()
+    $principal = New-Object Security.Principal.WindowsPrincipal($currentIdentity)
     return $principal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
 }
 
-function Get-NmapPath {
+function Get-NmapCommand {
     $cmd = Get-Command nmap.exe -ErrorAction SilentlyContinue
     if ($cmd) { return $cmd.Source }
 
-    $candidates = @(
+    $paths = @(
         "$env:ProgramFiles\Nmap\nmap.exe",
         "${env:ProgramFiles(x86)}\Nmap\nmap.exe"
     )
-    foreach ($p in $candidates) {
+    foreach ($p in $paths) {
         if ($p -and (Test-Path $p)) { return $p }
     }
     return $null
 }
 
-function Install-NmapWinget {
-    Write-Host "[*] Verificando winget..." -ForegroundColor Yellow
-    $winget = Get-Command winget.exe -ErrorAction SilentlyContinue
-    if (-not $winget) {
-        throw "winget nao encontrado. Instale o 'App Installer' pela Microsoft Store ou instale o Nmap manualmente em https://nmap.org/download.html"
+function Get-PrimaryIPv4 {
+    $cfg = Get-CimInstance Win32_NetworkAdapterConfiguration |
+        Where-Object { $_.IPEnabled -eq $true -and $_.DefaultIPGateway -and $_.IPAddress } |
+        Select-Object -First 1
+
+    if (-not $cfg) { throw "Nao encontrei uma placa de rede ativa com gateway." }
+
+    $ip = @($cfg.IPAddress | Where-Object { $_ -match '^\d{1,3}(\.\d{1,3}){3}$' })[0]
+    if (-not $ip) { throw "Nao encontrei IPv4 valido." }
+    return $ip
+}
+
+function Get-DefaultRange24 {
+    $ip = Get-PrimaryIPv4
+    $parts = $ip.Split('.')
+    return "$($parts[0]).$($parts[1]).$($parts[2]).0/24"
+}
+
+function Get-NmapInstallerUrl {
+    Write-Host "[*] Procurando instalador atual do Nmap no site oficial..." -ForegroundColor Yellow
+    $downloadPage = Invoke-WebRequest -Uri "https://nmap.org/download.html" -UseBasicParsing
+    $matches = [regex]::Matches($downloadPage.Content, 'https://nmap\.org/dist/nmap-[0-9\.]+-setup\.exe')
+    if ($matches.Count -eq 0) {
+        $matches = [regex]::Matches($downloadPage.Content, 'href="(/dist/nmap-[0-9\.]+-setup\.exe)"')
+        if ($matches.Count -gt 0) {
+            return "https://nmap.org" + $matches[0].Groups[1].Value
+        }
+        throw "Nao consegui encontrar o link do instalador do Nmap na pagina oficial."
     }
-
-    Write-Host "[*] Instalando Nmap via winget..." -ForegroundColor Yellow
-    Write-Host "    Comando: winget install -e --id Insecure.Nmap" -ForegroundColor DarkGray
-    & winget install -e --id Insecure.Nmap --accept-package-agreements --accept-source-agreements
-
-    $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
+    return $matches[0].Value
 }
 
-function Get-ActiveIPv4Config {
-    $configs = Get-NetIPConfiguration | Where-Object {
-        $_.IPv4Address -and
-        $_.NetAdapter.Status -eq "Up" -and
-        $_.IPv4Address.IPAddress -notlike "169.254.*"
-    }
-
-    $preferred = $configs | Where-Object { $_.IPv4DefaultGateway } | Select-Object -First 1
-    if (-not $preferred) { $preferred = $configs | Select-Object -First 1 }
-    if (-not $preferred) { throw "Nao encontrei uma interface IPv4 ativa." }
-
-    return [PSCustomObject]@{
-        IP = $preferred.IPv4Address.IPAddress
-        PrefixLength = [int]$preferred.IPv4Address.PrefixLength
-        InterfaceAlias = $preferred.InterfaceAlias
-        Gateway = if ($preferred.IPv4DefaultGateway) { $preferred.IPv4DefaultGateway.NextHop } else { "" }
-    }
-}
-
-function Get-DefaultRange {
-    $cfg = Get-ActiveIPv4Config
-    $ip = [string]$cfg.IP
-    $prefix = [int]$cfg.PrefixLength
-
-    # Evita calculo binario complexo. Para Nmap, IP/prefixo e valido e seguro.
-    $range = "$ip/$prefix"
-
-    Write-Host "[*] Interface: $($cfg.InterfaceAlias)" -ForegroundColor DarkGray
-    Write-Host "[*] IP local : $($cfg.IP)" -ForegroundColor DarkGray
-    Write-Host "[*] Gateway  : $($cfg.Gateway)" -ForegroundColor DarkGray
-    Write-Host "[*] Rede     : $range" -ForegroundColor DarkGray
-    Write-Host ""
-
-    return $range
-}
-
-function Get-OutputFolder {
-    $desktop = [Environment]::GetFolderPath("Desktop")
-    $folder = Join-Path $desktop "LanScout_Results"
-    if (-not (Test-Path $folder)) { New-Item -ItemType Directory -Path $folder | Out-Null }
-    return $folder
-}
-
-function Invoke-NmapXml {
+function Download-FileWithProgress {
     param(
-        [Parameter(Mandatory=$true)][string]$NmapPath,
-        [Parameter(Mandatory=$true)][string[]]$Arguments,
-        [Parameter(Mandatory=$true)][string]$XmlPath
+        [Parameter(Mandatory=$true)][string]$Url,
+        [Parameter(Mandatory=$true)][string]$Destination
     )
 
-    if (Test-Path $XmlPath) { Remove-Item $XmlPath -Force }
-    $fullArgs = @($Arguments + @("-oX", $XmlPath))
+    if (Test-Path $Destination) { Remove-Item $Destination -Force }
 
-    Write-Host "[*] Executando: nmap $($fullArgs -join ' ')" -ForegroundColor Yellow
-    & $NmapPath @fullArgs
+    $client = New-Object System.Net.WebClient
+    $global:downloadComplete = $false
+    $global:downloadError = $null
 
-    if (-not (Test-Path $XmlPath)) {
-        throw "O Nmap nao gerou o XML esperado: $XmlPath"
+    Register-ObjectEvent -InputObject $client -EventName DownloadProgressChanged -Action {
+        $pct = $EventArgs.ProgressPercentage
+        $received = [math]::Round($EventArgs.BytesReceived / 1MB, 2)
+        $total = if ($EventArgs.TotalBytesToReceive -gt 0) { [math]::Round($EventArgs.TotalBytesToReceive / 1MB, 2) } else { 0 }
+        if ($total -gt 0) {
+            Write-Progress -Activity "Baixando Nmap" -Status "$received MB de $total MB" -PercentComplete $pct
+        } else {
+            Write-Progress -Activity "Baixando Nmap" -Status "$received MB baixados" -PercentComplete 0
+        }
+    } | Out-Null
+
+    Register-ObjectEvent -InputObject $client -EventName DownloadFileCompleted -Action {
+        if ($EventArgs.Error) { $global:downloadError = $EventArgs.Error }
+        $global:downloadComplete = $true
+    } | Out-Null
+
+    Write-Host "[*] Baixando:" -ForegroundColor Yellow
+    Write-Host "    $Url" -ForegroundColor DarkGray
+    $client.DownloadFileAsync([Uri]$Url, $Destination)
+
+    while (-not $global:downloadComplete) {
+        Start-Sleep -Milliseconds 200
     }
+    Write-Progress -Activity "Baixando Nmap" -Completed
+    $client.Dispose()
 
-    [xml](Get-Content $XmlPath -Raw)
+    if ($global:downloadError) { throw $global:downloadError }
+    if (-not (Test-Path $Destination)) { throw "Download falhou: arquivo nao encontrado." }
+
+    $size = [math]::Round((Get-Item $Destination).Length / 1MB, 2)
+    Write-Host "[+] Download concluido: $size MB" -ForegroundColor Green
 }
 
-function Parse-NmapHosts {
-    param([xml]$Xml)
+function Install-NmapSpeedStyle {
+    $nmap = Get-NmapCommand
+    if ($nmap) {
+        Write-Host "[+] Nmap ja esta instalado: $nmap" -ForegroundColor Green
+        return
+    }
 
-    $items = New-Object System.Collections.Generic.List[object]
+    $url = Get-NmapInstallerUrl
+    $installer = Join-Path $env:TEMP ([IO.Path]::GetFileName($url))
+    Download-FileWithProgress -Url $url -Destination $installer
 
-    foreach ($host in $Xml.nmaprun.host) {
-        if (-not $host.status -or $host.status.state -ne "up") { continue }
+    Write-Host "[*] Abrindo instalador do Nmap..." -ForegroundColor Yellow
+    Write-Host "    Avance no instalador. Quando terminar, o scan continua." -ForegroundColor DarkGray
+    Write-Host "    Dica: mantenha Npcap marcado para melhor descoberta de rede." -ForegroundColor DarkGray
 
-        $ipv4Node = @($host.address | Where-Object { $_.addrtype -eq "ipv4" }) | Select-Object -First 1
-        if (-not $ipv4Node) { continue }
+    $p = Start-Process -FilePath $installer -Wait -PassThru
+    Write-Host "[*] Instalador finalizado com codigo: $($p.ExitCode)" -ForegroundColor Yellow
 
-        $macNode = @($host.address | Where-Object { $_.addrtype -eq "mac" }) | Select-Object -First 1
-        $hostnameNode = $null
-        if ($host.hostnames -and $host.hostnames.hostname) {
-            $hostnameNode = @($host.hostnames.hostname) | Select-Object -First 1
-        }
+    $nmap = Get-NmapCommand
+    if (-not $nmap) {
+        Write-Host "[!] Nmap ainda nao apareceu no PATH. Vou tentar caminhos padrao..." -ForegroundColor Yellow
+        Start-Sleep -Seconds 2
+        $nmap = Get-NmapCommand
+    }
+
+    if (-not $nmap) {
+        throw "Nmap nao foi encontrado depois da instalacao. Feche e abra o PowerShell, ou instale manualmente pelo instalador baixado: $installer"
+    }
+
+    Write-Host "[+] Nmap instalado: $nmap" -ForegroundColor Green
+}
+
+function Invoke-NmapScan {
+    param(
+        [Parameter(Mandatory=$true)][string]$NmapPath,
+        [Parameter(Mandatory=$true)][string]$TargetRange,
+        [Parameter(Mandatory=$true)][string]$Ports,
+        [switch]$Deep
+    )
+
+    $desktop = [Environment]::GetFolderPath('Desktop')
+    $outDir = Join-Path $desktop "LanScout_Results"
+    New-Item -ItemType Directory -Path $outDir -Force | Out-Null
+
+    $stamp = Get-Date -Format "yyyyMMdd_HHmmss"
+    $xmlPath = Join-Path $outDir "lanscout_$stamp.xml"
+    $txtPath = Join-Path $outDir "lanscout_$stamp.txt"
+    $csvPath = Join-Path $outDir "lanscout_$stamp.csv"
+    $htmlPath = Join-Path $outDir "lanscout_$stamp.html"
+
+    if ($Deep) {
+        $args = @("-A", "-T4", "--open", "-p", $Ports, "-oX", $xmlPath, "-oN", $txtPath, $TargetRange)
+    } else {
+        $args = @("-sV", "-T4", "--open", "-p", $Ports, "-oX", $xmlPath, "-oN", $txtPath, $TargetRange)
+    }
+
+    Write-Host "[*] Executando scan:" -ForegroundColor Yellow
+    Write-Host "    $NmapPath $($args -join ' ')" -ForegroundColor DarkGray
+    Write-Host ""
+
+    $proc = Start-Process -FilePath $NmapPath -ArgumentList $args -NoNewWindow -Wait -PassThru
+    if ($proc.ExitCode -ne 0) { Write-Host "[!] Nmap retornou codigo $($proc.ExitCode). Vou tentar ler o que foi gerado." -ForegroundColor Yellow }
+
+    if (-not (Test-Path $xmlPath)) { throw "Arquivo XML do Nmap nao foi gerado." }
+
+    [xml]$xml = Get-Content $xmlPath
+    $rows = @()
+
+    foreach ($hostNode in $xml.nmaprun.host) {
+        $status = $hostNode.status.state
+        if ($status -ne "up") { continue }
+
+        $ipv4 = ($hostNode.address | Where-Object { $_.addrtype -eq "ipv4" } | Select-Object -First 1).addr
+        $macNode = $hostNode.address | Where-Object { $_.addrtype -eq "mac" } | Select-Object -First 1
+        $mac = $macNode.addr
+        $vendor = $macNode.vendor
+        $hostname = ($hostNode.hostnames.hostname | Select-Object -First 1).name
 
         $openPorts = @()
-        if ($host.ports -and $host.ports.port) {
-            foreach ($p in @($host.ports.port)) {
-                if ($p.state.state -eq "open") {
-                    $svc = ""
-                    if ($p.service) {
-                        $svcParts = @()
-                        if ($p.service.name) { $svcParts += $p.service.name }
-                        if ($p.service.product) { $svcParts += $p.service.product }
-                        if ($p.service.version) { $svcParts += $p.service.version }
-                        $svc = ($svcParts -join " ").Trim()
-                    }
-                    if ($svc) { $openPorts += "$($p.portid)/$($p.protocol) $svc" }
-                    else { $openPorts += "$($p.portid)/$($p.protocol)" }
-                }
+        foreach ($portNode in $hostNode.ports.port) {
+            if ($portNode.state.state -eq "open") {
+                $svc = $portNode.service.name
+                $product = $portNode.service.product
+                $version = $portNode.service.version
+                $label = "$($portNode.portid)/$($portNode.protocol)"
+                if ($svc) { $label += " $svc" }
+                if ($product) { $label += " $product" }
+                if ($version) { $label += " $version" }
+                $openPorts += $label
             }
         }
 
         $osGuess = ""
-        if ($host.os -and $host.os.osmatch) {
-            $os = @($host.os.osmatch) | Sort-Object { [int]$_.accuracy } -Descending | Select-Object -First 1
-            if ($os) { $osGuess = "$($os.name) ($($os.accuracy)%)" }
-        }
+        if ($hostNode.os.osmatch) { $osGuess = ($hostNode.os.osmatch | Select-Object -First 1).name }
 
-        $items.Add([PSCustomObject]@{
-            IP = [string]$ipv4Node.addr
-            Hostname = if ($hostnameNode) { [string]$hostnameNode.name } else { "" }
-            MAC = if ($macNode) { [string]$macNode.addr } else { "" }
-            Fabricante = if ($macNode -and $macNode.vendor) { [string]$macNode.vendor } else { "" }
-            PortasAbertas = ($openPorts -join ", ")
+        $rows += [PSCustomObject]@{
+            IP = $ipv4
+            Hostname = if ($hostname) { $hostname } else { "" }
+            MAC = if ($mac) { $mac } else { "" }
+            Fabricante = if ($vendor) { $vendor } else { "" }
+            PortasAbertas = ($openPorts -join "; ")
             SistemaProvavel = $osGuess
-            Status = "Online"
-        }) | Out-Null
+        }
     }
 
-    return $items | Sort-Object {[version]$_.IP}
-}
+    $rows | Sort-Object IP | Format-Table -AutoSize
+    $rows | Sort-Object IP | Export-Csv -Path $csvPath -NoTypeInformation -Encoding UTF8
 
-function Write-Reports {
-    param(
-        [Parameter(Mandatory=$true)]$Data,
-        [Parameter(Mandatory=$true)][string]$Folder
-    )
+    $html = $rows | Sort-Object IP | ConvertTo-Html -Title "LanScout Results" -PreContent "<h1>LanScout SpeedStyle</h1><p>Rede: $TargetRange<br>Data: $(Get-Date)</p>" | Out-String
+    $html | Set-Content -Path $htmlPath -Encoding UTF8
 
-    $stamp = Get-Date -Format "yyyyMMdd_HHmmss"
-    $csv = Join-Path $Folder "lanscout_$stamp.csv"
-    $json = Join-Path $Folder "lanscout_$stamp.json"
-    $html = Join-Path $Folder "lanscout_$stamp.html"
+    Write-Host ""
+    Write-Host "[+] Encontrados: $($rows.Count) dispositivos ativos" -ForegroundColor Green
+    Write-Host "[+] CSV : $csvPath" -ForegroundColor Green
+    Write-Host "[+] HTML: $htmlPath" -ForegroundColor Green
+    Write-Host "[+] TXT : $txtPath" -ForegroundColor Green
 
-    $Data | Export-Csv -NoTypeInformation -Encoding UTF8 -Path $csv
-    $Data | ConvertTo-Json -Depth 5 | Set-Content -Encoding UTF8 -Path $json
-
-    $style = @"
-<style>
-body{font-family:Segoe UI,Arial,sans-serif;margin:24px;background:#f6f7fb;color:#222}
-h1{color:#0f4c81}.meta{color:#555;margin-bottom:16px}
-table{border-collapse:collapse;width:100%;background:white;box-shadow:0 1px 4px #ccc}
-th,td{border:1px solid #ddd;padding:8px;text-align:left;font-size:13px;vertical-align:top}
-th{background:#0f4c81;color:white;position:sticky;top:0}
-tr:nth-child(even){background:#f2f6fb}.online{font-weight:bold;color:#087a2a}
-</style>
-"@
-    $pre = "<h1>LanScout Pro</h1><div class='meta'>Gerado em $(Get-Date) | Total online: $(@($Data).Count)</div>"
-    $body = $Data | ConvertTo-Html -Head $style -PreContent $pre -Title "LanScout Pro" | Out-String
-    $body = $body -replace '<td>Online</td>', '<td class="online">Online</td>'
-    Set-Content -Encoding UTF8 -Path $html -Value $body
-
-    return [PSCustomObject]@{ CSV=$csv; JSON=$json; HTML=$html }
-}
-
-function Invoke-PowerShellFallback {
-    param([string]$RangeText)
-
-    Write-Host "[!] Nmap nao encontrado. Usando modo PowerShell basico." -ForegroundColor Yellow
-    Write-Host "[!] Para resultado estilo Advanced IP Scanner, instale/use Nmap." -ForegroundColor Yellow
-
-    # Fallback apenas para /24 simples. Ex.: 192.168.0.10/24 => 192.168.0.1-254
-    if ($RangeText -notmatch '^(\d{1,3}\.\d{1,3}\.\d{1,3})\.\d{1,3}/24$' -and $RangeText -notmatch '^(\d{1,3}\.\d{1,3}\.\d{1,3})\.0/24$') {
-        throw "Modo PowerShell basico suporta apenas /24. Instale o Nmap ou informe algo como 192.168.0.0/24."
+    if ($OpenResults) {
+        Start-Process $htmlPath
     }
-    $base = $Matches[1]
-
-    $jobs = foreach ($i in 1..254) {
-        $target = "$base.$i"
-        Start-Job -ScriptBlock {
-            param($ip)
-            $online = Test-Connection -ComputerName $ip -Count 1 -Quiet -TimeoutSeconds 1 -ErrorAction SilentlyContinue
-            if ($online) {
-                $name = ""
-                try { $name = ([System.Net.Dns]::GetHostEntry($ip)).HostName } catch {}
-                [PSCustomObject]@{ IP=$ip; Hostname=$name; MAC=""; Fabricante=""; PortasAbertas=""; SistemaProvavel=""; Status="Online" }
-            }
-        } -ArgumentList $target
-    }
-
-    $results = $jobs | Wait-Job | Receive-Job
-    $jobs | Remove-Job -Force
-    return $results | Sort-Object {[version]$_.IP}
 }
 
 Write-Title
 
-if (-not (Test-IsAdmin)) {
-    Write-Host "[!] Dica: execute como Administrador para melhor descoberta de MAC/OS." -ForegroundColor Yellow
-    Write-Host ""
+if (-not (Test-Admin)) {
+    Write-Host "[!] Recomendo executar como Administrador para melhor deteccao de MAC/fabricante." -ForegroundColor Yellow
 }
 
-if (-not $Range) { $Range = Get-DefaultRange }
-
-$outputFolder = Get-OutputFolder
-$nmap = Get-NmapPath
-
-if ($InstallNmap -or (-not $nmap -and -not $NoInstallPrompt)) {
-    if (-not $nmap) {
-        Install-NmapWinget
-        $nmap = Get-NmapPath
-    }
+if (-not $Range) {
+    $Range = Get-DefaultRange24
+    Write-Host "[*] Rede detectada automaticamente: $Range" -ForegroundColor Yellow
 }
 
-$data = @()
-
-if ($nmap) {
-    Write-Host "[*] Nmap encontrado: $nmap" -ForegroundColor Green
-    Write-Host "[*] Alvo: $Range" -ForegroundColor Green
-    Write-Host ""
-
-    $xmlPath = Join-Path $outputFolder "nmap_scan.xml"
-
-    if ($Deep) {
-        # -O precisa de admin em muitos casos. Se falhar, tenta sem -O.
-        try {
-            $args = @("-sV", "-O", "--osscan-guess", "-T4", "--open", "-p", $Ports, $Range)
-            $xml = Invoke-NmapXml -NmapPath $nmap -Arguments $args -XmlPath $xmlPath
-        } catch {
-            Write-Host "[!] Scan com deteccao de SO falhou. Tentando sem -O..." -ForegroundColor Yellow
-            $args = @("-sV", "-T4", "--open", "-p", $Ports, $Range)
-            $xml = Invoke-NmapXml -NmapPath $nmap -Arguments $args -XmlPath $xmlPath
-        }
-    } else {
-        # Descoberta rapida + portas comuns para ficar util no terminal.
-        $args = @("-T4", "--open", "-p", $Ports, $Range)
-        $xml = Invoke-NmapXml -NmapPath $nmap -Arguments $args -XmlPath $xmlPath
-    }
-
-    $data = @(Parse-NmapHosts -Xml $xml)
-} else {
-    $data = @(Invoke-PowerShellFallback -RangeText $Range)
+if ($DownloadNmap -and -not $SkipInstall) {
+    Install-NmapSpeedStyle
 }
 
-Write-Host ""
-Write-Host "==================== DISPOSITIVOS ENCONTRADOS ====================" -ForegroundColor Cyan
-if ($data.Count -eq 0) {
-    Write-Host "Nenhum dispositivo encontrado. Tente executar como Administrador ou use -Range manual." -ForegroundColor Yellow
-} else {
-    $data | Format-Table IP, Hostname, MAC, Fabricante, PortasAbertas, SistemaProvavel -AutoSize
+$nmapPath = Get-NmapCommand
+if (-not $nmapPath) {
+    Write-Host "[!] Nmap nao encontrado." -ForegroundColor Yellow
+    Write-Host "    Rode com -DownloadNmap para baixar com porcentagem e instalar." -ForegroundColor Yellow
+    Write-Host "    Exemplo: .\LanScout-SpeedStyle-Win10-11.ps1 -DownloadNmap -OpenResults" -ForegroundColor Yellow
+    exit 1
 }
 
-$reports = Write-Reports -Data $data -Folder $outputFolder
+Invoke-NmapScan -NmapPath $nmapPath -TargetRange $Range -Ports $Ports -Deep:$Deep
 
-Write-Host ""
-Write-Host "==================== RELATORIOS ====================" -ForegroundColor Cyan
-Write-Host "CSV : $($reports.CSV)" -ForegroundColor Green
-Write-Host "JSON: $($reports.JSON)" -ForegroundColor Green
-Write-Host "HTML: $($reports.HTML)" -ForegroundColor Green
-
-if ($OpenResults -and (Test-Path $reports.HTML)) {
-    Start-Process $reports.HTML
-}
-
-Write-Host ""
-Write-Host "[+] Finalizado." -ForegroundColor Green
+Write-Host "[+] Concluido." -ForegroundColor Green
