@@ -1,10 +1,6 @@
 Clear-Host
 
-Write-Host "==============================================" -ForegroundColor Cyan
-Write-Host " Scanner simples de rede local - PowerShell"
-Write-Host " Mostra IPs online + hostname"
-Write-Host "==============================================" -ForegroundColor Cyan
-Write-Host ""
+
 
 # Detecta o IPv4 principal
 try {
