@@ -219,10 +219,63 @@ irm https://raw.githubusercontent.com/francisney/inilog/refs/heads/main/speedtes
 irm https://raw.githubusercontent.com/francisney/inilog/main/cls.ps1 | iex 
 }
 
-"24" { 
-irm https://raw.githubusercontent.com/francisney/inilog/refs/heads/main/network.ps1 | iex 
-}
+"24" {
+    $url = "https://raw.githubusercontent.com/francisney/inilog/refs/heads/main/IP_Scanner.exe"
+    $destino = "C:\ti\IP_Scanner.exe"
 
+    if (-not (Test-Path "C:\ti")) {
+        New-Item -ItemType Directory -Path "C:\ti" | Out-Null
+        Write-Host "Diretório C:\ti criado." -ForegroundColor Green
+    }
+
+    Write-Host "Baixando IP Scanner..." -ForegroundColor Yellow
+
+    try {
+        $request = [System.Net.HttpWebRequest]::Create($url)
+        $response = $request.GetResponse()
+        $totalBytes = $response.ContentLength
+        $stream = $response.GetResponseStream()
+
+        $fileStream = [System.IO.File]::Create($destino)
+
+        $buffer = New-Object byte[] 8192
+        $totalLido = 0
+
+        do {
+            $bytesLidos = $stream.Read($buffer, 0, $buffer.Length)
+
+            if ($bytesLidos -gt 0) {
+                $fileStream.Write($buffer, 0, $bytesLidos)
+                $totalLido += $bytesLidos
+
+                if ($totalBytes -gt 0) {
+                    $porcentagem = [math]::Round(($totalLido / $totalBytes) * 100, 2)
+
+                    Write-Progress `
+                        -Activity "Baixando IP_Scanner.exe" `
+                        -Status "$porcentagem% concluído" `
+                        -PercentComplete $porcentagem
+                }
+            }
+
+        } while ($bytesLidos -gt 0)
+
+        $fileStream.Close()
+        $stream.Close()
+        $response.Close()
+
+        Write-Progress -Activity "Baixando IP_Scanner.exe" -Completed
+
+        Write-Host "Download concluído em: $destino" -ForegroundColor Green
+        Write-Host "Executando IP Scanner..." -ForegroundColor Cyan
+
+        Start-Process -FilePath $destino
+    }
+    catch {
+        Write-Host "Erro ao baixar ou executar o IP Scanner:" -ForegroundColor Red
+        Write-Host $_.Exception.Message -ForegroundColor Red
+    }
+}
 
 "25" { 
 irm https://raw.githubusercontent.com/francisney/winutil/refs/heads/main/windev.ps1 | iex 
