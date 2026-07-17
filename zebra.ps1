@@ -6,7 +6,7 @@ Gerenciador Zebra USB em arquivo único:
 - Atualiza automaticamente em tempo real.
 - Mostra cabo USB conectado ou desconectado.
 - Diferencia o estado físico da conexão do estado da fila do Windows.
-- Detecta várias impressoras Zebra ao mesmo tempo.
+- Mostra cada instalação Zebra em um quadro completo.
 - Funciona inteiramente em memória com Invoke-RestMethod | Invoke-Expression.
 #>
 
@@ -279,7 +279,6 @@ Gerenciador Zebra USB em arquivo único:
 
         $workOffline = Get-ZebraObjectValue $Queue 'WorkOffline'
         $queueStatusCode = Get-ZebraObjectValue $Queue 'PrinterStatus'
-        $isPaused = Get-ZebraObjectValue $Queue 'PrinterState'
 
         if ($workOffline -eq $true) {
             return [pscustomobject]@{
@@ -321,13 +320,9 @@ Gerenciador Zebra USB em arquivo único:
             }
         }
 
-        if ($null -ne $isPaused -and [int]$isPaused -ne 0) {
-            # Alguns drivers usam PrinterState, mas nem todos informam corretamente.
-        }
-
         return [pscustomobject]@{
-            Text       = 'Status não informado pelo Windows'
-            ShortText  = 'Status desconhecido'
+            Text       = 'Sem resposta da impressora'
+            ShortText  = 'Sem resposta'
             Category   = 'Unknown'
             IsOffline  = $false
             IsUsable   = $false
@@ -434,6 +429,30 @@ Gerenciador Zebra USB em arquivo único:
                     @{ Expression = 'IsOffline'; Descending = $false },
                     @{ Expression = 'Name'; Descending = $false }
         )
+    }
+
+    function Test-ZebraModelCompatibility {
+        param(
+            [AllowEmptyString()][string]$FirstModel,
+            [AllowEmptyString()][string]$SecondModel
+        )
+
+        $first = ($FirstModel -replace '[^A-Za-z0-9]', '').ToUpperInvariant()
+        $second = ($SecondModel -replace '[^A-Za-z0-9]', '').ToUpperInvariant()
+
+        if ([string]::IsNullOrWhiteSpace($first) -or
+            [string]::IsNullOrWhiteSpace($second)) {
+            return $true
+        }
+
+        if ($first -in @('ZEBRA', 'IMPRESSORAZEBRA') -or
+            $second -in @('ZEBRA', 'IMPRESSORAZEBRA')) {
+            return $true
+        }
+
+        $firstBase = $first -replace '(?i)[TD]$', ''
+        $secondBase = $second -replace '(?i)[TD]$', ''
+        return $firstBase -eq $secondBase
     }
 
     function Get-ZebraInventory {
@@ -665,9 +684,233 @@ Gerenciador Zebra USB em arquivo único:
             }
         }
 
+        # A lista acima representa as Zebras físicas atualmente presentes.
+        # A tela final é organizada por instalação/fila do Windows para que cada
+        # nome, como "promocao" ou "etiqueta", receba seu próprio quadro.
+        $physicalInventoryDevices = @($inventoryDevices)
+        $installedQueueEntries = @()
+
+        foreach ($printerQueue in $printerQueues) {
+            if (-not (Test-ZebraPrinterQueue -Queue $printerQueue)) { continue }
+
+            $queueName = [string](Get-ZebraObjectValue $printerQueue 'Name')
+            $driverName = [string](Get-ZebraObjectValue $printerQueue 'DriverName')
+            $portName = [string](Get-ZebraObjectValue $printerQueue 'PortName')
+            $queuePnpIdentifier = [string](Get-ZebraObjectValue $printerQueue 'PNPDeviceID')
+            $queueState = Get-ZebraQueueState -Queue $printerQueue
+            $queueModel = Resolve-ZebraModel `
+                -PnpEvidence '' `
+                -QueueEvidence ("$queueName | $driverName | $queuePnpIdentifier") `
+                -FriendlyEvidence ''
+
+            $installedQueueEntries += [pscustomobject][ordered]@{
+                Key             = ('QUEUE:{0}|{1}' -f $queueName, $portName).ToUpperInvariant()
+                Name            = $queueName
+                Driver          = $driverName
+                Port            = $portName
+                PnpIdentifier   = $queuePnpIdentifier
+                Model           = $queueModel
+                State           = $queueState.Text
+                StateCategory   = $queueState.Category
+                IsOffline       = $queueState.IsOffline
+                IsUsable        = $queueState.IsUsable
+            }
+        }
+
+        $displayDevices = @()
+        $physicalUsageCount = @{}
+
+        foreach ($queueEntry in $installedQueueEntries) {
+            $matchedPhysical = $null
+            $connectionConfidence = 'Não detectada'
+
+            # Associação mais segura: o PNPDeviceID da fila coincide com o nó
+            # USBPRINT que está fisicamente presente neste momento.
+            if (-not [string]::IsNullOrWhiteSpace($queueEntry.PnpIdentifier)) {
+                $matchedPhysical = @(
+                    $physicalInventoryDevices |
+                        Where-Object {
+                            (-not [string]::IsNullOrWhiteSpace($_.UsbPrintInstanceId) -and
+                             $_.UsbPrintInstanceId -ieq $queueEntry.PnpIdentifier) -or
+                            (-not [string]::IsNullOrWhiteSpace($_.UsbInstanceId) -and
+                             $_.UsbInstanceId -ieq $queueEntry.PnpIdentifier)
+                        }
+                ) | Select-Object -First 1
+
+                if ($null -ne $matchedPhysical) {
+                    $connectionConfidence = 'Confirmada pelo Windows'
+                }
+            }
+
+            # Alguns drivers Zebra deixam PNPDeviceID vazio. Quando a fila está
+            # disponível, usamos uma Zebra física do mesmo modelo como associação
+            # provável. Isso não transforma uma fila sem resposta em conectada.
+            if ($null -eq $matchedPhysical -and $queueEntry.IsUsable) {
+                $compatiblePhysical = @(
+                    $physicalInventoryDevices |
+                        Where-Object {
+                            Test-ZebraModelCompatibility `
+                                -FirstModel $queueEntry.Model `
+                                -SecondModel $_.Model
+                        } |
+                        Sort-Object `
+                            @{ Expression = {
+                                if ($physicalUsageCount.ContainsKey($_.Key)) {
+                                    [int]$physicalUsageCount[$_.Key]
+                                }
+                                else { 0 }
+                            }; Descending = $false },
+                            Model,
+                            PhysicalPort
+                )
+
+                if ($compatiblePhysical.Count -gt 0) {
+                    $matchedPhysical = $compatiblePhysical[0]
+                    $connectionConfidence = 'Provável pelo modelo e estado'
+                }
+            }
+
+            if ($null -ne $matchedPhysical) {
+                if (-not $physicalUsageCount.ContainsKey($matchedPhysical.Key)) {
+                    $physicalUsageCount[$matchedPhysical.Key] = 0
+                }
+                $physicalUsageCount[$matchedPhysical.Key] = [int]$physicalUsageCount[$matchedPhysical.Key] + 1
+
+                $overallState = 'Pronta para uso'
+                $overallCategory = 'Good'
+                switch ($queueEntry.StateCategory) {
+                    'Printing' {
+                        $overallState = 'Imprimindo'
+                        $overallCategory = 'Good'
+                    }
+                    'Busy' {
+                        $overallState = 'Preparando para imprimir'
+                        $overallCategory = 'Good'
+                    }
+                    'Paused' {
+                        $overallState = 'Pausada no Windows'
+                        $overallCategory = 'Warning'
+                    }
+                    'Offline' {
+                        $overallState = 'Cabo detectado, mas a fila está offline no Windows'
+                        $overallCategory = 'Warning'
+                    }
+                    'Unknown' {
+                        $overallState = 'Cabo detectado; aguardando resposta da impressora'
+                        $overallCategory = 'Warning'
+                    }
+                }
+
+                $displayModel = $queueEntry.Model
+                if ($displayModel -in @('Zebra', 'Impressora Zebra') -and
+                    -not [string]::IsNullOrWhiteSpace($matchedPhysical.Model)) {
+                    $displayModel = $matchedPhysical.Model
+                }
+
+                $displayDevices += [pscustomobject][ordered]@{
+                    Key                    = $queueEntry.Key
+                    EntryType              = 'Queue'
+                    Model                  = $displayModel
+                    IsConnected            = $true
+                    CableStatus            = 'CONECTADO'
+                    OverallState           = $overallState
+                    OverallCategory        = $overallCategory
+                    QueueName              = $queueEntry.Name
+                    QueueState             = $queueEntry.State
+                    QueueStateCategory     = $queueEntry.StateCategory
+                    DriverName             = $queueEntry.Driver
+                    VirtualPort            = $queueEntry.Port
+                    QueueAssociation       = $connectionConfidence
+                    QueueCandidates        = @()
+                    PhysicalPort           = $matchedPhysical.PhysicalPort
+                    UsbRoute               = $matchedPhysical.UsbRoute
+                    VendorId               = $matchedPhysical.VendorId
+                    UsbProductId           = $matchedPhysical.UsbProductId
+                    SerialOrInstance       = $matchedPhysical.SerialOrInstance
+                    UsbInstanceId          = $matchedPhysical.UsbInstanceId
+                    UsbPrintInstanceId     = $matchedPhysical.UsbPrintInstanceId
+                    LocationInfo           = $matchedPhysical.LocationInfo
+                    LocationPath           = $matchedPhysical.LocationPath
+                    ContainerId            = $matchedPhysical.ContainerId
+                    BusReportedDescription = $matchedPhysical.BusReportedDescription
+                    HardwareIds            = $matchedPhysical.HardwareIds
+                    LastSeen               = Get-Date
+                    DisconnectedAt         = $null
+                }
+                continue
+            }
+
+            $cableStatus = 'NÃO DETECTADO'
+            $overallState = 'Cabo USB desconectado, impressora desligada ou porta incorreta'
+            $overallCategory = 'Bad'
+
+            if ($queueEntry.IsUsable) {
+                $cableStatus = 'NÃO CONFIRMADO'
+                $overallState = 'O Windows mostra disponível, mas não confirmou qual cabo USB está sendo usado'
+                $overallCategory = 'Warning'
+            }
+            elseif ($queueEntry.IsOffline) {
+                $overallState = 'Offline — cabo USB não detectado ou impressora desligada'
+            }
+            elseif ($queueEntry.StateCategory -eq 'Paused') {
+                $overallState = 'Fila pausada; o cabo USB não foi detectado'
+                $overallCategory = 'Warning'
+            }
+
+            $displayDevices += [pscustomobject][ordered]@{
+                Key                    = $queueEntry.Key
+                EntryType              = 'Queue'
+                Model                  = $queueEntry.Model
+                IsConnected            = $false
+                CableStatus            = $cableStatus
+                OverallState           = $overallState
+                OverallCategory        = $overallCategory
+                QueueName              = $queueEntry.Name
+                QueueState             = $queueEntry.State
+                QueueStateCategory     = $queueEntry.StateCategory
+                DriverName             = $queueEntry.Driver
+                VirtualPort            = $queueEntry.Port
+                QueueAssociation       = 'Nenhum dispositivo USB correspondente foi encontrado'
+                QueueCandidates        = @()
+                PhysicalPort           = 'Não detectada'
+                UsbRoute               = ''
+                VendorId               = ''
+                UsbProductId           = ''
+                SerialOrInstance       = ''
+                UsbInstanceId          = ''
+                UsbPrintInstanceId     = $queueEntry.PnpIdentifier
+                LocationInfo           = ''
+                LocationPath           = ''
+                ContainerId            = ''
+                BusReportedDescription = ''
+                HardwareIds            = ''
+                LastSeen               = $null
+                DisconnectedAt         = $null
+            }
+        }
+
+        # Também mostra uma Zebra física que esteja conectada, mas ainda não tenha
+        # nenhuma fila/instalação criada no Windows.
+        foreach ($physicalDevice in $physicalInventoryDevices) {
+            if ($physicalUsageCount.ContainsKey($physicalDevice.Key)) { continue }
+
+            $physicalDevice | Add-Member -NotePropertyName EntryType -NotePropertyValue 'Physical' -Force
+            $physicalDevice | Add-Member -NotePropertyName QueueStateCategory -NotePropertyValue 'Unknown' -Force
+            $physicalDevice.QueueName = 'Ainda não configurada no Windows'
+            $physicalDevice.QueueState = 'Sem instalação'
+            $physicalDevice.QueueAssociation = 'Dispositivo físico sem fila'
+            $displayDevices += $physicalDevice
+        }
+
         return [pscustomobject][ordered]@{
             ScannedAt = Get-Date
-            Devices   = @($inventoryDevices | Sort-Object Model, PhysicalPort)
+            Devices   = @(
+                $displayDevices |
+                    Sort-Object `
+                        @{ Expression = 'IsConnected'; Descending = $true },
+                        QueueName,
+                        Model
+            )
         }
     }
 
@@ -679,17 +922,19 @@ Gerenciador Zebra USB em arquivo único:
 
         return [pscustomobject][ordered]@{
             Key                    = $Device.Key
+            EntryType              = $Device.EntryType
             Model                  = $Device.Model
             IsConnected            = $false
-            CableStatus            = 'DESCONECTADO'
+            CableStatus            = 'NÃO DETECTADO'
             OverallState           = 'Cabo USB desconectado ou impressora desligada'
             OverallCategory        = 'Bad'
             QueueName              = $Device.QueueName
-            QueueState             = 'Indisponível enquanto desconectada'
+            QueueState             = $Device.QueueState
+            QueueStateCategory     = $Device.QueueStateCategory
             DriverName             = $Device.DriverName
             VirtualPort            = $Device.VirtualPort
             QueueAssociation       = $Device.QueueAssociation
-            QueueCandidates        = @($Device.QueueCandidates)
+            QueueCandidates        = @()
             PhysicalPort           = $Device.PhysicalPort
             UsbRoute               = $Device.UsbRoute
             VendorId               = $Device.VendorId
@@ -722,20 +967,22 @@ Gerenciador Zebra USB em arquivo único:
         [void]$lines.Add('')
 
         if ($Devices.Count -eq 0) {
-            [void]$lines.Add('Nenhuma impressora Zebra foi detectada nesta execução.')
+            [void]$lines.Add('Nenhuma instalação ou impressora Zebra foi encontrada.')
         }
         else {
             $number = 0
             foreach ($device in $Devices) {
                 $number++
-                [void]$lines.Add(('Zebra {0}: {1}' -f $number, $device.Model))
+                [void]$lines.Add(('Zebra {0}: {1}' -f $number, $device.QueueName))
+                [void]$lines.Add(('  Modelo: {0}' -f $device.Model))
                 [void]$lines.Add(('  Cabo USB: {0}' -f $device.CableStatus))
                 [void]$lines.Add(('  Estado: {0}' -f $device.OverallState))
-                [void]$lines.Add(('  Nome no Windows: {0}' -f $device.QueueName))
+                [void]$lines.Add(('  Estado informado pelo Windows: {0}' -f $device.QueueState))
                 [void]$lines.Add(('  Porta de impressão: {0}' -f $device.VirtualPort))
                 [void]$lines.Add(('  Porta no computador: {0}' -f $device.PhysicalPort))
                 [void]$lines.Add(('  Número de série: {0}' -f $device.SerialOrInstance))
-                [void]$lines.Add(('  Identificador USB: {0}/{1}' -f $device.VendorId, $device.UsbProductId))
+                [void]$lines.Add(('  Driver: {0}' -f $device.DriverName))
+                [void]$lines.Add(('  Associação: {0}' -f $device.QueueAssociation))
                 [void]$lines.Add('')
             }
         }
@@ -775,15 +1022,20 @@ Gerenciador Zebra USB em arquivo único:
             [Parameter(Mandatory)][bool]$Detailed
         )
 
-        $connectedDevices = @($Devices | Where-Object { $_.IsConnected })
-        $disconnectedDevices = @($Devices | Where-Object { -not $_.IsConnected })
+        $connectedDevices = @($Devices | Where-Object { $_.CableStatus -eq 'CONECTADO' })
+        $unconfirmedDevices = @($Devices | Where-Object { $_.CableStatus -eq 'NÃO CONFIRMADO' })
+        $notDetectedDevices = @($Devices | Where-Object { $_.CableStatus -eq 'NÃO DETECTADO' })
 
         Clear-Host
         Write-Host '==================================================================' -ForegroundColor Cyan
-        Write-Host '              ZEBRA USB - STATUS DA IMPRESSORA' -ForegroundColor Cyan
+        Write-Host '              ZEBRA USB - STATUS DAS IMPRESSORAS' -ForegroundColor Cyan
         Write-Host '==================================================================' -ForegroundColor Cyan
         Write-Host ('Atualização automática {0}  {1:dd/MM/yyyy HH:mm:ss}' -f $SpinnerCharacter, $ScannedAt) -ForegroundColor White
-        Write-Host ('Conectadas: {0}   Desconectadas nesta execução: {1}' -f $connectedDevices.Count, $disconnectedDevices.Count) -ForegroundColor DarkGray
+        Write-Host ('Instalações: {0}   Conectadas: {1}   Sem cabo detectado: {2}' -f $Devices.Count, $connectedDevices.Count, $notDetectedDevices.Count) -ForegroundColor DarkGray
+
+        if ($unconfirmedDevices.Count -gt 0) {
+            Write-Host ('Conexão não confirmada pelo Windows: {0}' -f $unconfirmedDevices.Count) -ForegroundColor Yellow
+        }
 
         if (-not [string]::IsNullOrWhiteSpace($LastChangeMessage)) {
             Write-Host ('Última alteração: {0}' -f $LastChangeMessage) -ForegroundColor Yellow
@@ -791,55 +1043,46 @@ Gerenciador Zebra USB em arquivo único:
         Write-Host ''
 
         if ($Devices.Count -eq 0) {
-            Write-Host '                     CABO USB DESCONECTADO' -ForegroundColor Red
-            Write-Host ''
-            Write-Host 'Nenhuma impressora Zebra foi encontrada.' -ForegroundColor Yellow
-            Write-Host 'Ligue a impressora e conecte o cabo USB. A tela será atualizada automaticamente.' -ForegroundColor White
-            Write-Host 'Não é necessário fechar ou executar o comando novamente.' -ForegroundColor DarkGray
+            Write-Host 'Nenhuma instalação ou impressora Zebra foi encontrada.' -ForegroundColor Yellow
+            Write-Host 'Ligue a impressora, conecte o cabo USB ou instale o driver Zebra.' -ForegroundColor White
+            Write-Host 'A tela será atualizada automaticamente.' -ForegroundColor DarkGray
             Write-Host ''
         }
         else {
             $displayNumber = 0
-            foreach ($device in ($Devices | Sort-Object @{ Expression = 'IsConnected'; Descending = $true }, Model, PhysicalPort)) {
+            foreach ($device in ($Devices | Sort-Object @{ Expression = 'IsConnected'; Descending = $true }, QueueName, Model)) {
                 $displayNumber++
-                Write-Host ('---------------------------- ZEBRA {0} ----------------------------' -f $displayNumber) -ForegroundColor DarkCyan
+                $titleName = $device.QueueName
+                if ([string]::IsNullOrWhiteSpace($titleName)) { $titleName = $device.Model }
+
+                Write-Host ('---------------------- ZEBRA {0} - {1} ----------------------' -f $displayNumber, $titleName) -ForegroundColor DarkCyan
+                Write-ZebraField -Label 'Nome no Windows' -Value $device.QueueName -Color White
                 Write-ZebraField -Label 'Modelo' -Value $device.Model -Color Cyan
 
-                $cableColor = if ($device.IsConnected) { [ConsoleColor]::Green } else { [ConsoleColor]::Red }
+                $cableColor = [ConsoleColor]::Yellow
+                if ($device.CableStatus -eq 'CONECTADO') { $cableColor = [ConsoleColor]::Green }
+                elseif ($device.CableStatus -eq 'NÃO DETECTADO') { $cableColor = [ConsoleColor]::Red }
+
                 Write-ZebraField -Label 'Cabo USB' -Value $device.CableStatus -Color $cableColor
                 Write-ZebraField -Label 'Estado' -Value $device.OverallState -Color (Get-ZebraStateColor -Category $device.OverallCategory)
+                Write-ZebraField -Label 'Status no Windows' -Value $device.QueueState
+                Write-ZebraField -Label 'Porta de impressão' -Value $device.VirtualPort -Color Cyan
+                Write-ZebraField -Label 'Porta no computador' -Value $device.PhysicalPort -Color Cyan
+                Write-ZebraField -Label 'Número de série' -Value $device.SerialOrInstance
 
-                if ($device.IsConnected) {
-                    Write-ZebraField -Label 'Nome no Windows' -Value $device.QueueName
-                    Write-ZebraField -Label 'Porta de impressão' -Value $device.VirtualPort -Color Cyan
-                    Write-ZebraField -Label 'Porta no computador' -Value $device.PhysicalPort -Color Cyan
-                    Write-ZebraField -Label 'Número de série' -Value $device.SerialOrInstance
-
-                    if ($device.QueueCandidates.Count -gt 1) {
-                        Write-Host ''
-                        Write-Host 'Outras instalações encontradas no Windows:' -ForegroundColor DarkGray
-                        foreach ($otherQueue in @($device.QueueCandidates | Select-Object -Skip 1)) {
-                            $otherColor = if ($otherQueue.IsOffline) { [ConsoleColor]::Yellow } else { [ConsoleColor]::Gray }
-                            Write-Host ('  - {0} | {1} | {2}' -f $otherQueue.Name, $otherQueue.Port, $otherQueue.ShortState) -ForegroundColor $otherColor
-                        }
-                    }
-                }
-                elseif ($null -ne $device.DisconnectedAt) {
-                    Write-ZebraField -Label 'Desconectada às' -Value ($device.DisconnectedAt.ToString('HH:mm:ss')) -Color Red
-                    Write-ZebraField -Label 'Última porta usada' -Value $device.PhysicalPort
-                    Write-ZebraField -Label 'Nome no Windows' -Value $device.QueueName
+                if ($null -ne $device.DisconnectedAt -and -not $device.IsConnected) {
+                    Write-ZebraField -Label 'Sem conexão desde' -Value ($device.DisconnectedAt.ToString('HH:mm:ss')) -Color Red
                 }
 
                 if ($Detailed) {
                     Write-Host ''
-                    Write-Host 'Informações avançadas:' -ForegroundColor DarkGray
+                    Write-Host 'Mais informações:' -ForegroundColor DarkGray
                     Write-ZebraField -Label 'Driver' -Value $device.DriverName
-                    Write-ZebraField -Label 'Ligação com Windows' -Value $device.QueueAssociation
+                    Write-ZebraField -Label 'Como foi identificado' -Value $device.QueueAssociation
                     Write-ZebraField -Label 'Rota USB' -Value $device.UsbRoute
                     Write-ZebraField -Label 'Identificador USB' -Value (($device.VendorId + ' / ' + $device.UsbProductId).Trim([char[]]' /'))
                     Write-ZebraField -Label 'USB InstanceId' -Value $device.UsbInstanceId
                     Write-ZebraField -Label 'USBPRINT InstanceId' -Value $device.UsbPrintInstanceId
-                    Write-ZebraField -Label 'LocationPath' -Value $device.LocationPath
                 }
                 Write-Host ''
             }
@@ -917,15 +1160,34 @@ Gerenciador Zebra USB em arquivo único:
             $currentDevices = @{}
             foreach ($device in $inventory.Devices) {
                 $currentDevices[$device.Key] = $device
-
                 $wasKnown = $knownDevices.ContainsKey($device.Key)
-                $wasConnected = $false
-                if ($wasKnown) {
-                    $wasConnected = [bool]$knownDevices[$device.Key].IsConnected
-                }
 
-                if (-not $wasKnown -or -not $wasConnected) {
-                    $lastChangeMessage = ('{0} conectada às {1:HH:mm:ss}' -f $device.Model, (Get-Date))
+                if ($wasKnown) {
+                    $previousDevice = $knownDevices[$device.Key]
+
+                    if ($previousDevice.IsConnected -and -not $device.IsConnected) {
+                        $disconnectedTime = Get-Date
+                        $device.DisconnectedAt = $disconnectedTime
+                        $lastChangeMessage = ('{0} ficou sem cabo às {1:HH:mm:ss}' -f $device.QueueName, $disconnectedTime)
+                        $lastChangeExpiration = (Get-Date).AddSeconds(8)
+                        try {
+                            [Console]::Beep(700, 180)
+                            [Console]::Beep(500, 220)
+                        }
+                        catch {}
+                    }
+                    elseif (-not $previousDevice.IsConnected -and $device.IsConnected) {
+                        $device.DisconnectedAt = $null
+                        $lastChangeMessage = ('{0} conectada às {1:HH:mm:ss}' -f $device.QueueName, (Get-Date))
+                        $lastChangeExpiration = (Get-Date).AddSeconds(8)
+                        try { [Console]::Beep(1000, 220) } catch {}
+                    }
+                    elseif (-not $device.IsConnected -and $null -ne $previousDevice.DisconnectedAt) {
+                        $device.DisconnectedAt = $previousDevice.DisconnectedAt
+                    }
+                }
+                elseif ($device.IsConnected) {
+                    $lastChangeMessage = ('{0} conectada às {1:HH:mm:ss}' -f $device.QueueName, (Get-Date))
                     $lastChangeExpiration = (Get-Date).AddSeconds(8)
                     try { [Console]::Beep(1000, 220) } catch {}
                 }
@@ -937,16 +1199,14 @@ Gerenciador Zebra USB em arquivo único:
                 if ($currentDevices.ContainsKey($knownKey)) { continue }
 
                 $knownDevice = $knownDevices[$knownKey]
-                if ($knownDevice.IsConnected) {
+                if ($knownDevice.EntryType -eq 'Physical' -and $knownDevice.IsConnected) {
                     $disconnectedTime = Get-Date
                     $knownDevices[$knownKey] = Copy-ZebraDisconnectedDevice -Device $knownDevice -DisconnectedAt $disconnectedTime
                     $lastChangeMessage = ('{0} desconectada às {1:HH:mm:ss}' -f $knownDevice.Model, $disconnectedTime)
                     $lastChangeExpiration = (Get-Date).AddSeconds(8)
-                    try {
-                        [Console]::Beep(700, 180)
-                        [Console]::Beep(500, 220)
-                    }
-                    catch {}
+                }
+                else {
+                    $knownDevices.Remove($knownKey)
                 }
             }
 
