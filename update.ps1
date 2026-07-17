@@ -1,335 +1,603 @@
+#requires -Version 5.1
+
 # Francisney Delmondes
-# Telefone: (61) 99363-0969
 # Email: suporte@inilog.com
+# INILOG - Ferramentas Administrativas
 
-Clear-Host
-$url = "https://ipinfo.io/json"
-$response = Invoke-RestMethod -Uri $url
-$ip = $response.ip
-$provider = $response.org
+$ErrorActionPreference = 'Continue'
 
-Write-Host "$ip"
-Write-Host "$provider"
-
-
-function ConvertTo-PlainText([System.Security.SecureString]$secureString) {
-    $ptr = [System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($secureString)
-    [System.Runtime.InteropServices.Marshal]::PtrToStringBSTR($ptr)
+try {
+    [Net.ServicePointManager]::SecurityProtocol =
+        [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
+} catch {
+    # Mantém a compatibilidade caso TLS 1.2 já esteja configurado.
 }
 
-$Nzivkqavmg = (Get-Date).ToString("ddMMyyyy")
-
-Write-Host "======================" -ForegroundColor Cyan
-Write-Host "     INILOG - Administration Tool  " -ForegroundColor Yellow
-
-Write-Host "======================" -ForegroundColor Cyan
-if ((ConvertTo-PlainText (Read-Host -Prompt "E agora?" -AsSecureString)) -ne $Nzivkqavmg) {
-    Write-Host @"
-       _____
-     /      \
-    |  O  O  |
-    |   __   |
-     \______/
-
-
-
-
-"@ -ForegroundColor red
-    Write-Host "" 
-    Write-Host "      Ihiii!" -ForegroundColor red
-   
-
-    
-
-    Start-Sleep -Seconds 1 
-    irm https://raw.githubusercontent.com/francisney/inilog/refs/heads/main/tetris.ps1 | iex
-    return
-}
-Clear-Host
-
-Write-Host ":)"
-
-$tiDir = "C:\ti"
-if (-Not (Test-Path -Path $tiDir)) {
-New-Item -ItemType Directory -Path $tiDir | Out-Null
-Write-Host "Diretório $tiDir criado." -ForegroundColor Green
+try {
+    $Host.UI.RawUI.WindowTitle = 'INILOG - Ferramentas Administrativas'
+} catch {
+    # Alguns hosts não permitem alterar o título da janela.
 }
 
+$script:DiretorioTI = 'C:\ti'
+$script:IpPublico = 'Indisponível'
+$script:Provedor = 'Indisponível'
 
+$script:CorBorda = 'DarkCyan'
+$script:CorTitulo = 'Yellow'
+$script:CorSecao = 'Cyan'
+$script:CorOpcao = 'White'
+$script:CorNumero = 'Green'
+$script:CorSucesso = 'Green'
+$script:CorAviso = 'Yellow'
+$script:CorErro = 'Red'
+$script:CorInfo = 'Cyan'
 
+function Write-Line {
+    param(
+        [char]$Character = '=',
+        [ConsoleColor]$Color = 'DarkCyan'
+    )
 
-function Show-Menu {
-Clear-Host
-Write-Host "======================" -ForegroundColor Cyan
-Write-Host "     INILOG - Administration Tool  " -ForegroundColor Yellow
-Write-Host "IP Público: $ip"
-Write-Host "Nome do Provedor: $provider"
-Write-Host "======================" -ForegroundColor Cyan
-Write-Host "1. Office" -ForegroundColor Yellow
-Write-Host "2. Windows" -ForegroundColor Yellow
-Write-Host "3. Reset spooler" -ForegroundColor Yellow
-Write-Host "4. CC" -ForegroundColor Yellow
-Write-Host "5. Revo" -ForegroundColor Yellow
-Write-Host "6. Zebra" -ForegroundColor Yellow
-Write-Host "7. MP-4200" -ForegroundColor Yellow
-Write-Host "8. IP Scanner" -ForegroundColor Yellow
-Write-Host "9. Atv PS" -ForegroundColor Yellow
-Write-Host "10. CrystalDiskInfo" -ForegroundColor Yellow
-Write-Host "11. WinRAR" -ForegroundColor Yellow
-Write-Host "12. AnyDesk" -ForegroundColor Yellow
-Write-Host "13. Rustdesk" -ForegroundColor Yellow
-Write-Host "15. Optimizer" -ForegroundColor Yellow
-Write-Host "16. WinMTR" -ForegroundColor Yellow
-Write-Host "17. CPU-Z" -ForegroundColor Yellow
-Write-Host "18. MiniTool Partition" -ForegroundColor Yellow
-Write-Host "19. WINTOHD" -ForegroundColor Yellow
-Write-Host "20. GodMode" -ForegroundColor Yellow
-Write-Host "21. Adm Tools" -ForegroundColor Yellow
-Write-Host "22. Speed Test" -ForegroundColor Yellow
-Write-Host "23. CLS" -ForegroundColor Yellow
-Write-Host "24. Scanner ps" -ForegroundColor Yellow
-Write-Host "25. WinUtil" -ForegroundColor Yellow
-Write-Host "26. WinRar" -ForegroundColor Yellow
-Write-Host "27. Fake failover" -ForegroundColor Yellow
-Write-Host "28. AnyDesk Reset" -ForegroundColor Yellow
-Write-Host "29. Web Control" -ForegroundColor Yellow
-Write-Host "30. HWiNFO64" -ForegroundColor Yellow
-Write-Host "31. Snappy-Driver" -ForegroundColor Yellow
-Write-Host "32. Zebra N2" -ForegroundColor Yellow
-Write-Host "0. Sair" -ForegroundColor Red
-Write-Host "======================" -ForegroundColor Cyan
-}
-
-
-do {
-Show-Menu
-$choice = Read-Host "Choose an Option"
-
-switch ($choice) {
-"1" { 
-    Start-Process "https://drive.google.com/file/d/1WLEhOUIJMR3i6xWvYZVaYi13L6PpSGZ7/view"
-    Start-Process "https://c2rsetup.officeapps.live.com/c2r/download.aspx?ProductreleaseID=O365BusinessRetail&platform=x64&language=pt-br&version=O16GA"
-  
-    Write-Host "Abrindo links para baixar o Office..." -ForegroundColor Green
-}
-
-"2" { Start-Process "https://www.microsoft.com/pt-br/software-download/windows10"; Write-Host "Abrindo link para baixar Windows 10..." -ForegroundColor Green }
-"3" {
-$cmdFile = "C:\ti\zerar_fila_de_impressao.cmd"
-Invoke-WebRequest -Uri "https://raw.githubusercontent.com/francisney/inilog/refs/heads/main/Zerar_fila_de_impressao.cmd" -OutFile $cmdFile
-Write-Host "Download do script de zerar fila de impressão concluído." -ForegroundColor Green
-Start-Process cmd.exe -ArgumentList "/c `"$cmdFile`"" -Verb RunAs
-}
-"4" {
-$ccleanerFile = "C:\ti\ccleaner.zip"
-Invoke-WebRequest -Uri "https://download.ccleaner.com/portable/ccsetup629.zip" -OutFile $ccleanerFile
-Write-Host "Baixando CCleaner..." -ForegroundColor Green
-}
-"5" {
-$revoFile = "C:\ti\RevoUninstaller_Portable.zip"
-Invoke-WebRequest -Uri "https://download.revouninstaller.com/RevoUninstaller_Portable.zip" -OutFile $revoFile
-Write-Host "Baixando Revo Uninstaller..." -ForegroundColor Green
-}
-"6" {
-$zebraFile = "C:\ti\driver-zebra-zd220-e-zd230.zip"
-Invoke-WebRequest -Uri "https://inilog.com/suporte/628/files/driver-zebra-zd220-e-zd230.zip" -OutFile $zebraFile
-Write-Host "Baixando Driver Zebra..." -ForegroundColor Green
-}
-"7" {
-$mp4200File = "C:\ti\MP-4200.zip"
-Invoke-WebRequest -Uri "https://www.inilog.com/suporte/628/files/MP-4200.zip" -OutFile $mp4200File
-Write-Host "Baixando MP-4200..." -ForegroundColor Green
-}
-"8" {
-$ipScannerFile = "C:\ti\Advanced_IP_Scanner.exe"
-Invoke-WebRequest -Uri "https://download.advanced-ip-scanner.com/download/files/Advanced_IP_Scanner_2.5.4594.1.exe" -OutFile $ipScannerFile
-Write-Host "Baixando Advanced IP Scanner..." -ForegroundColor Green
-}
-"9" {
-irm https://get.activated.win | iex; Write-Host "Ativando Windows..." -ForegroundColor Green
-}
-"10" {
-$crystalDiskFile = "C:\ti\CrystalDiskInfo.zip"
-Invoke-WebRequest -Uri "http://www.inilog.com/suporte/628/files/CrystalDiskInfoPortable.zip" -OutFile $crystalDiskFile
-Write-Host "Baixando CrystalDiskInfo..." -ForegroundColor Green
-}
-"11" {
-$winRarFile = "C:\ti\WinRAR.exe"
-Invoke-WebRequest -Uri "https://www.win-rar.com/fileadmin/winrar-versions/winrar/winrar-x64-701.exe" -OutFile $winRarFile
-Write-Host "Baixando WinRAR..." -ForegroundColor Green
-}
-"12" {
-$anyDeskFile = "C:\ti\AnyDesk.exe"
-Invoke-WebRequest -Uri "https://download.anydesk.com/AnyDesk.exe" -OutFile $anyDeskFile
-Write-Host "Baixando AnyDesk..." -ForegroundColor Green
-}
-"13" {
-$githubCmdFile = "C:\ti\rustdesk-1.3.2-x86_64.exe"
-Invoke-WebRequest -Uri "https://github.com/rustdesk/rustdesk/releases/download/1.3.2/rustdesk-1.3.2-x86_64.exe" -OutFile $githubCmdFile
-Write-Host "Baixando Rustdek..." -ForegroundColor Green
-}
-# Esse abaixo e especifico para um serviço utilize os outros
-"14" { 
-irm https://inilog.com/suporte/628/files/628.ps1| iex 
-}
-
-"15" {
-$optimizerFile = "C:\ti\Optimizer.exe"
-Invoke-WebRequest -Uri "https://github.com/hellzerg/optimizer/releases/download/16.7/Optimizer-16.7.exe" -OutFile $optimizerFile
-Write-Host "Baixando Optimizer..." -ForegroundColor Green
-}
-
-"16" {
-$winMtrFile = "C:\ti\WinMTR.exe"
-Invoke-WebRequest -Uri "https://www.inilog.com/suporte/628/files/WinMTR.exe" -OutFile $winMtrFile
-Write-Host "Baixando WinMTR..." -ForegroundColor Green
-}
-
-"17" {
-$cpuZFile = "C:\ti\cpu-z.zip"
-Invoke-WebRequest -Uri "https://download.cpuid.com/cpu-z/cpu-z_2.11-en.zip" -OutFile $cpuZFile
-Write-Host "Baixando CPU-Z..." -ForegroundColor Green
-}
-"18" {
-Start-Process "https://cdn2.minitool.com/?p=pw&e=pw-free"; 
-Write-Host "Abrindo link para baixar MiniTool Partition Wizard..." -ForegroundColor Green
-}
-"19" {
-Start-Process "https://www.inilog.com/suporte/628/files/WINTOHD_Hasleo.zip"; 
-Write-Host "Abrindo link para baixar WINTOHD..." -ForegroundColor Green
-}
-
-
-"20" { 
-irm https://raw.githubusercontent.com/francisney/inilog/refs/heads/main/godmode | iex
-}
-
-"21" { 
-irm https://raw.githubusercontent.com/francisney/inilog/refs/heads/main/adm.ps1 | iex
-}
-
-
-
-
-"22" { 
-irm https://raw.githubusercontent.com/francisney/inilog/refs/heads/main/speedtest.ps1 | iex
-}
-
-
-"23" { 
-irm https://raw.githubusercontent.com/francisney/inilog/main/cls.ps1 | iex 
-}
-
-"24" {
-    $url = "https://raw.githubusercontent.com/francisney/inilog/refs/heads/main/IP_Scanner.exe"
-    $destino = "C:\ti\IP_Scanner.exe"
-
-    if (-not (Test-Path "C:\ti")) {
-        New-Item -ItemType Directory -Path "C:\ti" | Out-Null
-        Write-Host "Diretório C:\ti criado." -ForegroundColor Green
-    }
-
-    Write-Host "Baixando IP Scanner..." -ForegroundColor Yellow
+    $width = 72
 
     try {
-        $request = [System.Net.HttpWebRequest]::Create($url)
-        $response = $request.GetResponse()
-        $totalBytes = $response.ContentLength
-        $stream = $response.GetResponseStream()
+        $currentWidth = $Host.UI.RawUI.WindowSize.Width - 1
+        if ($currentWidth -ge 50 -and $currentWidth -le 110) {
+            $width = $currentWidth
+        }
+    } catch {
+        # Usa a largura padrão.
+    }
 
-        $fileStream = [System.IO.File]::Create($destino)
+    Write-Host ($Character.ToString() * $width) -ForegroundColor $Color
+}
 
-        $buffer = New-Object byte[] 8192
-        $totalLido = 0
+function Write-Centered {
+    param(
+        [Parameter(Mandatory)]
+        [string]$Text,
 
-        do {
-            $bytesLidos = $stream.Read($buffer, 0, $buffer.Length)
+        [ConsoleColor]$Color = 'White'
+    )
 
-            if ($bytesLidos -gt 0) {
-                $fileStream.Write($buffer, 0, $bytesLidos)
-                $totalLido += $bytesLidos
+    $width = 72
 
-                if ($totalBytes -gt 0) {
-                    $porcentagem = [math]::Round(($totalLido / $totalBytes) * 100, 2)
+    try {
+        $currentWidth = $Host.UI.RawUI.WindowSize.Width - 1
+        if ($currentWidth -ge 50 -and $currentWidth -le 110) {
+            $width = $currentWidth
+        }
+    } catch {
+        # Usa a largura padrão.
+    }
 
-                    Write-Progress `
-                        -Activity "Baixando IP_Scanner.exe" `
-                        -Status "$porcentagem% concluído" `
-                        -PercentComplete $porcentagem
-                }
+    $padding = [Math]::Max(0, [Math]::Floor(($width - $Text.Length) / 2))
+    Write-Host ((' ' * $padding) + $Text) -ForegroundColor $Color
+}
+
+function Write-Status {
+    param(
+        [Parameter(Mandatory)]
+        [string]$Message,
+
+        [ValidateSet('Info', 'Success', 'Warning', 'Error')]
+        [string]$Type = 'Info'
+    )
+
+    switch ($Type) {
+        'Success' {
+            Write-Host '[OK] ' -NoNewline -ForegroundColor $script:CorSucesso
+            Write-Host $Message -ForegroundColor White
+        }
+        'Warning' {
+            Write-Host '[!]  ' -NoNewline -ForegroundColor $script:CorAviso
+            Write-Host $Message -ForegroundColor White
+        }
+        'Error' {
+            Write-Host '[ERRO] ' -NoNewline -ForegroundColor $script:CorErro
+            Write-Host $Message -ForegroundColor White
+        }
+        default {
+            Write-Host '[i]  ' -NoNewline -ForegroundColor $script:CorInfo
+            Write-Host $Message -ForegroundColor White
+        }
+    }
+}
+
+function Write-MenuSection {
+    param([Parameter(Mandatory)][string]$Title)
+
+    Write-Host ''
+    Write-Host ('  {0}' -f $Title.ToUpperInvariant()) -ForegroundColor $script:CorSecao
+}
+
+function Write-MenuItem {
+    param(
+        [Parameter(Mandatory)][string]$Number,
+        [Parameter(Mandatory)][string]$Label
+    )
+
+    Write-Host '  [' -NoNewline -ForegroundColor DarkGray
+    Write-Host $Number.PadLeft(2, '0') -NoNewline -ForegroundColor $script:CorNumero
+    Write-Host '] ' -NoNewline -ForegroundColor DarkGray
+    Write-Host $Label -ForegroundColor $script:CorOpcao
+}
+
+function ConvertTo-PlainText {
+    param([Parameter(Mandatory)][System.Security.SecureString]$SecureString)
+
+    $pointer = [IntPtr]::Zero
+
+    try {
+        $pointer = [Runtime.InteropServices.Marshal]::SecureStringToBSTR($SecureString)
+        return [Runtime.InteropServices.Marshal]::PtrToStringBSTR($pointer)
+    } finally {
+        if ($pointer -ne [IntPtr]::Zero) {
+            [Runtime.InteropServices.Marshal]::ZeroFreeBSTR($pointer)
+        }
+    }
+}
+
+function Get-PublicNetworkInfo {
+    try {
+        $networkInfo = Invoke-RestMethod -Uri 'https://ipinfo.io/json' -TimeoutSec 10 -ErrorAction Stop
+
+        if ($networkInfo.ip) {
+            $script:IpPublico = [string]$networkInfo.ip
+        }
+
+        if ($networkInfo.org) {
+            $script:Provedor = [string]$networkInfo.org
+        }
+    } catch {
+        $script:IpPublico = 'Não foi possível consultar'
+        $script:Provedor = 'Não foi possível consultar'
+    }
+}
+
+function Initialize-WorkingDirectory {
+    try {
+        if (-not (Test-Path -LiteralPath $script:DiretorioTI)) {
+            New-Item -ItemType Directory -Path $script:DiretorioTI -Force | Out-Null
+            Write-Status "Diretório $script:DiretorioTI criado." 'Success'
+        }
+    } catch {
+        Write-Status "Não foi possível criar $script:DiretorioTI. $($_.Exception.Message)" 'Error'
+    }
+}
+
+function Save-RemoteFile {
+    param(
+        [Parameter(Mandatory)][string]$Uri,
+        [Parameter(Mandatory)][string]$Destination,
+        [Parameter(Mandatory)][string]$Description,
+        [switch]$Run,
+        [switch]$RunAsAdministrator
+    )
+
+    try {
+        $parentDirectory = Split-Path -Parent $Destination
+
+        if ($parentDirectory -and -not (Test-Path -LiteralPath $parentDirectory)) {
+            New-Item -ItemType Directory -Path $parentDirectory -Force | Out-Null
+        }
+
+        Write-Status "Baixando $Description..." 'Info'
+        Invoke-WebRequest -Uri $Uri -OutFile $Destination -UseBasicParsing -ErrorAction Stop
+        Write-Status "$Description salvo em: $Destination" 'Success'
+
+        if ($Run) {
+            if ($RunAsAdministrator) {
+                Start-Process -FilePath $Destination -Verb RunAs
+            } else {
+                Start-Process -FilePath $Destination
             }
 
-        } while ($bytesLidos -gt 0)
-
-        $fileStream.Close()
-        $stream.Close()
-        $response.Close()
-
-        Write-Progress -Activity "Baixando IP_Scanner.exe" -Completed
-
-        Write-Host "Download concluído em: $destino" -ForegroundColor Green
-        Write-Host "Executando IP Scanner..." -ForegroundColor Cyan
-
-        Start-Process -FilePath $destino
-    }
-    catch {
-        Write-Host "Erro ao baixar ou executar o IP Scanner:" -ForegroundColor Red
-        Write-Host $_.Exception.Message -ForegroundColor Red
-    }
-}
-
-"25" { 
-irm https://raw.githubusercontent.com/francisney/winutil/refs/heads/main/windev.ps1 | iex 
-}
-
-"26" {
-$winRAr = "C:\ti\winrar-x64-701.exe"
-Invoke-WebRequest -Uri "https://www.win-rar.com/fileadmin/winrar-versions/winrar/winrar-x64-701.exe" -OutFile $winRAr
-Write-Host "Baixando WinRar..." -ForegroundColor Green
-}
-
-"27" {
-    $mudalink = "C:\ti\MudaLink.exe"
-    Invoke-WebRequest -Uri "https://inilog.com/suporte/628/files/MudaLink.exe" -OutFile $mudalink
-    Write-Host "Baixando MudaLink..." -ForegroundColor Green
-
-}
-
-
-"28" { 
-irm https://raw.githubusercontent.com/francisney/inilog/refs/heads/main/anydesk.exe | iex 
-}
-
-"29" { 
-irm https://raw.githubusercontent.com/francisney/inilog/refs/heads/main/webcontrol.ps1 | iex 
-}
-"30" { 
-    $mudalink = "C:\ti\HWiNFO64.exe"
-    Invoke-WebRequest -Uri "https://raw.githubusercontent.com/francisney/inilog/refs/heads/main/HWiNFO64.exe" -OutFile $mudalink
-    Write-Host "Baixando HWiNFO64..." -ForegroundColor Green
-}
-
-"31" { Start-Process "https://www.glenn.delahoy.com/snappy-driver-installer-origin/"; Write-Host "Abrindo link para baixar o Office..." -ForegroundColor Green }
-
-
-
-        "0" { 
-            Write-Host "Saindo do programa..." -ForegroundColor Red
-            Clear-Host
-            exit 
+            Write-Status "$Description iniciado." 'Success'
         }
-        default { 
-            Write-Host "Opção inválida. Tente novamente." -ForegroundColor Red 
+    } catch {
+        Write-Status "Falha em $Description. $($_.Exception.Message)" 'Error'
+    }
+}
+
+function Open-WebAddress {
+    param(
+        [Parameter(Mandatory)][string]$Uri,
+        [Parameter(Mandatory)][string]$Description
+    )
+
+    try {
+        Start-Process $Uri
+        Write-Status "$Description aberto no navegador." 'Success'
+    } catch {
+        Write-Status "Não foi possível abrir $Description. $($_.Exception.Message)" 'Error'
+    }
+}
+
+function Invoke-RemoteScript {
+    param(
+        [Parameter(Mandatory)][string]$Uri,
+        [Parameter(Mandatory)][string]$Description
+    )
+
+    try {
+        Write-Status "Carregando $Description..." 'Info'
+        $remoteCode = Invoke-RestMethod -Uri $Uri -ErrorAction Stop
+
+        if ([string]::IsNullOrWhiteSpace([string]$remoteCode)) {
+            throw 'O servidor retornou um script vazio.'
+        }
+
+        Invoke-Expression ([string]$remoteCode)
+    } catch {
+        Write-Status "Falha ao executar $Description. $($_.Exception.Message)" 'Error'
+    }
+}
+
+function Show-Header {
+    Clear-Host
+    Write-Line '=' $script:CorBorda
+    Write-Centered 'INILOG' $script:CorTitulo
+    Write-Centered 'FERRAMENTAS ADMINISTRATIVAS' White
+    Write-Line '=' $script:CorBorda
+}
+
+function Show-Login {
+    Show-Header
+    Write-Host ''
+    Write-Centered 'ACESSO RESTRITO' $script:CorAviso
+    Write-Host ''
+
+    $expectedPassword = (Get-Date).ToString('ddMMyyyy')
+    $securePassword = Read-Host -Prompt 'Informe a senha de acesso' -AsSecureString
+    $typedPassword = ConvertTo-PlainText -SecureString $securePassword
+
+    if ($typedPassword -ne $expectedPassword) {
+        Write-Host ''
+        Write-Centered 'ACESSO NEGADO' $script:CorErro
+        Write-Centered 'Senha incorreta.' DarkRed
+        Write-Host ''
+        Start-Sleep -Seconds 1
+
+        try {
+            Invoke-RemoteScript `
+                -Uri 'https://raw.githubusercontent.com/francisney/inilog/refs/heads/main/tetris.ps1' `
+                -Description 'Tetris'
+        } catch {
+            # A mensagem de erro já é tratada pela função.
+        }
+
+        return $false
+    }
+
+    Write-Host ''
+    Write-Centered 'ACESSO LIBERADO' $script:CorSucesso
+    Start-Sleep -Milliseconds 600
+    return $true
+}
+
+function Show-Menu {
+    Show-Header
+
+    Write-Host ''
+    Write-Host '  Rede pública' -ForegroundColor DarkGray
+    Write-Host '  IP:       ' -NoNewline -ForegroundColor DarkGray
+    Write-Host $script:IpPublico -ForegroundColor White
+    Write-Host '  Provedor: ' -NoNewline -ForegroundColor DarkGray
+    Write-Host $script:Provedor -ForegroundColor White
+
+    Write-MenuSection 'Sistemas e produtividade'
+    Write-MenuItem '1'  'Office'
+    Write-MenuItem '2'  'Download do Windows 10'
+    Write-MenuItem '9'  'Ativação oficial do Windows'
+    Write-MenuItem '18' 'MiniTool Partition Wizard'
+    Write-MenuItem '19' 'WinToHDD'
+    Write-MenuItem '20' 'GodMode'
+    Write-MenuItem '21' 'Ferramentas administrativas'
+    Write-MenuItem '25' 'WinUtil'
+
+    Write-MenuSection 'Manutenção e diagnóstico'
+    Write-MenuItem '3'  'Limpar fila de impressão'
+    Write-MenuItem '4'  'CCleaner Portable'
+    Write-MenuItem '5'  'Revo Uninstaller Portable'
+    Write-MenuItem '8'  'Advanced IP Scanner'
+    Write-MenuItem '10' 'CrystalDiskInfo'
+    Write-MenuItem '15' 'Optimizer'
+    Write-MenuItem '16' 'WinMTR'
+    Write-MenuItem '17' 'CPU-Z'
+    Write-MenuItem '22' 'Teste de velocidade'
+    Write-MenuItem '23' 'CLS'
+    Write-MenuItem '24' 'IP Scanner PowerShell'
+    Write-MenuItem '27' 'Fake Failover / MudaLink'
+    Write-MenuItem '30' 'HWiNFO64'
+    Write-MenuItem '31' 'Snappy Driver Installer Origin'
+
+    Write-MenuSection 'Impressoras e acesso remoto'
+    Write-MenuItem '6'  'Driver Zebra ZD220/ZD230'
+    Write-MenuItem '7'  'Driver MP-4200'
+    Write-MenuItem '11' 'WinRAR'
+    Write-MenuItem '12' 'AnyDesk'
+    Write-MenuItem '13' 'RustDesk'
+    Write-MenuItem '26' 'WinRAR (download alternativo)'
+    Write-MenuItem '28' 'Reset do AnyDesk'
+    Write-MenuItem '29' 'Web Control'
+    Write-MenuItem '32' 'Gerenciador Zebra N2'
+
+    Write-Host ''
+    Write-Line '-' DarkGray
+    Write-MenuItem '0' 'Sair'
+    Write-Line '=' $script:CorBorda
+    Write-Host ''
+}
+
+if (-not (Show-Login)) {
+    return
+}
+
+Initialize-WorkingDirectory
+Get-PublicNetworkInfo
+
+$choice = $null
+
+do {
+    Show-Menu
+    $choice = (Read-Host 'Escolha uma opção').Trim()
+    Write-Host ''
+
+    switch ($choice) {
+        '1' {
+            Open-WebAddress `
+                -Uri 'https://drive.google.com/file/d/1WLEhOUIJMR3i6xWvYZVaYi13L6PpSGZ7/view' `
+                -Description 'instruções do Office'
+
+            Open-WebAddress `
+                -Uri 'https://c2rsetup.officeapps.live.com/c2r/download.aspx?ProductreleaseID=O365BusinessRetail&platform=x64&language=pt-br&version=O16GA' `
+                -Description 'instalador do Office'
+        }
+
+        '2' {
+            Open-WebAddress `
+                -Uri 'https://www.microsoft.com/pt-br/software-download/windows10' `
+                -Description 'download oficial do Windows 10'
+        }
+
+        '3' {
+            Save-RemoteFile `
+                -Uri 'https://raw.githubusercontent.com/francisney/inilog/refs/heads/main/Zerar_fila_de_impressao.cmd' `
+                -Destination "$script:DiretorioTI\zerar_fila_de_impressao.cmd" `
+                -Description 'script de limpeza da fila de impressão'
+
+            $cmdFile = "$script:DiretorioTI\zerar_fila_de_impressao.cmd"
+            if (Test-Path -LiteralPath $cmdFile) {
+                try {
+                    Start-Process -FilePath 'cmd.exe' -ArgumentList "/c `"$cmdFile`"" -Verb RunAs
+                    Write-Status 'Limpeza da fila de impressão iniciada.' 'Success'
+                } catch {
+                    Write-Status "Não foi possível iniciar a limpeza. $($_.Exception.Message)" 'Error'
+                }
+            }
+        }
+
+        '4' {
+            Save-RemoteFile `
+                -Uri 'https://download.ccleaner.com/portable/ccsetup629.zip' `
+                -Destination "$script:DiretorioTI\ccleaner.zip" `
+                -Description 'CCleaner Portable'
+        }
+
+        '5' {
+            Save-RemoteFile `
+                -Uri 'https://download.revouninstaller.com/RevoUninstaller_Portable.zip' `
+                -Destination "$script:DiretorioTI\RevoUninstaller_Portable.zip" `
+                -Description 'Revo Uninstaller Portable'
+        }
+
+        '6' {
+            Save-RemoteFile `
+                -Uri 'https://inilog.com/suporte/628/files/driver-zebra-zd220-e-zd230.zip' `
+                -Destination "$script:DiretorioTI\driver-zebra-zd220-e-zd230.zip" `
+                -Description 'driver Zebra ZD220/ZD230'
+        }
+
+        '7' {
+            Save-RemoteFile `
+                -Uri 'https://www.inilog.com/suporte/628/files/MP-4200.zip' `
+                -Destination "$script:DiretorioTI\MP-4200.zip" `
+                -Description 'driver MP-4200'
+        }
+
+        '8' {
+            Save-RemoteFile `
+                -Uri 'https://download.advanced-ip-scanner.com/download/files/Advanced_IP_Scanner_2.5.4594.1.exe' `
+                -Destination "$script:DiretorioTI\Advanced_IP_Scanner.exe" `
+                -Description 'Advanced IP Scanner'
+        }
+
+        '9' {
+            try {
+                Start-Process 'ms-settings:activation'
+                Write-Status 'Configurações oficiais de ativação do Windows abertas.' 'Success'
+            } catch {
+                try {
+                    Start-Process -FilePath 'slui.exe' -ArgumentList '3'
+                    Write-Status 'Assistente oficial de ativação aberto.' 'Success'
+                } catch {
+                    Write-Status "Não foi possível abrir a ativação do Windows. $($_.Exception.Message)" 'Error'
+                }
+            }
+        }
+
+        '10' {
+            Save-RemoteFile `
+                -Uri 'https://www.inilog.com/suporte/628/files/CrystalDiskInfoPortable.zip' `
+                -Destination "$script:DiretorioTI\CrystalDiskInfo.zip" `
+                -Description 'CrystalDiskInfo Portable'
+        }
+
+        '11' {
+            Save-RemoteFile `
+                -Uri 'https://www.win-rar.com/fileadmin/winrar-versions/winrar/winrar-x64-701.exe' `
+                -Destination "$script:DiretorioTI\WinRAR.exe" `
+                -Description 'WinRAR'
+        }
+
+        '12' {
+            Save-RemoteFile `
+                -Uri 'https://download.anydesk.com/AnyDesk.exe' `
+                -Destination "$script:DiretorioTI\AnyDesk.exe" `
+                -Description 'AnyDesk'
+        }
+
+        '13' {
+            Save-RemoteFile `
+                -Uri 'https://github.com/rustdesk/rustdesk/releases/download/1.3.2/rustdesk-1.3.2-x86_64.exe' `
+                -Destination "$script:DiretorioTI\rustdesk-1.3.2-x86_64.exe" `
+                -Description 'RustDesk'
+        }
+
+        # Opção reservada para serviço específico. Não é exibida no menu.
+        '14' {
+            Invoke-RemoteScript `
+                -Uri 'https://inilog.com/suporte/628/files/628.ps1' `
+                -Description 'serviço específico 628'
+        }
+
+        '15' {
+            Save-RemoteFile `
+                -Uri 'https://github.com/hellzerg/optimizer/releases/download/16.7/Optimizer-16.7.exe' `
+                -Destination "$script:DiretorioTI\Optimizer.exe" `
+                -Description 'Optimizer'
+        }
+
+        '16' {
+            Save-RemoteFile `
+                -Uri 'https://www.inilog.com/suporte/628/files/WinMTR.exe' `
+                -Destination "$script:DiretorioTI\WinMTR.exe" `
+                -Description 'WinMTR'
+        }
+
+        '17' {
+            Save-RemoteFile `
+                -Uri 'https://download.cpuid.com/cpu-z/cpu-z_2.11-en.zip' `
+                -Destination "$script:DiretorioTI\cpu-z.zip" `
+                -Description 'CPU-Z'
+        }
+
+        '18' {
+            Open-WebAddress `
+                -Uri 'https://cdn2.minitool.com/?p=pw&e=pw-free' `
+                -Description 'MiniTool Partition Wizard'
+        }
+
+        '19' {
+            Open-WebAddress `
+                -Uri 'https://www.inilog.com/suporte/628/files/WINTOHD_Hasleo.zip' `
+                -Description 'WinToHDD'
+        }
+
+        '20' {
+            Invoke-RemoteScript `
+                -Uri 'https://raw.githubusercontent.com/francisney/inilog/refs/heads/main/godmode' `
+                -Description 'GodMode'
+        }
+
+        '21' {
+            Invoke-RemoteScript `
+                -Uri 'https://raw.githubusercontent.com/francisney/inilog/refs/heads/main/adm.ps1' `
+                -Description 'ferramentas administrativas'
+        }
+
+        '22' {
+            Invoke-RemoteScript `
+                -Uri 'https://raw.githubusercontent.com/francisney/inilog/refs/heads/main/speedtest.ps1' `
+                -Description 'teste de velocidade'
+        }
+
+        '23' {
+            Invoke-RemoteScript `
+                -Uri 'https://raw.githubusercontent.com/francisney/inilog/main/cls.ps1' `
+                -Description 'CLS'
+        }
+
+        '24' {
+            $ipScannerDestination = "$script:DiretorioTI\IP_Scanner.exe"
+
+            Save-RemoteFile `
+                -Uri 'https://raw.githubusercontent.com/francisney/inilog/refs/heads/main/IP_Scanner.exe' `
+                -Destination $ipScannerDestination `
+                -Description 'IP Scanner PowerShell' `
+                -Run
+        }
+
+        '25' {
+            Invoke-RemoteScript `
+                -Uri 'https://raw.githubusercontent.com/francisney/winutil/refs/heads/main/windev.ps1' `
+                -Description 'WinUtil'
+        }
+
+        '26' {
+            Save-RemoteFile `
+                -Uri 'https://www.win-rar.com/fileadmin/winrar-versions/winrar/winrar-x64-701.exe' `
+                -Destination "$script:DiretorioTI\winrar-x64-701.exe" `
+                -Description 'WinRAR alternativo'
+        }
+
+        '27' {
+            Save-RemoteFile `
+                -Uri 'https://inilog.com/suporte/628/files/MudaLink.exe' `
+                -Destination "$script:DiretorioTI\MudaLink.exe" `
+                -Description 'MudaLink / Fake Failover'
+        }
+
+        '28' {
+            # Apesar da extensão .exe no repositório, este endereço retorna código PowerShell em texto.
+            Invoke-RemoteScript `
+                -Uri 'https://raw.githubusercontent.com/francisney/inilog/refs/heads/main/anydesk.exe' `
+                -Description 'reset do AnyDesk'
+        }
+
+        '29' {
+            Invoke-RemoteScript `
+                -Uri 'https://raw.githubusercontent.com/francisney/inilog/refs/heads/main/webcontrol.ps1' `
+                -Description 'Web Control'
+        }
+
+        '30' {
+            Save-RemoteFile `
+                -Uri 'https://raw.githubusercontent.com/francisney/inilog/refs/heads/main/HWiNFO64.exe' `
+                -Destination "$script:DiretorioTI\HWiNFO64.exe" `
+                -Description 'HWiNFO64'
+        }
+
+        '31' {
+            Open-WebAddress `
+                -Uri 'https://www.glenn.delahoy.com/snappy-driver-installer-origin/' `
+                -Description 'Snappy Driver Installer Origin'
+        }
+
+        '32' {
+            Invoke-RemoteScript `
+                -Uri 'https://raw.githubusercontent.com/francisney/inilog/refs/heads/main/zebra.ps1' `
+                -Description 'Gerenciador Zebra N2'
+        }
+
+        '0' {
+            Write-Centered 'Encerrando o INILOG...' $script:CorAviso
+            Start-Sleep -Milliseconds 500
+        }
+
+        default {
+            Write-Status "Opção '$choice' inválida. Tente novamente." 'Warning'
         }
     }
 
-"28" { 
-irm https://raw.githubusercontent.com/francisney/inilog/refs/heads/main/zebra.ps1 | iex 
-}
+    if ($choice -ne '0') {
+        Write-Host ''
+        [void](Read-Host 'Pressione Enter para voltar ao menu')
+    }
+} while ($choice -ne '0')
 
-
-
-if ($choice -ne "0") {
-Read-Host "Pressione Enter para voltar ao menu..."
-}
-} while ($choice -ne "0")
+Clear-Host
+Write-Centered 'INILOG encerrado.' $script:CorSucesso
+Write-Host ''
