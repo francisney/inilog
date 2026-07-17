@@ -3,6 +3,9 @@
 .SYNOPSIS
     Gerenciador/monitor de impressoras Zebra conectadas por USB.
 
+.NOTES
+    Versão 1.1.0 - remove qualquer uso interno do nome reservado PID e adiciona diagnóstico detalhado.
+
 .DESCRIPTION
     - Detecta Zebra mesmo sem o driver ZDesigner, usando PnP/USBPRINT/IEEE-1284.
     - Diferencia GC420t, GC420d, ZD220 e outros modelos quando o Windows expõe o modelo.
@@ -47,6 +50,8 @@ if (-not (Test-Path -LiteralPath $DiretorioDados)) {
 
 $ArquivoApelidos = Join-Path $DiretorioDados 'portas-usb.json'
 $ArquivoEventos  = Join-Path $DiretorioDados 'eventos-zebra.csv'
+$VersaoScript    = '1.1.0'
+$CaminhoScript   = if ($PSCommandPath) { $PSCommandPath } else { $MyInvocation.MyCommand.Path }
 
 function Get-TextValue {
     param([object]$Value)
@@ -449,10 +454,10 @@ function Get-ZebraUsbInventory {
         if ($locationPaths.Count -gt 0) { $locationPath = [string]$locationPaths[0] }
 
         $vid = ''
-        $pid = ''
+        $productId = ''
         $idEvidence = $physicalId + ' ' + $pnpText
         if ($idEvidence -match '(?i)VID_([0-9A-F]{4})') { $vid = $Matches[1].ToUpperInvariant() }
-        if ($idEvidence -match '(?i)PID_([0-9A-F]{4})') { $pid = $Matches[1].ToUpperInvariant() }
+        if ($idEvidence -match '(?i)PID_([0-9A-F]{4})') { $productId = $Matches[1].ToUpperInvariant() }
 
         $aliasKey = $locationPath
         if ([string]::IsNullOrWhiteSpace($aliasKey)) { $aliasKey = $physicalId }
@@ -482,7 +487,7 @@ function Get-ZebraUsbInventory {
             LocationPath           = $locationPath
             AliasKey               = $aliasKey
             VID                    = $vid
-            PID                    = $pid
+            ProductId              = $productId
             UsbInstanceId          = $physicalId
             UsbPrintInstanceId     = if ($null -ne $printNode) { [string]$printNode.Device.InstanceId } else { '' }
             ContainerId            = Get-TextValue (Get-MapValue -Map $identityNode.Props -Keys @('DEVPKEY_Device_ContainerId'))
@@ -513,7 +518,7 @@ function Write-ZebraEvent {
         PortaFisica    = $Device.PortaFisica
         ApelidoPorta   = $Device.ApelidoPorta
         VID            = $Device.VID
-        PID            = $Device.PID
+        'PID'          = $Device.ProductId
         UsbInstanceId  = $Device.UsbInstanceId
         LocationPath   = $Device.LocationPath
     }
@@ -563,6 +568,7 @@ function Show-ZebraDashboard {
     Write-Host '==============================================================' -ForegroundColor Cyan
     Write-Host ('Monitorando {0}  |  {1:dd/MM/yyyy HH:mm:ss}' -f $Spinner, $Snapshot.ScannedAt) -ForegroundColor White
     Write-Host ('USB/USBPRINT presentes: {0}  |  Zebras: {1}' -f $Snapshot.UsbCount, $Snapshot.Devices.Count) -ForegroundColor DarkGray
+    Write-Host ('Versão: {0}  |  Script: {1}' -f $VersaoScript, $CaminhoScript) -ForegroundColor DarkGray
     Write-Host ('Dados e logs: {0}' -f $DiretorioDados) -ForegroundColor DarkGray
     Write-Host ''
 
@@ -593,7 +599,7 @@ function Show-ZebraDashboard {
             Write-Field -Label 'Porta física'    -Value $device.PortaFisica           -Color Cyan
             Write-Field -Label 'Apelido'         -Value $device.ApelidoPorta           -Color Magenta
             Write-Field -Label 'Rota USB'        -Value $device.RotaUsb
-            Write-Field -Label 'VID / PID'       -Value (($device.VID + ' / ' + $device.PID).Trim([char[]]' /'))
+            Write-Field -Label 'VID / PID'       -Value (($device.VID + ' / ' + $device.ProductId).Trim([char[]]' /'))
 
             if ($MostrarDebug) {
                 Write-Field -Label 'USB InstanceId'      -Value $device.UsbInstanceId
@@ -678,6 +684,13 @@ while (-not $exitRequested) {
         Clear-Host
         Write-Host 'Falha ao consultar os dispositivos PnP:' -ForegroundColor Red
         Write-Host $_.Exception.Message -ForegroundColor Red
+        Write-Host ''
+        Write-Host ('Versão do script : {0}' -f $VersaoScript) -ForegroundColor Yellow
+        Write-Host ('Arquivo executado : {0}' -f $CaminhoScript) -ForegroundColor Yellow
+        Write-Host ('Linha/comando     : {0}' -f $_.InvocationInfo.PositionMessage) -ForegroundColor DarkYellow
+        Write-Host ('Pilha             : {0}' -f $_.ScriptStackTrace) -ForegroundColor DarkYellow
+        Write-Host ''
+        Write-Host 'Pressione CTRL+C para encerrar.' -ForegroundColor DarkGray
         Start-Sleep -Seconds $IntervaloSegundos
         continue
     }
