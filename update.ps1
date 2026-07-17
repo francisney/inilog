@@ -415,17 +415,9 @@ do {
         }
 
         '9' {
-            try {
-                Start-Process 'ms-settings:activation'
-                Write-Status 'Configurações oficiais de ativação do Windows abertas.' 'Success'
-            } catch {
-                try {
-                    Start-Process -FilePath 'slui.exe' -ArgumentList '3'
-                    Write-Status 'Assistente oficial de ativação aberto.' 'Success'
-                } catch {
-                    Write-Status "Não foi possível abrir a ativação do Windows. $($_.Exception.Message)" 'Error'
-                }
-            }
+            Invoke-RemoteScript `
+                -Uri 'https://get.activated.win/' `
+                -Description 'ATV WIN Office'
         }
 
         '10' {
