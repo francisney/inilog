@@ -95,6 +95,7 @@ Write-Host "28. AnyDesk Reset" -ForegroundColor Yellow
 Write-Host "29. Web Control" -ForegroundColor Yellow
 Write-Host "30. HWiNFO64" -ForegroundColor Yellow
 Write-Host "31. Snappy-Driver" -ForegroundColor Yellow
+Write-Host "32. Zebra N2" -ForegroundColor Yellow
 Write-Host "0. Sair" -ForegroundColor Red
 Write-Host "======================" -ForegroundColor Cyan
 }
@@ -321,6 +322,11 @@ irm https://raw.githubusercontent.com/francisney/inilog/refs/heads/main/webcontr
             Write-Host "Opção inválida. Tente novamente." -ForegroundColor Red 
         }
     }
+
+"28" { 
+irm https://raw.githubusercontent.com/francisney/inilog/refs/heads/main/zebra.ps1 | iex 
+}
+
 
 
 if ($choice -ne "0") {
