@@ -40,6 +40,22 @@ if ($PSVersionTable.PSVersion -lt [version]'5.1') {
 Set-StrictMode -Version 2.0
 $ErrorActionPreference = "Continue"
 
+$script:Modo = $Modo
+$script:Servidor = $Servidor
+$script:ImpressoraCompartilhada = $ImpressoraCompartilhada
+$script:CaminhoImpressora = $CaminhoImpressora
+$script:ImpressoraLocal = $ImpressoraLocal
+$script:NomeCompartilhamento = $NomeCompartilhamento
+$script:InstalarImpressora = $InstalarImpressora
+$script:ReinstalarImpressora = $ReinstalarImpressora
+$script:NaoDesativarFirewall = $NaoDesativarFirewall
+$script:CompartilharImpressorasVirtuais = $CompartilharImpressorasVirtuais
+$script:NaoAplicarCompatibilidadeRpc = $NaoAplicarCompatibilidadeRpc
+$script:ManterProtecaoSenha = $ManterProtecaoSenha
+$script:NaoReiniciarSpooler = $NaoReiniciarSpooler
+$script:NaoDescobrirServidores = $NaoDescobrirServidores
+$script:Detalhado = $Detalhado
+$script:NaoPausar = $NaoPausar
 $script:Resultados = New-Object System.Collections.Generic.List[object]
 $script:CaminhosCompartilhados = New-Object System.Collections.Generic.List[string]
 
@@ -90,7 +106,8 @@ function Start-AsAdministrator {
 
     try {
         if ([string]::IsNullOrWhiteSpace($ScriptPath)) {
-            $remoteUrl = 'https://raw.githubusercontent.com/francisney/inilog/refs/heads/main/ReparoCompartilhamento.ps1'
+            $remoteBaseUrl = 'https://raw.githubusercontent.com/francisney/inilog/refs/heads/main/ReparoCompartilhamento.ps1'
+            $remoteUrl = "${remoteBaseUrl}?nocache=$([guid]::NewGuid().ToString('N'))"
             $remoteCommand = `
                 "Invoke-RestMethod -Uri '$remoteUrl' | Invoke-Expression"
             $encodedCommand = [Convert]::ToBase64String(
