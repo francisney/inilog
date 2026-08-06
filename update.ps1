@@ -323,7 +323,7 @@ function Show-Menu {
     Write-MenuItem '28' 'Reset do AnyDesk'
     Write-MenuItem '29' 'Web Control'
     Write-MenuItem '32' 'Gerenciador Zebra N2'
-
+    Write-MenuItem '33' 'Reparo Compartilhamento'
     Write-Host ''
     Write-Line '-' DarkGray
     Write-MenuItem '0' 'Sair'
@@ -573,6 +573,13 @@ do {
                 -Uri 'https://raw.githubusercontent.com/francisney/inilog/refs/heads/main/zebra.ps1' `
                 -Description 'Gerenciador Zebra N2'
         }
+
+        '33' {
+            Invoke-RemoteScript `
+                -Uri 'https://raw.githubusercontent.com/francisney/inilog/refs/heads/main/ReparoCompartilhamento.ps1' `
+                -Description 'Reparo Compartilhamento'
+        }
+
 
         '0' {
             Write-Centered 'Encerrando o INILOG...' $script:CorAviso
