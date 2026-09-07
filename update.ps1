@@ -308,7 +308,7 @@ function Show-Menu {
     Write-MenuItem '17' 'CPU-Z'
     Write-MenuItem '22' 'Teste de velocidade'
     Write-MenuItem '23' 'CLS'
-    Write-MenuItem '24' 'IP Scanner PowerShell'
+    Write-MenuItem '24' 'Sysinternals'
     Write-MenuItem '27' 'Fake Failover / MudaLink'
     Write-MenuItem '30' 'HWiNFO64'
     Write-MenuItem '31' 'Snappy Driver Installer Origin'
@@ -512,15 +512,15 @@ do {
                 -Description 'CLS'
         }
 
-        '24' {
-            $ipScannerDestination = "$script:DiretorioTI\IP_Scanner.exe"
+'24' {
+    $ipScannerDestination = "$script:DiretorioTI\IP_Scanner.exe"
 
-            Save-RemoteFile `
-                -Uri 'https://raw.githubusercontent.com/francisney/inilog/refs/heads/main/IP_Scanner.exe' `
-                -Destination $ipScannerDestination `
-                -Description 'IP Scanner PowerShell' `
-                -Run
-        }
+    Save-RemoteFile `
+        -Uri 'https://raw.githubusercontent.com/francisney/inilog/refs/heads/main/IP_Scanner.exe' `
+        -Destination $ipScannerDestination `
+        -Description 'IP Scanner PowerShell' `
+        -Run
+}
 
         '25' {
             Invoke-RemoteScript `
