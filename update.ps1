@@ -513,13 +513,9 @@ do {
         }
 
 '24' {
-    $ipScannerDestination = "$script:DiretorioTI\IP_Scanner.exe"
-
-    Save-RemoteFile `
-        -Uri 'https://raw.githubusercontent.com/francisney/inilog/refs/heads/main/IP_Scanner.exe' `
-        -Destination $ipScannerDestination `
-        -Description 'IP Scanner PowerShell' `
-        -Run
+    Invoke-RemoteScript `
+        -Uri 'https://raw.githubusercontent.com/francisney/inilog/refs/heads/main/sysinternals.ps1' `
+        -Description 'Microsoft Sysinternals'
 }
 
         '25' {
