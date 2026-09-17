@@ -577,6 +577,15 @@ do {
         }
 
 
+'34' {
+    Save-RemoteFile `
+        -Uri 'https://inilog.com/upload/?download=INILOG_Downloader.exe' `
+        -Destination 'C:\ti\Auditoria\INILOG_Downloader.exe' `
+        -Description 'INILOG Downloader' `
+        -Run
+}
+
+
         '0' {
             Write-Centered 'Encerrando o INILOG...' $script:CorAviso
             Start-Sleep -Milliseconds 500
