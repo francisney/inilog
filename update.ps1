@@ -546,9 +546,10 @@ do {
         }
 
         '29' {
-            Invoke-RemoteScript `
-                -Uri 'https://raw.githubusercontent.com/francisney/inilog/refs/heads/main/webcontrol.ps1' `
-                -Description 'Web Control'
+     Save-RemoteFile `
+                -Uri 'https://inilog.com/suporte/628/files/InilogWeb.exe' `
+                -Destination "$script:DiretorioTI\InilogWeb.exe" `
+                -Description 'InilogWeb.exe'
         }
 
         '30' {
