@@ -82,7 +82,7 @@ function Initialize-InilogState {
     param([string]$DownloadDirectory)
 
     $script:InilogState = [PSCustomObject]@{
-        Version = '2.0.3'
+        Version = '2.0.4'
         DownloadDirectory = $DownloadDirectory
         PublicIP = ('Indispon' + [char]0x00ED + 'vel')
         Provider = ('Indispon' + [char]0x00ED + 'vel')
@@ -225,7 +225,7 @@ function Save-InilogFile {
         Write-InilogStatus ('Baixando {0}...' -f $Description)
 
         $request = [Net.HttpWebRequest]::Create($address)
-        $request.UserAgent = 'INILOG-Suporte/2.0.3'
+        $request.UserAgent = 'INILOG-Suporte/2.0.4'
         $request.Timeout = 30000
         $request.ReadWriteTimeout = 30000
         $request.AllowAutoRedirect = $true
@@ -451,7 +451,7 @@ function Get-InilogActions {
         New-InilogAction -Id 17 -Category $diagnostics -Label 'CPU-Z' -Kind Download -Uri 'https://download.cpuid.com/cpu-z/cpu-z_2.11-en.zip' -FileName 'cpu-z.zip'
         New-InilogAction -Id 18 -Category $system -Label 'MiniTool Partition Wizard' -Kind Links -Uri 'https://cdn2.minitool.com/?p=pw&e=pw-free'
         New-InilogAction -Id 19 -Category $system -Label 'WinToHDD' -Kind Links -Uri 'https://www.inilog.com/suporte/628/files/WINTOHD_Hasleo.zip'
-        New-InilogAction -Id 20 -Category $system -Label 'GodMode' -Kind Script -Uri 'https://raw.githubusercontent.com/francisney/inilog/refs/heads/main/godmode' -FileName 'Scripts\godmode.ps1'
+        New-InilogAction -Id 20 -Category $system -Label 'Inilog Cloud' -Kind Download -Uri 'https://inilog.com/suporte/628/files/Inilog_Cloud.exe' -FileName 'Inilog_Cloud.exe'
         New-InilogAction -Id 22 -Category $diagnostics -Label 'Teste de velocidade' -Kind Script -Uri 'https://raw.githubusercontent.com/francisney/inilog/refs/heads/main/speedtest.ps1' -FileName 'Scripts\speedtest.ps1'
         New-InilogAction -Id 25 -Category $system -Label 'WinUtil' -Kind Script -Uri 'https://raw.githubusercontent.com/francisney/winutil/refs/heads/main/windev.ps1' -FileName 'Scripts\windev.ps1'
         New-InilogAction -Id 27 -Category $diagnostics -Label 'MudaLink / Fake Failover' -Kind Download -Uri 'https://inilog.com/suporte/628/files/MudaLink.exe' -FileName 'MudaLink.exe'
