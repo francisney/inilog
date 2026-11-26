@@ -82,7 +82,7 @@ function Initialize-InilogState {
     param([string]$DownloadDirectory)
 
     $script:InilogState = [PSCustomObject]@{
-        Version = '2.0.1'
+        Version = '2.0.2'
         DownloadDirectory = $DownloadDirectory
         PublicIP = ('Indispon' + [char]0x00ED + 'vel')
         Provider = ('Indispon' + [char]0x00ED + 'vel')
@@ -162,7 +162,20 @@ function Test-InilogDownloadedFile {
     if ($file.Length -eq 0) { throw 'O servidor retornou um arquivo vazio.' }
 
     $extension = [IO.Path]::GetExtension($Destination).ToLowerInvariant()
-    if ($ContentType -match 'text/html' -and $extension -in @('.exe', '.zip', '.cmd', '.ps1')) {
+    if ($extension -eq '.ps1') {
+        # Alguns servidores entregam PowerShell valido com Content-Type text/html.
+        # Valida o conteudo antes de substituir o arquivo existente.
+        $scriptText = [IO.File]::ReadAllText($Path)
+        if ($scriptText -match '(?is)\A\s*(?:<!--.*?-->\s*)*(?:<!doctype\s+html\b|<html\b|<head\b|<body\b)') {
+            throw ('O endere' + [char]0x00E7 + 'o retornou uma p' + [char]0x00E1 + 'gina HTML em vez do arquivo solicitado.')
+        }
+        $tokens = $null
+        $parseErrors = $null
+        [void][Management.Automation.Language.Parser]::ParseInput($scriptText, [ref]$tokens, [ref]$parseErrors)
+        if (@($parseErrors).Count -gt 0) {
+            throw ('O script recebido cont' + [char]0x00E9 + 'm erro de sintaxe.')
+        }
+    } elseif ($ContentType -match 'text/html' -and $extension -in @('.exe', '.zip', '.cmd')) {
         throw ('O endere' + [char]0x00E7 + 'o retornou uma p' + [char]0x00E1 + 'gina HTML em vez do arquivo solicitado.')
     }
 
@@ -212,7 +225,7 @@ function Save-InilogFile {
         Write-InilogStatus ('Baixando {0}...' -f $Description)
 
         $request = [Net.HttpWebRequest]::Create($address)
-        $request.UserAgent = 'INILOG-Suporte/2.0.1'
+        $request.UserAgent = 'INILOG-Suporte/2.0.2'
         $request.Timeout = 30000
         $request.ReadWriteTimeout = 30000
         $request.AllowAutoRedirect = $true
