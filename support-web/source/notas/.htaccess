@@ -1,0 +1,4 @@
+Options -Indexes
+<FilesMatch "^(?:error_log|.*\.(?:bak|json|lock))$">
+Require all denied
+</FilesMatch>
