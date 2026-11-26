@@ -1,0 +1,38 @@
+name: Compilar INILOG Upload
+on:
+  push:
+    branches:
+      - codex/inilog-upload-mwy3l9rf
+permissions:
+  contents: read
+jobs:
+  windows:
+    runs-on: windows-latest
+    timeout-minutes: 8
+    steps:
+      - name: Obter fontes deste commit
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $base = 'https://raw.githubusercontent.com/' + $env:GITHUB_REPOSITORY + '/' + $env:GITHUB_SHA + '/upload-tool/'
+          $files = @('client/Program.cs','client/UploadClient.cs','client/app.manifest','tests/UploadTests.cs','tests/mock_server.py','build/build.ps1')
+          foreach ($relative in $files) {
+            $target = Join-Path $env:GITHUB_WORKSPACE $relative
+            New-Item -ItemType Directory -Path (Split-Path -Parent $target) -Force | Out-Null
+            Invoke-WebRequest -UseBasicParsing -TimeoutSec 30 -Uri ($base + $relative) -OutFile $target
+          }
+      - name: Compilar e validar no Windows
+        shell: powershell
+        run: |
+          & (Join-Path $env:GITHUB_WORKSPACE 'build/build.ps1')
+      - name: Guardar executavel e resultado
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9
+        with:
+          name: INILOG-Upload-Windows
+          path: |
+            dist/upload.exe
+            dist/window.png
+            dist/validation.json
+            dist/build-info.json
+          if-no-files-found: error
+          retention-days: 7
