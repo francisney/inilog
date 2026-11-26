@@ -1,14 +1,11 @@
-﻿#requires -Version 5.1
+#requires -Version 5.1
 <#
     INILOG | Painel de suporte
     Francisney Delmondes - suporte@inilog.com
     Compativel com Windows PowerShell 5.1 e PowerShell no Windows.
 #>
-[CmdletBinding()]
-param(
-    [ValidateNotNullOrEmpty()]
-    [string]$DiretorioDownloads = 'C:\ti'
-)
+# Entrada sem param/atributos de script para suportar irm | iex.
+# Fonte ASCII; [char] preserva a acentuacao em qualquer codificacao do host.
 
 function New-InilogResult {
     param(
@@ -51,7 +48,7 @@ function Get-InilogConsoleWidth {
             $width = [Math]::Min(118, $available)
         }
     } catch {
-        # Hosts sem RawUI usam a largura padrão.
+        # Hosts sem RawUI usam a largura padrao.
     }
     return $width
 }
@@ -85,10 +82,10 @@ function Initialize-InilogState {
     param([string]$DownloadDirectory)
 
     $script:InilogState = [PSCustomObject]@{
-        Version = '2.0'
+        Version = '2.0.1'
         DownloadDirectory = $DownloadDirectory
-        PublicIP = 'Indisponível'
-        Provider = 'Indisponível'
+        PublicIP = ('Indispon' + [char]0x00ED + 'vel')
+        Provider = ('Indispon' + [char]0x00ED + 'vel')
         Filter = ''
         IsAdministrator = (Test-InilogAdministrator)
     }
@@ -97,7 +94,7 @@ function Initialize-InilogState {
     $script:InilogActionMap = @{}
     foreach ($action in $script:InilogActions) {
         if ($script:InilogActionMap.ContainsKey($action.Id)) {
-            throw "Número de opção duplicado: $($action.Id)."
+            throw "N$([char]0x00FA)mero de op$([char]0x00E7)$([char]0x00E3)o duplicado: $($action.Id)."
         }
         $script:InilogActionMap[$action.Id] = $action
     }
@@ -106,12 +103,12 @@ function Initialize-InilogState {
 function Update-InilogNetworkInfo {
     try {
         $network = Invoke-RestMethod -Uri 'https://ipinfo.io/json' -TimeoutSec 8 -ErrorAction Stop
-        $script:InilogState.PublicIP = 'Indisponível'
-        $script:InilogState.Provider = 'Indisponível'
+        $script:InilogState.PublicIP = ('Indispon' + [char]0x00ED + 'vel')
+        $script:InilogState.Provider = ('Indispon' + [char]0x00ED + 'vel')
         if ($network.ip) { $script:InilogState.PublicIP = [string]$network.ip }
         if ($network.org) { $script:InilogState.Provider = [string]$network.org }
     } catch {
-        $script:InilogState.PublicIP = 'Indisponível'
+        $script:InilogState.PublicIP = ('Indispon' + [char]0x00ED + 'vel')
         $script:InilogState.Provider = 'Sem consulta de rede'
     }
 }
@@ -125,7 +122,7 @@ function Show-InilogHeader {
     Write-Host '  |  PAINEL DE SUPORTE' -NoNewline -ForegroundColor White
     Write-Host ('  v{0}' -f $script:InilogState.Version) -ForegroundColor DarkGray
 
-    $mode = 'Usuário padrão'
+    $mode = ('Usu' + [char]0x00E1 + 'rio padr' + [char]0x00E3 + 'o')
     if ($script:InilogState.IsAdministrator) { $mode = 'Administrador' }
     Write-Host (' {0}  |  {1}' -f (Get-Date -Format 'dd/MM/yyyy HH:mm'), $mode) -ForegroundColor DarkGray
     Write-InilogRule '='
@@ -166,7 +163,7 @@ function Test-InilogDownloadedFile {
 
     $extension = [IO.Path]::GetExtension($Destination).ToLowerInvariant()
     if ($ContentType -match 'text/html' -and $extension -in @('.exe', '.zip', '.cmd', '.ps1')) {
-        throw 'O endereço retornou uma página HTML em vez do arquivo solicitado.'
+        throw ('O endere' + [char]0x00E7 + 'o retornou uma p' + [char]0x00E1 + 'gina HTML em vez do arquivo solicitado.')
     }
 
     if ($extension -in @('.exe', '.zip')) {
@@ -178,10 +175,10 @@ function Test-InilogDownloadedFile {
             $stream.Dispose()
         }
         if ($extension -eq '.exe' -and ($first -ne 0x4D -or $second -ne 0x5A)) {
-            throw 'O conteúdo recebido não tem o cabeçalho de um executável Windows.'
+            throw ('O conte' + [char]0x00FA + 'do recebido n' + [char]0x00E3 + 'o tem o cabe' + [char]0x00E7 + 'alho de um execut' + [char]0x00E1 + 'vel Windows.')
         }
         if ($extension -eq '.zip' -and ($first -ne 0x50 -or $second -ne 0x4B)) {
-            throw 'O conteúdo recebido não tem o cabeçalho de um arquivo ZIP.'
+            throw ('O conte' + [char]0x00FA + 'do recebido n' + [char]0x00E3 + 'o tem o cabe' + [char]0x00E7 + 'alho de um arquivo ZIP.')
         }
     }
 }
@@ -202,7 +199,7 @@ function Save-InilogFile {
     try {
         $address = [Uri]$Uri
         if (-not $address.IsAbsoluteUri -or $address.Scheme -notin @('http', 'https')) {
-            throw 'O endereço de download precisa usar HTTP ou HTTPS.'
+            throw ('O endere' + [char]0x00E7 + 'o de download precisa usar HTTP ou HTTPS.')
         }
 
         $parent = Split-Path -Parent $Destination
@@ -215,7 +212,7 @@ function Save-InilogFile {
         Write-InilogStatus ('Baixando {0}...' -f $Description)
 
         $request = [Net.HttpWebRequest]::Create($address)
-        $request.UserAgent = 'INILOG-Suporte/2.0'
+        $request.UserAgent = 'INILOG-Suporte/2.0.1'
         $request.Timeout = 30000
         $request.ReadWriteTimeout = 30000
         $request.AllowAutoRedirect = $true
@@ -286,7 +283,7 @@ function Start-InilogProcess {
         Start-Process @parameters | Out-Null
         return (New-InilogResult $true ('{0} iniciado.' -f $Description) $Path)
     } catch {
-        return (New-InilogResult $false ('Não foi possível iniciar {0}: {1}' -f $Description, $_.Exception.Message))
+        return (New-InilogResult $false (('N' + [char]0x00E3 + 'o foi poss' + [char]0x00ED + 'vel iniciar {0}: {1}') -f $Description, $_.Exception.Message))
     }
 }
 
@@ -299,7 +296,7 @@ function Open-InilogLinks {
         }
         return (New-InilogResult $true ('{0} aberto no navegador.' -f $Description))
     } catch {
-        return (New-InilogResult $false ('Não foi possível abrir {0}: {1}' -f $Description, $_.Exception.Message))
+        return (New-InilogResult $false (('N' + [char]0x00E3 + 'o foi poss' + [char]0x00ED + 'vel abrir {0}: {1}') -f $Description, $_.Exception.Message))
     }
 }
 
@@ -308,7 +305,7 @@ function Get-InilogPowerShellPath {
         $candidate = Join-Path $PSHOME $name
         if (Test-Path -LiteralPath $candidate -PathType Leaf) { return $candidate }
     }
-    throw 'Não foi possível localizar o executável do PowerShell.'
+    throw ('N' + [char]0x00E3 + 'o foi poss' + [char]0x00ED + 'vel localizar o execut' + [char]0x00E1 + 'vel do PowerShell.')
 }
 
 function Invoke-InilogRemoteScript {
@@ -324,7 +321,7 @@ function Invoke-InilogRemoteScript {
         $parseErrors = $null
         [void][Management.Automation.Language.Parser]::ParseFile($destination, [ref]$tokens, [ref]$parseErrors)
         if (@($parseErrors).Count -gt 0) {
-            throw 'O script recebido contém erro de sintaxe.'
+            throw ('O script recebido cont' + [char]0x00E9 + 'm erro de sintaxe.')
         }
 
         $engine = Get-InilogPowerShellPath
@@ -332,8 +329,8 @@ function Invoke-InilogRemoteScript {
         $command = "& ([ScriptBlock]::Create([IO.File]::ReadAllText('$escapedPath')))"
         Write-InilogStatus ('Executando {0}...' -f $Description)
 
-        # Compartilha o console, sem capturar a entrada/saída das ferramentas interativas.
-        # O processo filho mantém o menu aberto mesmo se a ferramenta usar exit.
+        # Compartilha o console, sem capturar a entrada/saida das ferramentas interativas.
+        # O processo filho mantem o menu aberto mesmo se a ferramenta usar exit.
         $parameters = @{
             FilePath = $engine
             ArgumentList = ('-NoLogo -NoProfile -Command "{0}"' -f $command)
@@ -344,7 +341,7 @@ function Invoke-InilogRemoteScript {
         }
         $process = Start-Process @parameters
         if ($process.ExitCode -ne 0) {
-            throw ('A ferramenta encerrou com o código {0}.' -f $process.ExitCode)
+            throw (('A ferramenta encerrou com o c' + [char]0x00F3 + 'digo {0}.') -f $process.ExitCode)
         }
         return (New-InilogResult $true ('{0} finalizado.' -f $Description) $destination)
     } catch {
@@ -417,26 +414,26 @@ function New-InilogAction {
 }
 
 function Get-InilogActions {
-    $system = 'Sistema e manutenção'
-    $diagnostics = 'Diagnóstico e rede'
+    $system = ('Sistema e manuten' + [char]0x00E7 + [char]0x00E3 + 'o')
+    $diagnostics = ('Diagn' + [char]0x00F3 + 'stico e rede')
     $support = 'Impressoras e suporte'
 
-    # Os IDs são estáveis. Remover uma entrada retira também seu comando.
+    # Os IDs sao estaveis. Remover uma entrada retira tambem seu comando.
     # Visible controla tanto o menu quanto a busca; os reservados aceitam o ID direto.
     @(
         New-InilogAction -Id 1 -Category $system -Label 'Microsoft Office' -Kind Links -Uri @(
             'https://drive.google.com/file/d/1WLEhOUIJMR3i6xWvYZVaYi13L6PpSGZ7/view',
             'https://c2rsetup.officeapps.live.com/c2r/download.aspx?ProductreleaseID=O365BusinessRetail&platform=x64&language=pt-br&version=O16GA'
         )
-        New-InilogAction -Id 3 -Category $system -Label 'Limpar fila de impressão' -Kind PrintQueue -Uri 'https://raw.githubusercontent.com/francisney/inilog/refs/heads/main/Zerar_fila_de_impressao.cmd' -FileName 'zerar_fila_de_impressao.cmd'
+        New-InilogAction -Id 3 -Category $system -Label ('Limpar fila de impress' + [char]0x00E3 + 'o') -Kind PrintQueue -Uri 'https://raw.githubusercontent.com/francisney/inilog/refs/heads/main/Zerar_fila_de_impressao.cmd' -FileName 'zerar_fila_de_impressao.cmd'
         New-InilogAction -Id 5 -Category $system -Label 'Revo Uninstaller Portable' -Kind Download -Uri 'https://download.revouninstaller.com/RevoUninstaller_Portable.zip' -FileName 'RevoUninstaller_Portable.zip'
         New-InilogAction -Id 6 -Category $support -Label 'Driver Zebra ZD220/ZD230' -Kind Download -Uri 'https://inilog.com/suporte/628/files/driver-zebra-zd220-e-zd230.zip' -FileName 'driver-zebra-zd220-e-zd230.zip'
         New-InilogAction -Id 7 -Category $support -Label 'Driver MP-4200' -Kind Download -Uri 'https://www.inilog.com/suporte/628/files/MP-4200.zip' -FileName 'MP-4200.zip'
         New-InilogAction -Id 8 -Category $diagnostics -Label 'Advanced IP Scanner' -Kind Download -Uri 'https://download.advanced-ip-scanner.com/download/files/Advanced_IP_Scanner_2.5.4594.1.exe' -FileName 'Advanced_IP_Scanner.exe'
-        New-InilogAction -Id 9 -Category 'Reservado' -Label 'Ativação Windows/Office' -Kind Script -Uri 'https://get.activated.win/' -FileName 'Scripts\reservado-09.ps1' -Hidden
+        New-InilogAction -Id 9 -Category 'Reservado' -Label ('Ativa' + [char]0x00E7 + [char]0x00E3 + 'o Windows/Office') -Kind Script -Uri 'https://get.activated.win/' -FileName 'Scripts\reservado-09.ps1' -Hidden
         New-InilogAction -Id 10 -Category $diagnostics -Label 'CrystalDiskInfo Portable' -Kind Download -Uri 'https://www.inilog.com/suporte/628/files/CrystalDiskInfoPortable.zip' -FileName 'CrystalDiskInfo.zip'
         New-InilogAction -Id 13 -Category $support -Label 'RustDesk' -Kind Download -Uri 'https://github.com/rustdesk/rustdesk/releases/download/1.3.2/rustdesk-1.3.2-x86_64.exe' -FileName 'rustdesk-1.3.2-x86_64.exe'
-        New-InilogAction -Id 14 -Category 'Reservado' -Label 'Serviço específico 628' -Kind Script -Uri 'https://inilog.com/suporte/628/files/628.ps1' -FileName 'Scripts\628.ps1' -Hidden
+        New-InilogAction -Id 14 -Category 'Reservado' -Label ('Servi' + [char]0x00E7 + 'o espec' + [char]0x00ED + 'fico 628') -Kind Script -Uri 'https://inilog.com/suporte/628/files/628.ps1' -FileName 'Scripts\628.ps1' -Hidden
         New-InilogAction -Id 15 -Category $system -Label 'Optimizer' -Kind Download -Uri 'https://github.com/hellzerg/optimizer/releases/download/16.7/Optimizer-16.7.exe' -FileName 'Optimizer.exe'
         New-InilogAction -Id 16 -Category $diagnostics -Label 'WinMTR' -Kind Download -Uri 'https://www.inilog.com/suporte/628/files/WinMTR.exe' -FileName 'WinMTR.exe'
         New-InilogAction -Id 17 -Category $diagnostics -Label 'CPU-Z' -Kind Download -Uri 'https://download.cpuid.com/cpu-z/cpu-z_2.11-en.zip' -FileName 'cpu-z.zip'
@@ -484,7 +481,7 @@ function Show-InilogMenu {
     Show-InilogHeader
     $width = Get-InilogConsoleWidth
     $items = @(Get-InilogVisibleActions -Actions $script:InilogActions -Filter $script:InilogState.Filter)
-    $categories = @('Sistema e manutenção', 'Diagnóstico e rede', 'Impressoras e suporte')
+    $categories = @(('Sistema e manuten' + [char]0x00E7 + [char]0x00E3 + 'o'), ('Diagn' + [char]0x00F3 + 'stico e rede'), 'Impressoras e suporte')
     $twoColumns = $width -ge 90
     $cellWidth = $width
     if ($twoColumns) { $cellWidth = [int][Math]::Floor(($width - 2) / 2) }
@@ -557,7 +554,7 @@ function Invoke-InilogAction {
                 return (Start-InilogProcess -Path 'cmd.exe' -Description $Action.Label -Arguments $arguments -AsAdministrator)
             }
             default {
-                return (New-InilogResult $false 'Tipo de ferramenta não reconhecido.')
+                return (New-InilogResult $false ('Tipo de ferramenta n' + [char]0x00E3 + 'o reconhecido.'))
             }
         }
     } catch {
@@ -582,13 +579,13 @@ function Start-InilogConsole {
 
     if (-not (Show-InilogLogin)) { return }
 
-    Write-InilogStatus 'Consultando informações da conexão...'
+    Write-InilogStatus ('Consultando informa' + [char]0x00E7 + [char]0x00F5 + 'es da conex' + [char]0x00E3 + 'o...')
     Update-InilogNetworkInfo
 
     while ($true) {
         Show-InilogMenu
         Write-Host ''
-        $choiceText = Read-Host 'Opção ou comando'
+        $choiceText = Read-Host ('Op' + [char]0x00E7 + [char]0x00E3 + 'o ou comando')
         if ($null -eq $choiceText) { break }
         $choiceText = $choiceText.Trim()
         if (-not $choiceText) { continue }
@@ -596,7 +593,7 @@ function Start-InilogConsole {
 
         if ($commandName -eq '0') { break }
         if ($commandName -eq 'B') {
-            $filterText = Read-Host 'Buscar por nome ou número (Enter mostra tudo)'
+            $filterText = Read-Host ('Buscar por nome ou n' + [char]0x00FA + 'mero (Enter mostra tudo)')
             $script:InilogState.Filter = [string]$filterText
             $script:InilogState.Filter = $script:InilogState.Filter.Trim()
             continue
@@ -606,7 +603,7 @@ function Start-InilogConsole {
             continue
         }
         if ($commandName -eq 'R') {
-            Write-InilogStatus 'Atualizando informações da conexão...'
+            Write-InilogStatus ('Atualizando informa' + [char]0x00E7 + [char]0x00F5 + 'es da conex' + [char]0x00E3 + 'o...')
             Update-InilogNetworkInfo
             continue
         }
@@ -628,7 +625,7 @@ function Start-InilogConsole {
         $selectedId = 0
         if (-not [int]::TryParse($choiceText, [ref]$selectedId) -or
             -not $script:InilogActionMap.ContainsKey($selectedId)) {
-            Write-InilogStatus 'Opção inválida. Digite um número do menu ou um dos comandos exibidos.' 'Warning'
+            Write-InilogStatus ('Op' + [char]0x00E7 + [char]0x00E3 + 'o inv' + [char]0x00E1 + 'lida. Digite um n' + [char]0x00FA + 'mero do menu ou um dos comandos exibidos.') 'Warning'
             Wait-InilogMenu
             continue
         }
@@ -652,4 +649,4 @@ if ($env:OS -ne 'Windows_NT') {
     return
 }
 
-Start-InilogConsole -DownloadDirectory $DiretorioDownloads
+Start-InilogConsole -DownloadDirectory 'C:\ti'
