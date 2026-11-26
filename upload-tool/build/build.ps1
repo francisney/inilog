@@ -2,8 +2,10 @@ $ErrorActionPreference = 'Stop'
 $root = Split-Path -Parent $PSScriptRoot
 $dist = Join-Path $root 'dist'
 New-Item -ItemType Directory -Path $dist -Force | Out-Null
-$csc = Join-Path $env:WINDIR 'Microsoft.NET\Framework64\v4.0.30319\csc.exe'
-if (-not (Test-Path $csc)) { $csc = Join-Path $env:WINDIR 'Microsoft.NET\Framework\v4.0.30319\csc.exe' }
+$vswhere = Join-Path ${env:ProgramFiles(x86)} 'Microsoft Visual Studio\Installer\vswhere.exe'
+$candidates = @(& $vswhere -latest -products '*' -find 'MSBuild\**\Bin\Roslyn\csc.exe')
+if ($candidates.Count -eq 0) { throw 'Compilador C# Roslyn nao encontrado.' }
+$csc = $candidates[0]
 & $csc /nologo /codepage:65001 /target:winexe /optimize+ /platform:anycpu "/win32manifest:$root\client\app.manifest" "/out:$dist\upload.exe" /r:System.dll /r:System.Core.dll /r:System.Drawing.dll /r:System.Windows.Forms.dll /r:System.Web.Extensions.dll "$root\client\Program.cs" "$root\client\UploadClient.cs"
 if ($LASTEXITCODE -ne 0) { throw 'Falha ao compilar upload.exe' }
 & $csc /nologo /codepage:65001 /target:exe "/out:$dist\UploadTests.exe" "/r:$dist\upload.exe" /r:System.dll /r:System.Core.dll /r:System.Drawing.dll /r:System.Windows.Forms.dll "$root\tests\UploadTests.cs"
