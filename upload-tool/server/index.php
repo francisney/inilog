@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 require __DIR__.'/common.php';
-header('X-Content-Type-Options: nosniff');header('Referrer-Policy: no-referrer');header('Cache-Control: no-store');
+header('X-Content-Type-Options: nosniff');header('Referrer-Policy: same-origin');header('Cache-Control: no-store');
 $api=$_GET['api']??'';
 if($api!==''){
     try{
@@ -31,4 +31,4 @@ if(($_SERVER['REQUEST_METHOD']??'GET')==='POST'){
     }catch(Throwable $e){http_response_code(400);header('Content-Type: text/plain; charset=UTF-8');echo 'ERRO: '.$e->getMessage();exit;}
 }
 header("Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self'; base-uri 'self'; frame-ancestors 'self'; form-action 'self'");
-?><!doctype html><html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>INILOG Upload</title><link rel="stylesheet" href="upload.css?v=1"><script src="upload.js?v=1" defer></script></head><body><main><h1>INILOG <span>Upload</span></h1><label class="file"><input type="file" id="file"><span id="filename">Escolher arquivo</span><small id="size">Qualquer formato de arquivo</small></label><div class="progress-row"><progress id="progress" value="0" max="100"></progress><strong id="percent">0%</strong></div><p id="status" role="status">Selecione um arquivo para começar.</p><div class="actions"><button id="send" disabled>Carregar</button><button id="copy" disabled>Copiar link</button></div><input id="url" readonly aria-label="Link para compartilhar" placeholder="O link aparecerá aqui"><footer>Francisney Delmondes | INILOG<br>(61) 99363-0969 · suporte@inilog.com<br>www.inilog.com</footer></main></body></html>
+?><!doctype html><html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>INILOG Upload</title><link rel="stylesheet" href="upload.css?v=2"><script src="upload.js?v=2" defer></script></head><body><main><h1>INILOG <span>Upload</span></h1><label class="file"><input type="file" id="file"><span id="filename">Escolher arquivo</span><small id="size">Qualquer formato de arquivo</small></label><div class="progress-row"><progress id="progress" value="0" max="100"></progress><strong id="percent">0%</strong></div><p id="status" role="status">Selecione um arquivo para começar.</p><div class="actions"><button id="send" disabled>Carregar</button><button id="copy" disabled>Copiar link</button></div><input id="url" readonly aria-label="Link para compartilhar" placeholder="O link aparecerá aqui"><footer>Francisney Delmondes | INILOG<br>(61) 99363-0969 · suporte@inilog.com<br>www.inilog.com</footer></main></body></html>
