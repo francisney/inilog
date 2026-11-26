@@ -1,0 +1,3 @@
+Options -Indexes
+RewriteEngine On
+RewriteRule ^([a-f0-9]{32})/?$ /backup/download.php?file=$1 [END]
