@@ -1,671 +1,249 @@
 using Namespace System.Drawing
+using Namespace System.Drawing.Drawing2D
 using Namespace System.Windows.Forms
 
-enum ShapeTypes {
-    Unspecified = 0        
-    Line = 1    
-    T = 2    
-    Square = 3    
-    L = 4   
-    LMirrored = 5 
-    S = 6   
-    SMirrored = 7 
+Add-Type -AssemblyName System.Drawing
+Add-Type -AssemblyName System.Windows.Forms
+
+$Width = 700
+$Height = 700
+$CenterX = [float]($Width / 2)
+$CenterY = [float]($Height / 2)
+$ClockRadius = 255.0
+
+$Form = [Form]@{
+    Text            = 'www.inilog.com'
+    ClientSize      = [Size]::new($Width, $Height)
+    BackColor       = [Color]::FromArgb(8, 10, 16)
+    FormBorderStyle = [FormBorderStyle]::FixedSingle
+    MaximizeBox     = $false
+    StartPosition   = 'CenterScreen'
 }
 
-class TetrisShape {
-    [System.Drawing.Point] $Position
-    [System.Drawing.Color] $Color
-    [ShapeTypes] $Type = 0
-    [int[, ]] $Body
-    
-    [PSCustomObject] $Moveset = [PSCustomObject] @{
-        Left  = $false
-        Right = $false
-        Up    = $false
-        Down  = $false
-    }
+$DoubleBufferedProp = [Control].GetProperty('DoubleBuffered', [System.Reflection.BindingFlags]'Instance,NonPublic')
+$DoubleBufferedProp.SetValue($Form, $true, $null)
 
-    [int[, ]] SetShape([ShapeTypes] $Type) {
-        $Coordinates = [int[, ]]::new(5, 5)
-        Switch ([int]$Type) {
-            Default {
-                $Coordinates[2, 0] = 1
-                $Coordinates[2, 1] = 1
-                $Coordinates[2, 2] = 1
-                $Coordinates[2, 3] = 1
-            }
-            2 {
-                $Coordinates[2, 1] = 1
-                $Coordinates[2, 2] = 1
-                $Coordinates[2, 3] = 1
-                $Coordinates[1, 2] = 1
-            }
-            3 {
-                $Coordinates[2, 2] = 1
-                $Coordinates[2, 3] = 1
-                $Coordinates[3, 2] = 1
-                $Coordinates[3, 3] = 1
-            }
-            4 {
-                $Coordinates[1, 2] = 1
-                $Coordinates[1, 3] = 1
-                $Coordinates[2, 2] = 1
-                $Coordinates[3, 2] = 1
-            }
-            5 {
-                $Coordinates[1, 1] = 1
-                $Coordinates[1, 2] = 1
-                $Coordinates[2, 2] = 1
-                $Coordinates[3, 2] = 1
-            }
-            6 {
-                $Coordinates[1, 2] = 1
-                $Coordinates[2, 1] = 1
-                $Coordinates[2, 2] = 1
-                $Coordinates[3, 1] = 1
-            }
-            7 {
-                $Coordinates[1, 2] = 1
-                $Coordinates[2, 2] = 1
-                $Coordinates[2, 3] = 1
-                $Coordinates[3, 3] = 1
-            }
-        }
-        Return $Coordinates
-    }
-
-    [bool] IsColliding([int[, ]] $Body, [int[, ]] $Table, [System.Drawing.Point] $Position) {
-        For ($Y = 0; $Y -le $Body.GetUpperBound(1); $Y++) {
-            For ($X = 0; $X -le $Body.GetUpperBound(0); $X++) {
-                If ($Table[($Position.X + $X), ($Position.Y + $Y)] -and $Body[$X, $Y]) {
-                    Return $true
-                }
-            }
-        }
-        Return $false
-    }
-
-    [void] Move([System.Drawing.Point] $PositionChange, [int[, ]] $TableCoordinates) {
-        $PositionChange = [System.Drawing.Point]::new(
-            ($this.Position.X + $PositionChange.X), 
-            ($this.Position.X + $PositionChange.Y)
-        )
-
-        If (!$this.IsColliding($this.Body, $TableCoordinates, $PositionChange)) {
-            $this.Position = $PositionChange
-        }
-    }
-
-    [void] Rotate([bool] $Reverse, [int[, ]] $TableCoordinates) {
-        If ($this.Type -ne [ShapeTypes]::Square) {
-            [int[, ]] $RotatedBody = [int[, ]]::new(($this.Body.GetUpperBound(1) + 1), ($this.Body.GetUpperBound(1) + 1))
-
-            For ($Y = 0; $Y -lt ($this.Body.GetUpperBound(1) + 1); ++$Y) {
-                For ($X = 0; $X -lt ($this.Body.GetUpperBound(1) + 1); ++$X) {
-                    If ($Reverse) {
-                        $RotatedBody[$Y, $X] = $this.Body[$X, (($this.Body.GetUpperBound(1) + 1) - $Y - 1)]
-                    }
-                    Else {
-                        $RotatedBody[$Y, $X] = $this.Body[(($this.Body.GetUpperBound(1) + 1) - $X - 1), $Y]
-                    }
-                }   
-            }
-            If (!$this.IsColliding($RotatedBody, $TableCoordinates, $this.Position)) {
-                $this.Body = $RotatedBody
-            }
-        }
-    }
-
-    [void] PrintBody() {
-        [console]::WriteLine(
-            ('Type: {0}, Color: {1}: Left: {2}, Right: {3} Position: {4}, {5}' -f 
-            $this.Type, $this.Color.Name, 
-            $this.Moveset.Left, $this.Moveset.Right, 
-            $this.Position.X, $this.Position.Y
-            )
-        )
-        
-        ForEach ($Y in 0 .. $this.Body.GetUpperBound(1)) {
-            [console]::WriteLine(
-                (
-                    (
-                        0 .. $this.Body.GetUpperBound(0) | ForEach-Object { 
-                            $this.Body[$_, $Y]
-                        }
-                    ) -join '-' -replace '0', '-'
-                )
-            )
-        }
-    }
-
-    TetrisShape([ShapeTypes] $ShapeName) {
-        $this.Color = [System.Drawing.Color]::FromArgb(255, (Get-Random (1 .. 255)), (Get-Random (1 .. 255)), (Get-Random (1 .. 255)))
-        $this.Type = $ShapeName
-        $this.Body = $this.SetShape([int]$ShapeName)
-    }
+function Get-PolarPoint {
+    param(
+        [float]$cx,
+        [float]$cy,
+        [double]$radius,
+        [double]$angleDeg
+    )
+    $rad = ($angleDeg - 90.0) * [Math]::PI / 180.0
+    $x = $cx + ($radius * [Math]::Cos($rad))
+    $y = $cy + ($radius * [Math]::Sin($rad))
+    return [PointF]::new([float]$x, [float]$y)
 }
 
-class TetrisBoard {
-    [bool] $Debug = $false
-    [int32] $BlockSize
-    [int32] $Width
-    [int32] $Height
-    [int[, ]] $Coordinates
-    [TetrisShape] $NextShape
-    [TetrisShape] $ActiveShape
-    [PSCustomObject] $Background = [PSCustomObject] @{
-        Burn  = $false
-        Color = [System.Drawing.Color]::FromArgb(255, 135, 206, 235)
-        Min   = 200
-        Max   = 254
+function Draw-ModernHand {
+    param(
+        [Graphics]$g,
+        [float]$cx,
+        [float]$cy,
+        [double]$angleDeg,
+        [double]$length,
+        [double]$tailLength,
+        [float]$width,
+        [Color]$color,
+        [bool]$withGlow = $false
+    )
+    $tip = Get-PolarPoint -cx $cx -cy $cy -radius $length -angleDeg $angleDeg
+    $tail = Get-PolarPoint -cx $cx -cy $cy -radius (-$tailLength) -angleDeg $angleDeg
+
+    if ($withGlow) {
+        $glowPen = [Pen]::new([Color]::FromArgb(45, $color.R, $color.G, $color.B), ($width + 6.0))
+        $glowPen.StartCap = [LineCap]::Round
+        $glowPen.EndCap = [LineCap]::Round
+        $g.DrawLine($glowPen, $tail, $tip)
+        $glowPen.Dispose()
     }
 
-    [void] Kill() {
-        If ($null -ne $this.ActiveShape) {
-            For ($Y = 0; $Y -le $this.ActiveShape.Body.GetUpperBound(1); $Y++) {
-                For ($X = 0; $X -le $this.ActiveShape.Body.GetUpperBound(0); $X++) {
-                    If ($this.ActiveShape.Body[$X, $Y]) {
-                        Try {
-                            $this.Coordinates[($this.ActiveShape.Position.X + ($X)), ($this.ActiveShape.Position.Y + $Y)] = 1
-                        }
-                        Catch { }
-                    }
-                }
-            }
-            $this.ActiveShape = $null
-        }
-    }
-
-    [bool] LostGame() {
-        # If the next shape collides with a deadblock - player lost
-        If ($null -ne $this.NextShape) {
-            Return $this.NextShape.IsColliding($this.NextShape.Body, $this.Coordinates, $this.NextShape.Position)
-        }
-        Else {
-            Return $false
-        }
-    }
-
-    [void] UpdateBoard() {
-        # Check for any lines to be removed, or if player has fucked up enough
-    }
-
-    [void] UpdateMoveset() {
-        If ($null -ne $this.ActiveShape) {
-            # Enable movement to each direction
-            $this.ActiveShape.Moveset.Left = $true
-            $this.ActiveShape.Moveset.Right = $true
-            $this.ActiveShape.Moveset.Down = $true
-            For ($Y = 0; $Y -le $this.ActiveShape.Body.GetUpperBound(1); $Y++) {
-                For ($X = 0; $X -le $this.ActiveShape.Body.GetUpperBound(0); $X++) {
-                    If ($this.ActiveShape.Body[$X, $Y]) {
-                        If (
-                            # If the left side of the block is blocked, or is out of bounds
-                            $this.Coordinates[($this.ActiveShape.Position.X + ($X - 1)), ($this.ActiveShape.Position.Y + $Y)] -or
-                            $this.RelativePoint($X, $Y, $this.ActiveShape).X -lt $this.BlockSize
-                        ) {
-                            $this.ActiveShape.Moveset.Left = $false
-                        }
-                        If (
-                            # If the right side of the block is blocked, or is out of bounds
-                            $this.Coordinates[($this.ActiveShape.Position.X + ($X + 1)), ($this.ActiveShape.Position.Y + $Y)] -or
-                            $this.RelativePoint($X, $Y, $this.ActiveShape).X -ge (($this.Width * $this.BlockSize) - $this.BlockSize)
-                        ) {
-                            $this.ActiveShape.Moveset.Right = $false
-                        }
-                        If (
-                            # If the block below is dead, or is out of bounds (Debug mode, invincible execpt oob)
-                            (
-                                !$this.Debug -and
-                                $this.Coordinates[($this.ActiveShape.Position.X + $X), ($this.ActiveShape.Position.Y + ($Y + 1))]
-                            ) -or
-                            $this.RelativePoint($X, $Y, $this.ActiveShape).Y -ge (($this.Height * $this.BlockSize) - $this.BlockSize)
-                        ) {
-                            $this.ActiveShape.Moveset.Down = $false
-                        }
-                    }
-                }
-            }
-            
-        }
-    }
-
-    [void] NewShape() {
-        If ($null -ne $this.NextShape) {
-            If ($null -eq $this.ActiveShape) {
-                $this.ActiveShape = $this.NextShape
-                $this.NextShape = [TetrisShape]::new((Get-Random (1 .. 7)))
-                $this.NextShape.Position = [System.Drawing.Point]::new((Get-Random (1 .. ($this.Width - ($this.NextShape.Body.GetUpperBound(0) + 1)))), 0)
-            }
-        }
-        Else {
-            $this.NextShape = [TetrisShape]::new((Get-Random (1 .. 7)))
-            $this.NextShape.Position = [System.Drawing.Point]::new((Get-Random (1 .. ($this.Width - ($this.NextShape.Body.GetUpperBound(0) + 1)))), 0)
-        }
-    }
-
-    [System.Drawing.Point] RelativePoint([int]$X, [int]$Y, [TetrisShape] $Shape) {
-        Return [System.Drawing.Point]::new(
-            (($Shape.Position.X * $this.BlockSize) + ($X * $this.BlockSize)),
-            (($Shape.Position.Y * $this.BlockSize) + ($Y * $this.BlockSize))
-        )
-    }
-
-    [void] AddLines([int] $Lines) {
-        1 .. $Lines | ForEach-Object {
-            #Write-Host 'Starting adding a new line'
-            ForEach ($Y in 1 .. $this.Coordinates.GetUpperBound(1)) {
-                #Write-Host ('Loop Y:{0}/{1}' -f $Y, $this.Coordinates.GetUpperBound(1))
-                0 .. $this.Coordinates.GetUpperBound(0) | ForEach-Object { 
-                    #Write-Host ('Column X:{0}/{1} Y:{2} = X:{3}/{4} Y:{5}' -f $_, $this.Coordinates.GetUpperBound(0), ($Y - 1), $_, $this.Coordinates.GetUpperBound(0), $Y)
-                    $this.Coordinates[$_, ($Y - 1)] = $this.Coordinates[$_, $Y] 
-                }
-            }
-            0 .. $this.Coordinates.GetUpperBound(0) | ForEach-Object { 
-                #Write-Host ('Set: {0},{1} = 1' -f $_, $this.Coordinates.GetUpperBound(1))
-                $this.Coordinates[$_, $this.Coordinates.GetUpperBound(1)] = Get-Random (0 .. 1)
-            }
-        }
-    }
-
-    [void] ClearLines() {
-        ForEach ($Y in $this.Coordinates.GetUpperBound(1) .. 0) {
-            If (!( -join (0 .. $this.Coordinates.GetUpperBound(0) | ForEach-Object { $this.Coordinates[$_, $Y] })).Contains('0')) {
-                # Reset top row
-                0 .. $this.Coordinates.GetUpperBound(0) | ForEach-Object { $this.Coordinates[$_, 0] = 0 }
-                # Loop, from current full row -> row 1 and set currentrow to the one above
-                ForEach ($TempY in $Y .. 1) { 
-                    0 .. $this.Coordinates.GetUpperBound(0) | ForEach-Object { 
-                        $this.Coordinates[$_, $TempY] = $this.Coordinates[$_, ($TempY - 1)] 
-                    } 
-                }
-            }
-        }
-    }
-
-    [void] PrintBoard() {
-        For ($Y = 0; $Y -le $this.Coordinates.GetUpperBound(1); $Y++) {
-            [console]::WriteLine(
-                (
-                    (
-                        0 .. $this.Coordinates.GetUpperBound(0) | ForEach-Object { 
-                            $this.Coordinates[$_, $Y]
-                        }
-                    ) -join '-' -replace '0', '-'
-                )
-            )
-        }
-    }
-
-    [System.Drawing.Image] DrawImage() {
-        $Buffer = [System.Drawing.Bitmap]::new($this.Width * $this.BlockSize, $this.Height * $this.BlockSize)
-        $Graphics = [System.Drawing.Graphics]::FromImage($Buffer)
-        # Fill buffer with a white background
-        $Graphics.FillRectangle(
-            [System.Drawing.SolidBrush]::new($this.Background.Color), 
-            [System.Drawing.Rectangle]::new(0, 0, $Buffer.Width, $Buffer.Height)
-        )
-
-        If (
-            ($this.Background.Burn -and $this.Background.Color.B -ge $this.Background.Max) -or
-            (!$this.Background.Burn -and $this.Background.Color.B -lt $this.Background.Min)
-        ) { 
-            $this.Background.Burn = !$this.Background.Burn
-        }
-        If ($this.Background.Burn) {
-            $this.Background.Color = [System.Drawing.Color]::FromArgb(255, $this.Background.Color.R, $this.Background.Color.G, ($this.Background.Color.B + 1))
-        }
-        Else {
-            $this.Background.Color = [System.Drawing.Color]::FromArgb(255, $this.Background.Color.R, $this.Background.Color.G, ($this.Background.Color.B - 1))
-        }
-        If ($null -ne $this.NextShape) {
-            # Draw NextShape
-            For ($Y = 0; $Y -le $this.NextShape.Body.GetUpperBound(1); $Y++) {
-                For ($X = 0; $X -le $this.NextShape.Body.GetUpperBound(0); $X++) {
-                    If ($this.NextShape.Body[$X, $Y]) {
-                        # If this part of the shape body is solid, draw it on the table
-                        $Graphics.FillRectangle(
-                            [System.Drawing.SolidBrush]::new([System.Drawing.Color]::FromArgb(255, ($this.Background.Color.R - 60), ($this.Background.Color.G - 60), ($this.Background.Color.B - 60))), 
-                            [System.Drawing.Rectangle]::new(
-                                $this.RelativePoint($X, $Y, $this.NextShape).X, $this.RelativePoint($X, $Y, $this.NextShape).Y, 
-                                $this.BlockSize, $this.BlockSize
-                            )
-                        )
-                        $Graphics.FillRectangle(
-                            [System.Drawing.SolidBrush]::new([System.Drawing.Color]::FromArgb(255, ($this.Background.Color.R - 30), ($this.Background.Color.G - 30), ($this.Background.Color.B - 30))), 
-                            [System.Drawing.Rectangle]::new(
-                                $this.RelativePoint($X, $Y, $this.NextShape).X, $this.RelativePoint($X, $Y, $this.NextShape).Y, 
-                                $this.BlockSize - 2, $this.BlockSize - 2
-                            )
-                        )
-                    }
-                }
-            }
-        }
-
-        If ($null -ne $this.ActiveShape) {
-            # Draw ActiveShape
-            For ($Y = 0; $Y -le $this.ActiveShape.Body.GetUpperBound(1); $Y++) {
-                For ($X = 0; $X -le $this.ActiveShape.Body.GetUpperBound(0); $X++) {
-                    If ($this.ActiveShape.Body[$X, $Y]) {
-                        # If this part of the shape body is solid, draw it on the table
-                        $Graphics.FillRectangle(
-                            [System.Drawing.SolidBrush]::new([System.Drawing.Color]::Gray), 
-                            [System.Drawing.Rectangle]::new(
-                                $this.RelativePoint($X, $Y, $this.ActiveShape).X, $this.RelativePoint($X, $Y, $this.ActiveShape).Y, 
-                                $this.BlockSize, $this.BlockSize
-                            )
-                        )
-                        $Graphics.FillRectangle(
-                            [System.Drawing.SolidBrush]::new($this.ActiveShape.Color), 
-                            [System.Drawing.Rectangle]::new(
-                                $this.RelativePoint($X, $Y, $this.ActiveShape).X, $this.RelativePoint($X, $Y, $this.ActiveShape).Y, 
-                                $this.BlockSize - 2, $this.BlockSize - 2
-                            )
-                        )
-                    }
-                }
-            }
-        }
-        
-        # Draw DeadBlocks
-        For ($Y = 0; $Y -le $this.Coordinates.GetUpperBound(1); $Y++) {
-            For ($X = 0; $X -le $this.Coordinates.GetUpperBound(0); $X++) {
-                If ($this.Coordinates[$X, $Y]) {
-                    # Draw a Gray outline
-                    $Graphics.FillRectangle(
-                        [System.Drawing.SolidBrush]::new([System.Drawing.Color]::Gray), 
-                        [System.Drawing.Rectangle]::new(
-                            $X * $this.BlockSize, $Y * $this.BlockSize, 
-                            $this.BlockSize, $this.BlockSize
-                        )
-                    )
-                    # Fill rest of the rectangle to give 3d block effect
-                    $Graphics.FillRectangle(
-                        [System.Drawing.SolidBrush]::new([System.Drawing.Color]::Silver), 
-                        [System.Drawing.Rectangle]::new(
-                            $X * $this.BlockSize, $Y * $this.BlockSize, 
-                            $this.BlockSize - 2, $this.BlockSize - 2
-                        )
-                    )
-                }
-            }
-        }
-
-        If ($this.Debug) {
-            For ($Y = 0; $Y -le $this.Coordinates.GetUpperBound(1); $Y++) {
-                For ($X = 0; $X -le $this.Coordinates.GetUpperBound(0); $X++) {
-                    If ($this.Coordinates[$X, $Y]) {
-                    }
-                }
-            }
-            For ($Y = 0; $Y -le $this.ActiveShape.Body.GetUpperBound(1); $Y++) {
-                For ($X = 0; $X -le $this.ActiveShape.Body.GetUpperBound(0); $X++) {
-                    If (
-                        $this.Coordinates[($this.ActiveShape.Position.X + $X), ($this.ActiveShape.Position.Y + $Y)] -and 
-                        $this.ActiveShape.Body[$X, $Y]
-                    ) {
-                        $Graphics.DrawString( 
-                            ('{0},{1}: {2}' -f 
-                                ($this.ActiveShape.Position.X + $X), 
-                                ($this.ActiveShape.Position.Y + $Y),
-                            $this.Coordinates[($this.ActiveShape.Position.X + $X), ($this.ActiveShape.Position.Y + $Y)]
-                            ),
-                            [System.Drawing.Font]::new('Segoe UI', 8, [System.Drawing.FontStyle]::Regular),
-                            [System.Drawing.SolidBrush]::new([System.Drawing.Color]::Red),
-                            $this.RelativePoint($X, $Y, $this.ActiveShape).X, $this.RelativePoint($X, $Y, $this.ActiveShape).Y
-                        )
-                    }
-                }
-            }
-            # Draws the ActiveShape Body (5x5 dimensions)
-            $Graphics.DrawRectangle(
-                [System.Drawing.Pen]::new($this.ActiveShape.Color, 1), 
-                [System.Drawing.Rectangle]::new(
-                    ($this.ActiveShape.Position.X * $this.BlockSize), ($this.ActiveShape.Position.Y * $this.BlockSize), 
-                    (($this.ActiveShape.Body.GetUpperBound(0) + 1) * $this.BlockSize) , (($this.ActiveShape.Body.GetUpperBound(1) + 1) * $this.BlockSize)
-                )
-            )
-            # Draws coordinate of the middle body
-            $Graphics.DrawString( ('Type: {0}' -f $this.ActiveShape.Type ), 
-                [System.Drawing.Font]::new('Segoe UI', 8, [System.Drawing.FontStyle]::Regular),
-                [System.Drawing.SolidBrush]::new([System.Drawing.Color]::Red),
-                1, 0 * $this.BlockSize
-            )
-            $Graphics.DrawString( ('Color: {0}' -f $this.ActiveShape.Color.Name ), 
-                [System.Drawing.Font]::new('Segoe UI', 8, [System.Drawing.FontStyle]::Regular),
-                [System.Drawing.SolidBrush]::new([System.Drawing.Color]::Red),
-                1, 1 * $this.BlockSize
-            )
-            $Graphics.DrawString( ('Left: {0}, Right: {1}, Down: {2}' -f $this.ActiveShape.Moveset.Left, $this.ActiveShape.Moveset.Right, $this.ActiveShape.Moveset.Down ), 
-                [System.Drawing.Font]::new('Segoe UI', 8, [System.Drawing.FontStyle]::Regular),
-                [System.Drawing.SolidBrush]::new([System.Drawing.Color]::Red),
-                1, 2 * $this.BlockSize
-            )
-        }
-        $Graphics.Dispose()
-        return $Buffer
-    }
-
-    TetrisBoard($Width, $Height, $BlockSize) {
-        $this.Coordinates = [int[, ]]::new($Width, $Height)
-        $this.BlockSize = $BlockSize
-        $this.Width = $Width
-        $this.Height = $Height
-        # Generate random rubble at start
-        $this.AddLines(4)
-    }
+    $pen = [Pen]::new($color, $width)
+    $pen.StartCap = [LineCap]::Round
+    $pen.EndCap = [LineCap]::Round
+    $g.DrawLine($pen, $tail, $tip)
+    $pen.Dispose()
 }
 
-$Engine = [Hashtable]::Synchronized(@{})
-$Engine.Settings = @{
-    Block          = @{
-        Size = 30
-    }
-    Board          = @{
-        Width  = 11
-        Height = 21
-    }
-    SpeedMs        = 300
-    CurrentSpeedMs = 300
-    LoopTime       = 100
-}
-$Engine.TetrisBoard = [TetrisBoard]::new($Engine.Settings.Board.Width, $Engine.Settings.Board.Height, $Engine.Settings.Block.Size)
-$Engine.NextFall = [Datetime]::Now.AddMilliseconds($Engine.Settings.CurrentSpeedMs)
+$Form.Add_Paint({
+    param($sender, $e)
+    $g = $e.Graphics
+    $g.SmoothingMode = [SmoothingMode]::AntiAlias
+    $g.TextRenderingHint = [System.Drawing.Text.TextRenderingHint]::AntiAliasGridFit
 
-$PowerShell = [PowerShell]::Create()
-$PowerShell.Runspace = [RunSpaceFactory]::CreateRunspace()
-$PowerShell.Runspace.Open()
-$PowerShell.Runspace.SessionStateProxy.setVariable('Engine', $Engine)
-$IAsyncResult = $PowerShell.AddScript( {
-        [void] [System.Reflection.Assembly]::LoadWithPartialName('System.Drawing')
-        [void] [System.Reflection.Assembly]::LoadWithPartialName('System.Windows.Forms')
-        [System.Windows.Forms.Application]::EnableVisualStyles()
-        $Engine.Form = [System.Windows.Forms.Form] @{
-            Text            = 'PowerShell Tetris'
-            ClientSize      = [System.Drawing.Size]::new(
-                ($Engine.Settings.Block.Size * $Engine.Settings.Board.Width), 
-                ($Engine.Settings.Block.Size * $Engine.Settings.Board.Height)
-            )
-            Font            = [System.Drawing.Font]::new('Segoe UI', 8.25, [System.Drawing.FontStyle]::Regular)
-            FormBorderStyle = [System.Windows.Forms.FormBorderStyle]::Fixed3D
-            KeyPreview      = $true
-            MaximizeBox     = $false
-        }
-        $Engine.PictureBox = [System.Windows.Forms.PictureBox] @{
-            Dock     = [System.Windows.Forms.DockStyle]::Fill
-            SizeMode = [System.Windows.Forms.PictureBoxSizeMode]::StretchImage
-        }
-        $Engine.PictureBox.Add_MouseClick(
-            {
-                Param(
-                    $Object,
-                    [System.Windows.Forms.MouseEventArgs] $MouseEventArgs
-                )
-                $Engine.InstantiateBlock = [System.Drawing.Point]::new(
-                    ($MouseEventArgs.X - ($MouseEventArgs.X % $Engine.Settings.Block.Size)) / $Engine.Settings.Block.Size,
-                    ($MouseEventArgs.Y - ($MouseEventArgs.Y % $Engine.Settings.Block.Size)) / $Engine.Settings.Block.Size
-                )
-            }
-        )
-        $Engine.Form.Add_KeyUp( {
-                Param( 
-                    $Object,
-                    [System.Windows.Forms.KeyEventArgs] $Key 
-                )
-                If ($Key.KeyCode -eq [System.Windows.Forms.Keys]::Space) {
-                    $Engine.Settings.CurrentSpeedMs = $Engine.Settings.SpeedMs
-                }
-                If ($Key.KeyCode -eq [System.Windows.Forms.Keys]::Enter) {
-                    $Engine.SwitchShape = $true
-                }
-                If ($Key.KeyCode -eq [System.Windows.Forms.Keys]::X -and $Engine.TetrisBoard.Debug) {
-                    $Engine.AddLines = Get-Random (1 .. 4)
-                }
-            }
-        )
-        $Engine.Form.Add_KeyDown( {
-                Param( 
-                    $Object,
-                    [System.Windows.Forms.KeyEventArgs] $Key 
-                )
-                If ($Key.KeyCode -eq [System.Windows.Forms.Keys]::Space) {
-                    $Engine.Settings.CurrentSpeedMs = $Engine.Settings.SpeedMs / 4
-                }
-                If ($Engine.TetrisBoard.Debug) {
-                    If ($Key.KeyCode -eq [System.Windows.Forms.Keys]::K) {
-                        $Engine.TetrisBoard.Kill()
-                    }
-                    If ($Key.KeyCode -eq [System.Windows.Forms.Keys]::NumPad8) {
-                        $Engine.TetrisBoard.ActiveShape.Position = [System.Drawing.Point]::new(
-                            $Engine.TetrisBoard.ActiveShape.Position.X,
-                            $Engine.TetrisBoard.ActiveShape.Position.Y - 1
-                        )
-                    }
-                    If ($Key.KeyCode -eq [System.Windows.Forms.Keys]::NumPad4) {
-                        $Engine.TetrisBoard.ActiveShape.Position = [System.Drawing.Point]::new(
-                            $Engine.TetrisBoard.ActiveShape.Position.X - 1,
-                            $Engine.TetrisBoard.ActiveShape.Position.Y
-                        )
-                    }
-                    If ($Key.KeyCode -eq [System.Windows.Forms.Keys]::NumPad6) {
-                        $Engine.TetrisBoard.ActiveShape.Position = [System.Drawing.Point]::new(
-                            $Engine.TetrisBoard.ActiveShape.Position.X + 1,
-                            $Engine.TetrisBoard.ActiveShape.Position.Y
-                        )
-                    }
-                    If ($Key.KeyCode -eq [System.Windows.Forms.Keys]::NumPad2) {
-                        $Engine.TetrisBoard.ActiveShape.Position = [System.Drawing.Point]::new(
-                            $Engine.TetrisBoard.ActiveShape.Position.X,
-                            $Engine.TetrisBoard.ActiveShape.Position.Y + 1
-                        )
-                    }
-                    If ($Key.KeyCode -eq [System.Windows.Forms.Keys]::NumPad7) {
-                        $Engine.TetrisBoard.ActiveShape.Rotate($false)
-                    }
-                    If ($Key.KeyCode -eq [System.Windows.Forms.Keys]::NumPad9) {
-                        $Engine.TetrisBoard.ActiveShape.Rotate($true)
-                    }
-                }
-                If ($Key.KeyCode -eq [System.Windows.Forms.Keys]::P) {
-                    $Engine.Debug = $true
-                }
-                If ($Key.KeyCode -eq [System.Windows.Forms.Keys]::Left) {
-                    $Engine.XMove = [System.Drawing.Point]::new(-1, 0)
-                }
-                If ($Key.KeyCode -eq [System.Windows.Forms.Keys]::Right) {
-                    $Engine.XMove = [System.Drawing.Point]::new(1, 0)
-                }
-                If ($Key.KeyCode -eq [System.Windows.Forms.Keys]::Up) {
-                    $Engine.Rotate = $true
-                }
-                If ($Key.KeyCode -eq [System.Windows.Forms.Keys]::Down) {
-                    $Engine.Rotate = $false
-                }
-                If ($Key.KeyCode -eq [System.Windows.Forms.Keys]::R) {
-                    $Engine.Renew = $true
-                }
-            }
-        )
-        $Engine.Form.Controls.Add($Engine.PictureBox)
-        $Engine.Form.Add_Resize( { If ($Engine.Dispose) { $Engine.Form.Close() } } )
-        $Engine.Form.Add_Load( { $Engine.Form.Activate() })
-        $Engine.Form.ShowDialog()
-        $Engine.Form.Dispose()
-    }
-).BeginInvoke()
+    $now = [DateTime]::Now
+    $g.Clear([Color]::FromArgb(8, 10, 16))
 
-While (-not $IAsyncResult.IsCompleted) {
-    If ($null -ne $Engine.PictureBox) {
-        $Time = Measure-Command {
-            If ($null -ne $Engine.AddLines -and $Engine.TetrisBoard.Debug) {
-                Write-Host ('Adding {0} lines' -f $Engine.AddLines)
-                $Engine.TetrisBoard.AddLines($Engine.AddLines)
-                $Engine.AddLines = $null
-            }
-            If ($null -ne $Engine.SwitchShape -and $null -ne $Engine.TetrisBoard.ActiveShape -and $null -ne $Engine.TetrisBoard.NextShape) {
-                $TempShape = $Engine.TetrisBoard.ActiveShape
-                $Engine.TetrisBoard.ActiveShape = $Engine.TetrisBoard.NextShape
-                $Engine.TetrisBoard.NextShape = $TempShape
-                $TempShape = $null
-                $Engine.SwitchShape = $null
-            }
-            If ($null -ne $Engine.InstantiateBlock -and $Engine.TetrisBoard.Debug) {
-                $Engine.TetrisBoard.Coordinates[$Engine.InstantiateBlock.X, $Engine.InstantiateBlock.Y] = !$Engine.TetrisBoard.Coordinates[$Engine.InstantiateBlock.X, $Engine.InstantiateBlock.Y]
-                $Engine.InstantiateBlock = $null
-            }
-            If ($null -ne $Engine.XMove) {
-                $Engine.TetrisBoard.UpdateMoveset()
-                If (
-                    ($Engine.XMove.X -gt 0 -and $Engine.TetrisBoard.ActiveShape.Moveset.Right) -or
-                    ($Engine.XMove.X -lt 0 -and $Engine.TetrisBoard.ActiveShape.Moveset.Left)
-                ) {
-                    $Engine.TetrisBoard.ActiveShape.Position = [System.Drawing.Point]::new(
-                        ($Engine.TetrisBoard.ActiveShape.Position.X + $Engine.XMove.X), 
-                        $Engine.TetrisBoard.ActiveShape.Position.Y + $Engine.XMove.Y
-                    )
-                }
-                $Engine.XMove = $null
-            }
-            If ($null -ne $Engine.Debug) {
-                $Engine.TetrisBoard.Debug = !$Engine.TetrisBoard.Debug
-                $Engine.Debug = $null
-            }
-            If ($null -ne $Engine.Renew) {
-                $Engine.TetrisBoard.ActiveShape = $null
-                $Engine.Renew = $null
-            }
-            If ($null -ne $Engine.Rotate -and $null -ne $Engine.TetrisBoard.ActiveShape) {
-                $Engine.TetrisBoard.UpdateMoveset()
-                $Engine.TetrisBoard.ActiveShape.Rotate($Engine.Rotate, $Engine.TetrisBoard.Coordinates)
-                $Engine.Rotate = $null
-            }
-    
-            If ([Datetime]::Now -ge $Engine.NextFall -and $null -ne $Engine.TetrisBoard.ActiveShape) {
-                $Engine.TetrisBoard.UpdateMoveset()
-                If ($Engine.TetrisBoard.ActiveShape.Moveset.Down) {
-                    $Engine.TetrisBoard.ActiveShape.Position = [System.Drawing.Point]::new(
-                        ($Engine.TetrisBoard.ActiveShape.Position.X), 
-                        $Engine.TetrisBoard.ActiveShape.Position.Y + 1
-                    )
-                }
-                Else {
-                    $Engine.TetrisBoard.Kill()
-                }
-                $Engine.NextFall = [Datetime]::Now.AddMilliseconds($Engine.Settings.CurrentSpeedMs)
-            }
-            If ($Engine.TetrisBoard.LostGame()) {
-                $Engine.TetrisBoard = [TetrisBoard]::new($Engine.Settings.Board.Width, $Engine.Settings.Board.Height, $Engine.Settings.Block.Size)
-            }
-            If ($null -eq $Engine.TetrisBoard.ActiveShape) {
-                $Engine.TetrisBoard.NewShape()
-            }
-            $Engine.TetrisBoard.UpdateMoveset()
-            $Engine.TetrisBoard.ClearLines()
-            $Engine.PictureBox.Image = $Engine.TetrisBoard.DrawImage()
+    # --- MOSTRADOR MODERNO COM GRADIENTE RADIAL ---
+    $dialRect = [RectangleF]::new(($CenterX - $ClockRadius), ($CenterY - $ClockRadius), ($ClockRadius * 2), ($ClockRadius * 2))
+    $dialPath = [GraphicsPath]::new()
+    $dialPath.AddEllipse($dialRect)
+
+    $dialGrad = [PathGradientBrush]::new($dialPath)
+    $dialGrad.CenterPoint = [PointF]::new($CenterX, ($CenterY - 25.0))
+    $dialGrad.CenterColor = [Color]::FromArgb(255, 24, 32, 48)
+    $dialGrad.SurroundColors = @([Color]::FromArgb(255, 10, 13, 21))
+    $g.FillPath($dialGrad, $dialPath)
+    $dialGrad.Dispose()
+    $dialPath.Dispose()
+
+    # Anel externo moderno com brilho sutil
+    $outerGlowPen = [Pen]::new([Color]::FromArgb(42, 56, 189, 248), 10.0)
+    $g.DrawEllipse($outerGlowPen, $dialRect)
+    $outerGlowPen.Dispose()
+
+    $outerRingPen = [Pen]::new([Color]::FromArgb(235, 56, 189, 248), 2.5)
+    $g.DrawEllipse($outerRingPen, $dialRect)
+    $outerRingPen.Dispose()
+
+    # Anéis internos minimalistas
+    $rTrackOuter = $ClockRadius - 12.0
+    $rTrackInner = $ClockRadius - 26.0
+    $trackPen = [Pen]::new([Color]::FromArgb(45, 148, 163, 184), 1.0)
+    $g.DrawEllipse($trackPen, ($CenterX - $rTrackOuter), ($CenterY - $rTrackOuter), ($rTrackOuter * 2), ($rTrackOuter * 2))
+    $g.DrawEllipse($trackPen, ($CenterX - $rTrackInner), ($CenterY - $rTrackInner), ($rTrackInner * 2), ($rTrackInner * 2))
+    $trackPen.Dispose()
+
+    # Arco de progresso dos segundos ao redor da borda interna
+    $secExact = $now.Second + ($now.Millisecond / 1000.0)
+    $secSweep = [float](($secExact / 60.0) * 360.0)
+    $rArc = $ClockRadius - 19.0
+    $arcRect = [RectangleF]::new(($CenterX - $rArc), ($CenterY - $rArc), ($rArc * 2), ($rArc * 2))
+    $secArcPen = [Pen]::new([Color]::FromArgb(145, 56, 189, 248), 2.2)
+    $secArcPen.StartCap = [LineCap]::Round
+    $secArcPen.EndCap = [LineCap]::Round
+    $g.DrawArc($secArcPen, $arcRect, -90.0, $secSweep)
+    $secArcPen.Dispose()
+
+    # Escala de 60 minutos e marcadores de hora
+    for ($i = 0; $i -lt 60; $i++) {
+        $deg = $i * 6.0
+        $isHour = ($i % 5 -eq 0)
+        $isMajor = ($i % 15 -eq 0)
+
+        $rOuter = $ClockRadius - 28.0
+        $rInner = if ($isMajor) { $ClockRadius - 46.0 } elseif ($isHour) { $ClockRadius - 42.0 } else { $ClockRadius - 34.0 }
+        $width = if ($isMajor) { 3.6 } elseif ($isHour) { 2.6 } else { 1.1 }
+
+        $col = if ($isMajor) {
+            [Color]::FromArgb(250, 248, 250, 252)
         }
-        If ($Time.TotalMilliseconds -lt $Engine.Settings.LoopTime) {
-            [System.Threading.Thread]::Sleep(($Engine.Settings.LoopTime - $Time.TotalMilliseconds))
+        elseif ($isHour) {
+            [Color]::FromArgb(200, 148, 210, 255)
+        }
+        else {
+            [Color]::FromArgb(85, 148, 163, 184)
+        }
+
+        $p1 = Get-PolarPoint -cx $CenterX -cy $CenterY -radius $rInner -angleDeg $deg
+        $p2 = Get-PolarPoint -cx $CenterX -cy $CenterY -radius $rOuter -angleDeg $deg
+
+        $tickPen = [Pen]::new($col, $width)
+        $tickPen.StartCap = [LineCap]::Round
+        $tickPen.EndCap = [LineCap]::Round
+        $g.DrawLine($tickPen, $p1, $p2)
+        $tickPen.Dispose()
+    }
+
+    # Números modernos (12, 3, 6, 9 em destaque e demais discretos)
+    $cardinalFont = [Font]::new('Segoe UI', 16.0, [FontStyle]::Bold)
+    $hourFont = [Font]::new('Segoe UI', 12.0, [FontStyle]::Regular)
+    $sf = [StringFormat]::new()
+    $sf.Alignment = [StringAlignment]::Center
+    $sf.LineAlignment = [StringAlignment]::Center
+
+    for ($h = 1; $h -le 12; $h++) {
+        $deg = ($h % 12) * 30.0
+        $isCardinal = ($h -in @(12, 3, 6, 9))
+        $numPt = Get-PolarPoint -cx $CenterX -cy $CenterY -radius ($ClockRadius - 68.0) -angleDeg $deg
+        $numRect = [RectangleF]::new(($numPt.X - 20), ($numPt.Y - 15), 40, 30)
+
+        if ($isCardinal) {
+            $b = [SolidBrush]::new([Color]::FromArgb(250, 241, 245, 249))
+            $g.DrawString("$h", $cardinalFont, $b, $numRect, $sf)
+            $b.Dispose()
+        }
+        else {
+            $b = [SolidBrush]::new([Color]::FromArgb(165, 148, 163, 184))
+            $g.DrawString("$h", $hourFont, $b, $numRect, $sf)
+            $b.Dispose()
         }
     }
-}
+
+    $sf.Dispose()
+    $cardinalFont.Dispose()
+    $hourFont.Dispose()
+
+    # Visor minimalista de data e hora digital
+    $culture = [System.Globalization.CultureInfo]::GetCultureInfo('pt-BR')
+    $dateStr = $now.ToString("ddd, dd MMM", $culture).ToUpper()
+    $timeStr = $now.ToString("HH:mm:ss")
+
+    $badgeW = 124.0
+    $badgeH = 46.0
+    $badgeX = $CenterX - ($badgeW / 2.0)
+    $badgeY = $CenterY + 56.0
+    $badgeRect = [RectangleF]::new($badgeX, $badgeY, $badgeW, $badgeH)
+
+    $badgeBrush = [SolidBrush]::new([Color]::FromArgb(220, 13, 18, 29))
+    $badgePen = [Pen]::new([Color]::FromArgb(95, 56, 189, 248), 1.0)
+    $g.FillRectangle($badgeBrush, $badgeRect)
+    $g.DrawRectangle($badgePen, $badgeRect.X, $badgeRect.Y, $badgeRect.Width, $badgeRect.Height)
+    $badgePen.Dispose()
+    $badgeBrush.Dispose()
+
+    $dateFont = [Font]::new('Segoe UI', 8.5, [FontStyle]::Bold)
+    $timeFont = [Font]::new('Consolas', 11.0, [FontStyle]::Bold)
+    $dateBrush = [SolidBrush]::new([Color]::FromArgb(215, 148, 163, 184))
+    $timeBrush = [SolidBrush]::new([Color]::FromArgb(250, 56, 189, 248))
+
+    $dateSf = [StringFormat]::new()
+    $dateSf.Alignment = [StringAlignment]::Center
+    $g.DrawString($dateStr, $dateFont, $dateBrush, [RectangleF]::new($badgeX, ($badgeY + 5.0), $badgeW, 16.0), $dateSf)
+    $g.DrawString($timeStr, $timeFont, $timeBrush, [RectangleF]::new($badgeX, ($badgeY + 21.0), $badgeW, 20.0), $dateSf)
+    $dateSf.Dispose()
+
+    $dateBrush.Dispose()
+    $timeBrush.Dispose()
+    $dateFont.Dispose()
+    $timeFont.Dispose()
+
+    # Cálculo preciso dos ponteiros
+    $minExact = $now.Minute + ($secExact / 60.0)
+    $hourExact = ($now.Hour % 12) + ($minExact / 60.0)
+
+    $secAngle = $secExact * 6.0
+    $minAngle = $minExact * 6.0
+    $hourAngle = $hourExact * 30.0
+
+    # Hora (branco gelo), Minuto (azul claro moderno), Segundo (ciano vibrante com brilho)
+    Draw-ModernHand -g $g -cx $CenterX -cy $CenterY -angleDeg $hourAngle -length ($ClockRadius * 0.50) -tailLength 16.0 -width 7.0 -color ([Color]::FromArgb(250, 241, 245, 249)) -withGlow $false
+    Draw-ModernHand -g $g -cx $CenterX -cy $CenterY -angleDeg $minAngle  -length ($ClockRadius * 0.74) -tailLength 22.0 -width 4.5 -color ([Color]::FromArgb(250, 125, 211, 252)) -withGlow $false
+    Draw-ModernHand -g $g -cx $CenterX -cy $CenterY -angleDeg $secAngle  -length ($ClockRadius * 0.85) -tailLength 28.0 -width 2.0 -color ([Color]::FromArgb(255, 56, 189, 248))  -withGlow $true
+
+    # Pino central em camadas
+    $capOuter = [SolidBrush]::new([Color]::FromArgb(255, 56, 189, 248))
+    $capMid = [SolidBrush]::new([Color]::FromArgb(255, 241, 245, 249))
+    $capInner = [SolidBrush]::new([Color]::FromArgb(15, 23, 42))
+    $g.FillEllipse($capOuter, ($CenterX - 9.0), ($CenterY - 9.0), 18.0, 18.0)
+    $g.FillEllipse($capMid, ($CenterX - 5.5), ($CenterY - 5.5), 11.0, 11.0)
+    $g.FillEllipse($capInner, ($CenterX - 2.5), ($CenterY - 2.5), 5.0, 5.0)
+    $capInner.Dispose()
+    $capMid.Dispose()
+    $capOuter.Dispose()
+})
+
+$Timer = [Timer]@{ Interval = 30 }
+$Timer.Add_Tick({
+    $Form.Invalidate()
+})
+
+$Form.Add_FormClosing({
+    $Timer.Stop()
+    $Timer.Dispose()
+})
+
+$Timer.Start()
+[void]$Form.ShowDialog()
+$Form.Dispose()
