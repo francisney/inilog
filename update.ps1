@@ -1,134 +1,145 @@
-#requires -Version 5.1
+﻿#requires -Version 5.1
+<#
+    INILOG | Painel de suporte
+    Francisney Delmondes - suporte@inilog.com
+    Compativel com Windows PowerShell 5.1 e PowerShell no Windows.
+#>
+[CmdletBinding()]
+param(
+    [ValidateNotNullOrEmpty()]
+    [string]$DiretorioDownloads = 'C:\ti'
+)
 
-# Francisney Delmondes
-# Email: suporte@inilog.com
-# INILOG - Ferramentas Administrativas
-
-$ErrorActionPreference = 'Continue'
-
-try {
-    [Net.ServicePointManager]::SecurityProtocol =
-        [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
-} catch {
-    # Mantém a compatibilidade caso TLS 1.2 já esteja configurado.
-}
-
-try {
-    $Host.UI.RawUI.WindowTitle = 'INILOG - Ferramentas Administrativas'
-} catch {
-    # Alguns hosts não permitem alterar o título da janela.
-}
-
-$script:DiretorioTI = 'C:\ti'
-$script:IpPublico = 'Indisponível'
-$script:Provedor = 'Indisponível'
-
-$script:CorBorda = 'DarkCyan'
-$script:CorTitulo = 'Yellow'
-$script:CorSecao = 'Cyan'
-$script:CorOpcao = 'White'
-$script:CorNumero = 'Green'
-$script:CorSucesso = 'Green'
-$script:CorAviso = 'Yellow'
-$script:CorErro = 'Red'
-$script:CorInfo = 'Cyan'
-
-function Write-Line {
+function New-InilogResult {
     param(
-        [char]$Character = '=',
-        [ConsoleColor]$Color = 'DarkCyan'
-    )
-
-    $width = 72
-
-    try {
-        $currentWidth = $Host.UI.RawUI.WindowSize.Width - 1
-        if ($currentWidth -ge 50 -and $currentWidth -le 110) {
-            $width = $currentWidth
-        }
-    } catch {
-        # Usa a largura padrão.
-    }
-
-    Write-Host ($Character.ToString() * $width) -ForegroundColor $Color
-}
-
-function Write-Centered {
-    param(
-        [Parameter(Mandatory)]
-        [string]$Text,
-
-        [ConsoleColor]$Color = 'White'
-    )
-
-    $width = 72
-
-    try {
-        $currentWidth = $Host.UI.RawUI.WindowSize.Width - 1
-        if ($currentWidth -ge 50 -and $currentWidth -le 110) {
-            $width = $currentWidth
-        }
-    } catch {
-        # Usa a largura padrão.
-    }
-
-    $padding = [Math]::Max(0, [Math]::Floor(($width - $Text.Length) / 2))
-    Write-Host ((' ' * $padding) + $Text) -ForegroundColor $Color
-}
-
-function Write-Status {
-    param(
-        [Parameter(Mandatory)]
+        [bool]$Success,
         [string]$Message,
+        [string]$Path = ''
+    )
 
+    [PSCustomObject]@{
+        Success = $Success
+        Message = $Message
+        Path = $Path
+    }
+}
+
+function Write-InilogStatus {
+    param(
+        [string]$Message,
         [ValidateSet('Info', 'Success', 'Warning', 'Error')]
         [string]$Type = 'Info'
     )
 
-    switch ($Type) {
-        'Success' {
-            Write-Host '[OK] ' -NoNewline -ForegroundColor $script:CorSucesso
-            Write-Host $Message -ForegroundColor White
+    $styles = @{
+        Info    = @('[i]', 'Cyan')
+        Success = @('[OK]', 'Green')
+        Warning = @('[!]', 'Yellow')
+        Error   = @('[ERRO]', 'Red')
+    }
+
+    $style = $styles[$Type]
+    Write-Host (' {0} ' -f $style[0]) -NoNewline -ForegroundColor $style[1]
+    Write-Host $Message -ForegroundColor White
+}
+
+function Get-InilogConsoleWidth {
+    $width = 96
+    try {
+        $available = [int]$Host.UI.RawUI.WindowSize.Width - 1
+        if ($available -ge 32) {
+            $width = [Math]::Min(118, $available)
         }
-        'Warning' {
-            Write-Host '[!]  ' -NoNewline -ForegroundColor $script:CorAviso
-            Write-Host $Message -ForegroundColor White
-        }
-        'Error' {
-            Write-Host '[ERRO] ' -NoNewline -ForegroundColor $script:CorErro
-            Write-Host $Message -ForegroundColor White
-        }
-        default {
-            Write-Host '[i]  ' -NoNewline -ForegroundColor $script:CorInfo
-            Write-Host $Message -ForegroundColor White
-        }
+    } catch {
+        # Hosts sem RawUI usam a largura padrão.
+    }
+    return $width
+}
+
+function Get-InilogFitText {
+    param([string]$Text, [int]$Width)
+
+    if ($Width -le 0) { return '' }
+    if ($null -eq $Text) { return '' }
+    if ($Text.Length -le $Width) { return $Text }
+    if ($Width -le 3) { return $Text.Substring(0, $Width) }
+    return $Text.Substring(0, $Width - 3) + '...'
+}
+
+function Write-InilogRule {
+    param([char]$Character = '-', [ConsoleColor]$Color = 'DarkCyan')
+    Write-Host ($Character.ToString() * (Get-InilogConsoleWidth)) -ForegroundColor $Color
+}
+
+function Test-InilogAdministrator {
+    try {
+        $identity = [Security.Principal.WindowsIdentity]::GetCurrent()
+        $principal = New-Object Security.Principal.WindowsPrincipal($identity)
+        return $principal.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
+    } catch {
+        return $false
     }
 }
 
-function Write-MenuSection {
-    param([Parameter(Mandatory)][string]$Title)
+function Initialize-InilogState {
+    param([string]$DownloadDirectory)
 
-    Write-Host ''
-    Write-Host ('  {0}' -f $Title.ToUpperInvariant()) -ForegroundColor $script:CorSecao
+    $script:InilogState = [PSCustomObject]@{
+        Version = '2.0'
+        DownloadDirectory = $DownloadDirectory
+        PublicIP = 'Indisponível'
+        Provider = 'Indisponível'
+        Filter = ''
+        IsAdministrator = (Test-InilogAdministrator)
+    }
+
+    $script:InilogActions = @(Get-InilogActions)
+    $script:InilogActionMap = @{}
+    foreach ($action in $script:InilogActions) {
+        if ($script:InilogActionMap.ContainsKey($action.Id)) {
+            throw "Número de opção duplicado: $($action.Id)."
+        }
+        $script:InilogActionMap[$action.Id] = $action
+    }
 }
 
-function Write-MenuItem {
-    param(
-        [Parameter(Mandatory)][string]$Number,
-        [Parameter(Mandatory)][string]$Label
-    )
-
-    Write-Host '  [' -NoNewline -ForegroundColor DarkGray
-    Write-Host $Number.PadLeft(2, '0') -NoNewline -ForegroundColor $script:CorNumero
-    Write-Host '] ' -NoNewline -ForegroundColor DarkGray
-    Write-Host $Label -ForegroundColor $script:CorOpcao
+function Update-InilogNetworkInfo {
+    try {
+        $network = Invoke-RestMethod -Uri 'https://ipinfo.io/json' -TimeoutSec 8 -ErrorAction Stop
+        $script:InilogState.PublicIP = 'Indisponível'
+        $script:InilogState.Provider = 'Indisponível'
+        if ($network.ip) { $script:InilogState.PublicIP = [string]$network.ip }
+        if ($network.org) { $script:InilogState.Provider = [string]$network.org }
+    } catch {
+        $script:InilogState.PublicIP = 'Indisponível'
+        $script:InilogState.Provider = 'Sem consulta de rede'
+    }
 }
 
-function ConvertTo-PlainText {
-    param([Parameter(Mandatory)][System.Security.SecureString]$SecureString)
+function Show-InilogHeader {
+    try { Clear-Host } catch {}
+
+    $width = Get-InilogConsoleWidth
+    Write-InilogRule '='
+    Write-Host ' INILOG' -NoNewline -ForegroundColor Cyan
+    Write-Host '  |  PAINEL DE SUPORTE' -NoNewline -ForegroundColor White
+    Write-Host ('  v{0}' -f $script:InilogState.Version) -ForegroundColor DarkGray
+
+    $mode = 'Usuário padrão'
+    if ($script:InilogState.IsAdministrator) { $mode = 'Administrador' }
+    Write-Host (' {0}  |  {1}' -f (Get-Date -Format 'dd/MM/yyyy HH:mm'), $mode) -ForegroundColor DarkGray
+    Write-InilogRule '='
+
+    $networkLine = ' IP: {0}  |  {1}' -f $script:InilogState.PublicIP, $script:InilogState.Provider
+    Write-Host (Get-InilogFitText $networkLine $width) -ForegroundColor Gray
+    $directoryLine = ' Downloads: {0}' -f $script:InilogState.DownloadDirectory
+    Write-Host (Get-InilogFitText $directoryLine $width) -ForegroundColor DarkGray
+}
+
+function ConvertFrom-InilogSecureString {
+    param([Security.SecureString]$SecureString)
 
     $pointer = [IntPtr]::Zero
-
     try {
         $pointer = [Runtime.InteropServices.Marshal]::SecureStringToBSTR($SecureString)
         return [Runtime.InteropServices.Marshal]::PtrToStringBSTR($pointer)
@@ -139,471 +150,506 @@ function ConvertTo-PlainText {
     }
 }
 
-function Get-PublicNetworkInfo {
-    try {
-        $networkInfo = Invoke-RestMethod -Uri 'https://ipinfo.io/json' -TimeoutSec 10 -ErrorAction Stop
+function Format-InilogSize {
+    param([long]$Bytes)
+    if ($Bytes -ge 1GB) { return ('{0:N2} GB' -f ($Bytes / 1GB)) }
+    if ($Bytes -ge 1MB) { return ('{0:N1} MB' -f ($Bytes / 1MB)) }
+    if ($Bytes -ge 1KB) { return ('{0:N1} KB' -f ($Bytes / 1KB)) }
+    return ('{0} B' -f $Bytes)
+}
 
-        if ($networkInfo.ip) {
-            $script:IpPublico = [string]$networkInfo.ip
-        }
+function Test-InilogDownloadedFile {
+    param([string]$Path, [string]$Destination, [string]$ContentType)
 
-        if ($networkInfo.org) {
-            $script:Provedor = [string]$networkInfo.org
-        }
-    } catch {
-        $script:IpPublico = 'Não foi possível consultar'
-        $script:Provedor = 'Não foi possível consultar'
+    $file = Get-Item -LiteralPath $Path -ErrorAction Stop
+    if ($file.Length -eq 0) { throw 'O servidor retornou um arquivo vazio.' }
+
+    $extension = [IO.Path]::GetExtension($Destination).ToLowerInvariant()
+    if ($ContentType -match 'text/html' -and $extension -in @('.exe', '.zip', '.cmd', '.ps1')) {
+        throw 'O endereço retornou uma página HTML em vez do arquivo solicitado.'
     }
-}
 
-function Initialize-WorkingDirectory {
-    try {
-        if (-not (Test-Path -LiteralPath $script:DiretorioTI)) {
-            New-Item -ItemType Directory -Path $script:DiretorioTI -Force | Out-Null
-            Write-Status "Diretório $script:DiretorioTI criado." 'Success'
-        }
-    } catch {
-        Write-Status "Não foi possível criar $script:DiretorioTI. $($_.Exception.Message)" 'Error'
-    }
-}
-
-function Save-RemoteFile {
-    param(
-        [Parameter(Mandatory)][string]$Uri,
-        [Parameter(Mandatory)][string]$Destination,
-        [Parameter(Mandatory)][string]$Description,
-        [switch]$Run,
-        [switch]$RunAsAdministrator
-    )
-
-    try {
-        $parentDirectory = Split-Path -Parent $Destination
-
-        if ($parentDirectory -and -not (Test-Path -LiteralPath $parentDirectory)) {
-            New-Item -ItemType Directory -Path $parentDirectory -Force | Out-Null
-        }
-
-        Write-Status "Baixando $Description..." 'Info'
-        Invoke-WebRequest -Uri $Uri -OutFile $Destination -UseBasicParsing -ErrorAction Stop
-        Write-Status "$Description salvo em: $Destination" 'Success'
-
-        if ($Run) {
-            if ($RunAsAdministrator) {
-                Start-Process -FilePath $Destination -Verb RunAs
-            } else {
-                Start-Process -FilePath $Destination
-            }
-
-            Write-Status "$Description iniciado." 'Success'
-        }
-    } catch {
-        Write-Status "Falha em $Description. $($_.Exception.Message)" 'Error'
-    }
-}
-
-function Open-WebAddress {
-    param(
-        [Parameter(Mandatory)][string]$Uri,
-        [Parameter(Mandatory)][string]$Description
-    )
-
-    try {
-        Start-Process $Uri
-        Write-Status "$Description aberto no navegador." 'Success'
-    } catch {
-        Write-Status "Não foi possível abrir $Description. $($_.Exception.Message)" 'Error'
-    }
-}
-
-function Invoke-RemoteScript {
-    param(
-        [Parameter(Mandatory)][string]$Uri,
-        [Parameter(Mandatory)][string]$Description
-    )
-
-    try {
-        Write-Status "Carregando $Description..." 'Info'
-        $remoteCode = Invoke-RestMethod -Uri $Uri -ErrorAction Stop
-
-        if ([string]::IsNullOrWhiteSpace([string]$remoteCode)) {
-            throw 'O servidor retornou um script vazio.'
-        }
-
-        Invoke-Expression ([string]$remoteCode)
-    } catch {
-        Write-Status "Falha ao executar $Description. $($_.Exception.Message)" 'Error'
-    }
-}
-
-function Show-Header {
-    Clear-Host
-    Write-Line '=' $script:CorBorda
-    Write-Centered 'INILOG' $script:CorTitulo
-    Write-Centered 'FERRAMENTAS ADMINISTRATIVAS' White
-    Write-Line '=' $script:CorBorda
-}
-
-function Show-Login {
-    Show-Header
-    Write-Host ''
-    Write-Centered 'ACESSO RESTRITO' $script:CorAviso
-    Write-Host ''
-
-    $expectedPassword = (Get-Date).ToString('ddMMyyyy')
-    $securePassword = Read-Host -Prompt 'Informe a senha de acesso' -AsSecureString
-    $typedPassword = ConvertTo-PlainText -SecureString $securePassword
-
-    if ($typedPassword -ne $expectedPassword) {
-        Write-Host ''
-        Write-Centered 'ACESSO NEGADO' $script:CorErro
-        Write-Centered 'Senha incorreta.' DarkRed
-        Write-Host ''
-        Start-Sleep -Seconds 1
-
+    if ($extension -in @('.exe', '.zip')) {
+        $stream = [IO.File]::OpenRead($Path)
         try {
-            Invoke-RemoteScript `
-                -Uri 'https://raw.githubusercontent.com/francisney/inilog/refs/heads/main/tetris.ps1' `
-                -Description 'Tetris'
-        } catch {
-            # A mensagem de erro já é tratada pela função.
+            $first = $stream.ReadByte()
+            $second = $stream.ReadByte()
+        } finally {
+            $stream.Dispose()
+        }
+        if ($extension -eq '.exe' -and ($first -ne 0x4D -or $second -ne 0x5A)) {
+            throw 'O conteúdo recebido não tem o cabeçalho de um executável Windows.'
+        }
+        if ($extension -eq '.zip' -and ($first -ne 0x50 -or $second -ne 0x4B)) {
+            throw 'O conteúdo recebido não tem o cabeçalho de um arquivo ZIP.'
+        }
+    }
+}
+
+function Save-InilogFile {
+    param(
+        [Parameter(Mandatory = $true)][string]$Uri,
+        [Parameter(Mandatory = $true)][string]$Destination,
+        [Parameter(Mandatory = $true)][string]$Description
+    )
+
+    $temporary = $null
+    $response = $null
+    $sourceStream = $null
+    $fileStream = $null
+    $activity = 'INILOG | ' + $Description
+
+    try {
+        $address = [Uri]$Uri
+        if (-not $address.IsAbsoluteUri -or $address.Scheme -notin @('http', 'https')) {
+            throw 'O endereço de download precisa usar HTTP ou HTTPS.'
         }
 
+        $parent = Split-Path -Parent $Destination
+        if (-not (Test-Path -LiteralPath $parent -PathType Container)) {
+            New-Item -ItemType Directory -Path $parent -Force -ErrorAction Stop | Out-Null
+        }
+
+        $temporaryName = '.inilog-' + [Guid]::NewGuid().ToString('N') + '.download'
+        $temporary = Join-Path $parent $temporaryName
+        Write-InilogStatus ('Baixando {0}...' -f $Description)
+
+        $request = [Net.HttpWebRequest]::Create($address)
+        $request.UserAgent = 'INILOG-Suporte/2.0'
+        $request.Timeout = 30000
+        $request.ReadWriteTimeout = 30000
+        $request.AllowAutoRedirect = $true
+        $response = $request.GetResponse()
+        $total = [long]$response.ContentLength
+        $contentType = [string]$response.ContentType
+        $sourceStream = $response.GetResponseStream()
+        $fileStream = [IO.File]::Create($temporary)
+        $buffer = New-Object byte[] 65536
+        $received = [long]0
+        $clock = [Diagnostics.Stopwatch]::StartNew()
+        $lastUpdate = [long]-250
+
+        while (($readCount = $sourceStream.Read($buffer, 0, $buffer.Length)) -gt 0) {
+            $fileStream.Write($buffer, 0, $readCount)
+            $received += $readCount
+
+            if (($clock.ElapsedMilliseconds - $lastUpdate) -ge 200) {
+                $percent = -1
+                $status = Format-InilogSize $received
+                if ($total -gt 0) {
+                    $percent = [int][Math]::Min(100, [Math]::Floor(100.0 * $received / $total))
+                    $status = '{0}% | {1} / {2}' -f $percent, (Format-InilogSize $received), (Format-InilogSize $total)
+                }
+                Write-Progress -Id 1 -Activity $activity -Status $status -PercentComplete $percent
+                $lastUpdate = $clock.ElapsedMilliseconds
+            }
+        }
+
+        $fileStream.Dispose()
+        $fileStream = $null
+        $sourceStream.Dispose()
+        $sourceStream = $null
+
+        if ($total -ge 0 -and $received -ne $total) {
+            throw 'O download terminou antes de receber todos os dados.'
+        }
+
+        Test-InilogDownloadedFile -Path $temporary -Destination $Destination -ContentType $contentType
+        Move-Item -LiteralPath $temporary -Destination $Destination -Force -ErrorAction Stop
+        $temporary = $null
+        return (New-InilogResult $true ('Arquivo salvo: {0}' -f $Destination) $Destination)
+    } catch {
+        return (New-InilogResult $false ('Falha no download de {0}: {1}' -f $Description, $_.Exception.Message))
+    } finally {
+        if ($fileStream) { $fileStream.Dispose() }
+        if ($sourceStream) { $sourceStream.Dispose() }
+        if ($response) { $response.Dispose() }
+        if ($temporary -and (Test-Path -LiteralPath $temporary)) {
+            Remove-Item -LiteralPath $temporary -Force -ErrorAction SilentlyContinue
+        }
+        Write-Progress -Id 1 -Activity $activity -Completed
+    }
+}
+
+function Start-InilogProcess {
+    param(
+        [string]$Path,
+        [string]$Description,
+        [string]$Arguments = '',
+        [switch]$AsAdministrator
+    )
+
+    try {
+        $parameters = @{ FilePath = $Path; ErrorAction = 'Stop' }
+        if ($Arguments) { $parameters.ArgumentList = $Arguments }
+        if ($AsAdministrator) { $parameters.Verb = 'RunAs' }
+        Start-Process @parameters | Out-Null
+        return (New-InilogResult $true ('{0} iniciado.' -f $Description) $Path)
+    } catch {
+        return (New-InilogResult $false ('Não foi possível iniciar {0}: {1}' -f $Description, $_.Exception.Message))
+    }
+}
+
+function Open-InilogLinks {
+    param([string[]]$Uris, [string]$Description)
+
+    try {
+        foreach ($address in $Uris) {
+            Start-Process -FilePath $address -ErrorAction Stop | Out-Null
+        }
+        return (New-InilogResult $true ('{0} aberto no navegador.' -f $Description))
+    } catch {
+        return (New-InilogResult $false ('Não foi possível abrir {0}: {1}' -f $Description, $_.Exception.Message))
+    }
+}
+
+function Get-InilogPowerShellPath {
+    foreach ($name in @('powershell.exe', 'pwsh.exe', 'pwsh')) {
+        $candidate = Join-Path $PSHOME $name
+        if (Test-Path -LiteralPath $candidate -PathType Leaf) { return $candidate }
+    }
+    throw 'Não foi possível localizar o executável do PowerShell.'
+}
+
+function Invoke-InilogRemoteScript {
+    param([string]$Uri, [string]$Description, [string]$FileName)
+
+    $destination = Join-Path $script:InilogState.DownloadDirectory $FileName
+    $download = Save-InilogFile -Uri $Uri -Destination $destination -Description $Description
+    if (-not $download.Success) { return $download }
+
+    $process = $null
+    try {
+        $tokens = $null
+        $parseErrors = $null
+        [void][Management.Automation.Language.Parser]::ParseFile($destination, [ref]$tokens, [ref]$parseErrors)
+        if (@($parseErrors).Count -gt 0) {
+            throw 'O script recebido contém erro de sintaxe.'
+        }
+
+        $engine = Get-InilogPowerShellPath
+        $escapedPath = $destination.Replace("'", "''")
+        $command = "& ([ScriptBlock]::Create([IO.File]::ReadAllText('$escapedPath')))"
+        Write-InilogStatus ('Executando {0}...' -f $Description)
+
+        # Compartilha o console, sem capturar a entrada/saída das ferramentas interativas.
+        # O processo filho mantém o menu aberto mesmo se a ferramenta usar exit.
+        $parameters = @{
+            FilePath = $engine
+            ArgumentList = ('-NoLogo -NoProfile -Command "{0}"' -f $command)
+            NoNewWindow = $true
+            Wait = $true
+            PassThru = $true
+            ErrorAction = 'Stop'
+        }
+        $process = Start-Process @parameters
+        if ($process.ExitCode -ne 0) {
+            throw ('A ferramenta encerrou com o código {0}.' -f $process.ExitCode)
+        }
+        return (New-InilogResult $true ('{0} finalizado.' -f $Description) $destination)
+    } catch {
+        return (New-InilogResult $false ('Falha ao executar {0}: {1}' -f $Description, $_.Exception.Message))
+    } finally {
+        if ($process) { $process.Dispose() }
+    }
+}
+
+function Show-InilogLogin {
+    Show-InilogHeader
+    Write-Host ''
+    Write-Host ' ACESSO RESTRITO' -ForegroundColor Yellow
+    Write-Host ''
+    $securePassword = $null
+    $typedPassword = $null
+    $expectedPassword = $null
+    $authenticated = $false
+
+    try {
+        $expectedPassword = (Get-Date).ToString('ddMMyyyy')
+        $securePassword = Read-Host 'Informe a senha de acesso' -AsSecureString
+        $typedPassword = ConvertFrom-InilogSecureString $securePassword
+        $authenticated = $typedPassword -eq $expectedPassword
+    } finally {
+        $typedPassword = $null
+        $expectedPassword = $null
+        if ($securePassword) { $securePassword.Dispose() }
+    }
+
+    if (-not $authenticated) {
+        Write-InilogStatus 'Acesso negado. Senha incorreta.' 'Error'
+        Start-Sleep -Milliseconds 700
+        $game = @{
+            Uri = 'https://raw.githubusercontent.com/francisney/inilog/refs/heads/main/tetris.ps1'
+            Description = 'Tetris'
+            FileName = 'Scripts\tetris.ps1'
+        }
+        [void](Invoke-InilogRemoteScript @game)
         return $false
     }
 
-    Write-Host ''
-    Write-Centered 'ACESSO LIBERADO' $script:CorSucesso
-    Start-Sleep -Milliseconds 600
+    Write-InilogStatus 'Acesso liberado.' 'Success'
     return $true
 }
 
-function Show-Menu {
-    Show-Header
+function New-InilogAction {
+    param(
+        [int]$Id,
+        [string]$Category,
+        [string]$Label,
+        [ValidateSet('Download', 'Links', 'Script', 'PrintQueue')]
+        [string]$Kind,
+        [string[]]$Uri,
+        [string]$FileName = '',
+        [switch]$Run,
+        [switch]$Hidden
+    )
 
-    Write-Host ''
-    Write-Host '  Rede pública' -ForegroundColor DarkGray
-    Write-Host '  IP:       ' -NoNewline -ForegroundColor DarkGray
-    Write-Host $script:IpPublico -ForegroundColor White
-    Write-Host '  Provedor: ' -NoNewline -ForegroundColor DarkGray
-    Write-Host $script:Provedor -ForegroundColor White
-
-    Write-MenuSection 'Sistemas e produtividade'
-    Write-MenuItem '1'  'Office'
-    Write-MenuItem '2'  'Download do Windows 10'
-    Write-MenuItem '9'  'Ativação oficial do Windows'
-    Write-MenuItem '18' 'MiniTool Partition Wizard'
-    Write-MenuItem '19' 'WinToHDD'
-    Write-MenuItem '20' 'GodMode'
-    Write-MenuItem '21' 'Ferramentas administrativas'
-    Write-MenuItem '25' 'WinUtil'
-
-    Write-MenuSection 'Manutenção e diagnóstico'
-    Write-MenuItem '3'  'Limpar fila de impressão'
-    Write-MenuItem '4'  'CCleaner Portable'
-    Write-MenuItem '5'  'Revo Uninstaller Portable'
-    Write-MenuItem '8'  'Advanced IP Scanner'
-    Write-MenuItem '10' 'CrystalDiskInfo'
-    Write-MenuItem '15' 'Optimizer'
-    Write-MenuItem '16' 'WinMTR'
-    Write-MenuItem '17' 'CPU-Z'
-    Write-MenuItem '22' 'Teste de velocidade'
-    Write-MenuItem '23' 'CLS'
-    Write-MenuItem '24' 'Sysinternals'
-    Write-MenuItem '27' 'Fake Failover / MudaLink'
-    Write-MenuItem '30' 'HWiNFO64'
-    Write-MenuItem '31' 'Snappy Driver Installer Origin'
-
-    Write-MenuSection 'Impressoras e acesso remoto'
-    Write-MenuItem '6'  'Driver Zebra ZD220/ZD230'
-    Write-MenuItem '7'  'Driver MP-4200'
-    Write-MenuItem '11' 'WinRAR'
-    Write-MenuItem '12' 'AnyDesk'
-    Write-MenuItem '13' 'RustDesk'
-    Write-MenuItem '26' 'WinRAR (download alternativo)'
-    Write-MenuItem '28' 'Reset do AnyDesk'
-    Write-MenuItem '29' 'Web Control'
-    Write-MenuItem '32' 'Gerenciador Zebra N2'
-    Write-MenuItem '33' 'Reparo Compartilhamento'
-    Write-Host ''
-    Write-Line '-' DarkGray
-    Write-MenuItem '0' 'Sair'
-    Write-Line '=' $script:CorBorda
-    Write-Host ''
+    [PSCustomObject]@{
+        Id = $Id
+        Category = $Category
+        Label = $Label
+        Kind = $Kind
+        Uris = @($Uri)
+        FileName = $FileName
+        Run = [bool]$Run
+        Visible = (-not [bool]$Hidden)
+    }
 }
 
-if (-not (Show-Login)) {
+function Get-InilogActions {
+    $system = 'Sistema e manutenção'
+    $diagnostics = 'Diagnóstico e rede'
+    $support = 'Impressoras e suporte'
+
+    # Os IDs são estáveis. Remover uma entrada retira também seu comando.
+    # Visible controla tanto o menu quanto a busca; os reservados aceitam o ID direto.
+    @(
+        New-InilogAction -Id 1 -Category $system -Label 'Microsoft Office' -Kind Links -Uri @(
+            'https://drive.google.com/file/d/1WLEhOUIJMR3i6xWvYZVaYi13L6PpSGZ7/view',
+            'https://c2rsetup.officeapps.live.com/c2r/download.aspx?ProductreleaseID=O365BusinessRetail&platform=x64&language=pt-br&version=O16GA'
+        )
+        New-InilogAction -Id 3 -Category $system -Label 'Limpar fila de impressão' -Kind PrintQueue -Uri 'https://raw.githubusercontent.com/francisney/inilog/refs/heads/main/Zerar_fila_de_impressao.cmd' -FileName 'zerar_fila_de_impressao.cmd'
+        New-InilogAction -Id 5 -Category $system -Label 'Revo Uninstaller Portable' -Kind Download -Uri 'https://download.revouninstaller.com/RevoUninstaller_Portable.zip' -FileName 'RevoUninstaller_Portable.zip'
+        New-InilogAction -Id 6 -Category $support -Label 'Driver Zebra ZD220/ZD230' -Kind Download -Uri 'https://inilog.com/suporte/628/files/driver-zebra-zd220-e-zd230.zip' -FileName 'driver-zebra-zd220-e-zd230.zip'
+        New-InilogAction -Id 7 -Category $support -Label 'Driver MP-4200' -Kind Download -Uri 'https://www.inilog.com/suporte/628/files/MP-4200.zip' -FileName 'MP-4200.zip'
+        New-InilogAction -Id 8 -Category $diagnostics -Label 'Advanced IP Scanner' -Kind Download -Uri 'https://download.advanced-ip-scanner.com/download/files/Advanced_IP_Scanner_2.5.4594.1.exe' -FileName 'Advanced_IP_Scanner.exe'
+        New-InilogAction -Id 9 -Category 'Reservado' -Label 'Ativação Windows/Office' -Kind Script -Uri 'https://get.activated.win/' -FileName 'Scripts\reservado-09.ps1' -Hidden
+        New-InilogAction -Id 10 -Category $diagnostics -Label 'CrystalDiskInfo Portable' -Kind Download -Uri 'https://www.inilog.com/suporte/628/files/CrystalDiskInfoPortable.zip' -FileName 'CrystalDiskInfo.zip'
+        New-InilogAction -Id 13 -Category $support -Label 'RustDesk' -Kind Download -Uri 'https://github.com/rustdesk/rustdesk/releases/download/1.3.2/rustdesk-1.3.2-x86_64.exe' -FileName 'rustdesk-1.3.2-x86_64.exe'
+        New-InilogAction -Id 14 -Category 'Reservado' -Label 'Serviço específico 628' -Kind Script -Uri 'https://inilog.com/suporte/628/files/628.ps1' -FileName 'Scripts\628.ps1' -Hidden
+        New-InilogAction -Id 15 -Category $system -Label 'Optimizer' -Kind Download -Uri 'https://github.com/hellzerg/optimizer/releases/download/16.7/Optimizer-16.7.exe' -FileName 'Optimizer.exe'
+        New-InilogAction -Id 16 -Category $diagnostics -Label 'WinMTR' -Kind Download -Uri 'https://www.inilog.com/suporte/628/files/WinMTR.exe' -FileName 'WinMTR.exe'
+        New-InilogAction -Id 17 -Category $diagnostics -Label 'CPU-Z' -Kind Download -Uri 'https://download.cpuid.com/cpu-z/cpu-z_2.11-en.zip' -FileName 'cpu-z.zip'
+        New-InilogAction -Id 18 -Category $system -Label 'MiniTool Partition Wizard' -Kind Links -Uri 'https://cdn2.minitool.com/?p=pw&e=pw-free'
+        New-InilogAction -Id 19 -Category $system -Label 'WinToHDD' -Kind Links -Uri 'https://www.inilog.com/suporte/628/files/WINTOHD_Hasleo.zip'
+        New-InilogAction -Id 20 -Category $system -Label 'GodMode' -Kind Script -Uri 'https://raw.githubusercontent.com/francisney/inilog/refs/heads/main/godmode' -FileName 'Scripts\godmode.ps1'
+        New-InilogAction -Id 22 -Category $diagnostics -Label 'Teste de velocidade' -Kind Script -Uri 'https://raw.githubusercontent.com/francisney/inilog/refs/heads/main/speedtest.ps1' -FileName 'Scripts\speedtest.ps1'
+        New-InilogAction -Id 24 -Category $diagnostics -Label 'Microsoft Sysinternals' -Kind Script -Uri 'https://raw.githubusercontent.com/francisney/inilog/refs/heads/main/sysinternals.ps1' -FileName 'Scripts\sysinternals.ps1'
+        New-InilogAction -Id 25 -Category $system -Label 'WinUtil' -Kind Script -Uri 'https://raw.githubusercontent.com/francisney/winutil/refs/heads/main/windev.ps1' -FileName 'Scripts\windev.ps1'
+        New-InilogAction -Id 27 -Category $diagnostics -Label 'MudaLink / Fake Failover' -Kind Download -Uri 'https://inilog.com/suporte/628/files/MudaLink.exe' -FileName 'MudaLink.exe'
+        New-InilogAction -Id 29 -Category $support -Label 'Web Control / InilogWeb' -Kind Download -Uri 'https://inilog.com/suporte/628/files/InilogWeb.exe' -FileName 'InilogWeb.exe'
+        New-InilogAction -Id 30 -Category $diagnostics -Label 'HWiNFO64' -Kind Download -Uri 'https://raw.githubusercontent.com/francisney/inilog/refs/heads/main/HWiNFO64.exe' -FileName 'HWiNFO64.exe'
+        New-InilogAction -Id 31 -Category $system -Label 'Snappy Driver Installer Origin' -Kind Links -Uri 'https://www.glenn.delahoy.com/snappy-driver-installer-origin/'
+        New-InilogAction -Id 34 -Category $support -Label 'Auditoria INILOG' -Kind Download -Uri 'https://inilog.com/upload/INILOG_Auditoria.exe' -FileName 'Auditoria\INILOG_Downloader.exe' -Run
+    )
+}
+
+function Get-InilogVisibleActions {
+    param([object[]]$Actions, [string]$Filter = '')
+
+    $compare = [Globalization.CultureInfo]::CurrentCulture.CompareInfo
+    $options = [Globalization.CompareOptions]::IgnoreCase -bor [Globalization.CompareOptions]::IgnoreNonSpace
+    foreach ($action in $Actions) {
+        if (-not $action.Visible) { continue }
+        $searchText = '{0} {1} {2}' -f $action.Id, $action.Label, $action.Category
+        if ([string]::IsNullOrWhiteSpace($Filter) -or
+            $compare.IndexOf($searchText, $Filter, $options) -ge 0) {
+            $action
+        }
+    }
+}
+
+function Write-InilogMenuCell {
+    param([object]$Action, [int]$Width)
+
+    $labelWidth = [Math]::Max(1, $Width - 7)
+    $label = Get-InilogFitText $Action.Label $labelWidth
+    Write-Host '  [' -NoNewline -ForegroundColor DarkGray
+    Write-Host ($Action.Id.ToString('00')) -NoNewline -ForegroundColor Green
+    Write-Host '] ' -NoNewline -ForegroundColor DarkGray
+    Write-Host ($label.PadRight($labelWidth)) -NoNewline -ForegroundColor White
+}
+
+function Show-InilogMenu {
+    Show-InilogHeader
+    $width = Get-InilogConsoleWidth
+    $items = @(Get-InilogVisibleActions -Actions $script:InilogActions -Filter $script:InilogState.Filter)
+    $categories = @('Sistema e manutenção', 'Diagnóstico e rede', 'Impressoras e suporte')
+    $twoColumns = $width -ge 90
+    $cellWidth = $width
+    if ($twoColumns) { $cellWidth = [int][Math]::Floor(($width - 2) / 2) }
+
+    if ($script:InilogState.Filter) {
+        Write-Host ''
+        $filterLine = ' Busca: {0} | {1} resultado(s)' -f $script:InilogState.Filter, $items.Count
+        Write-Host (Get-InilogFitText $filterLine $width) -ForegroundColor Yellow
+    }
+
+    foreach ($category in $categories) {
+        $group = @($items | Where-Object { $_.Category -eq $category } | Sort-Object Id)
+        if ($group.Count -eq 0) { continue }
+        Write-Host ''
+        Write-Host (' {0}' -f $category.ToUpperInvariant()) -ForegroundColor Cyan
+
+        $step = 1
+        if ($twoColumns) { $step = 2 }
+        for ($index = 0; $index -lt $group.Count; $index += $step) {
+            Write-InilogMenuCell -Action $group[$index] -Width $cellWidth
+            if ($twoColumns -and ($index + 1) -lt $group.Count) {
+                Write-Host '  ' -NoNewline
+                Write-InilogMenuCell -Action $group[$index + 1] -Width $cellWidth
+            }
+            Write-Host ''
+        }
+    }
+
+    if ($items.Count -eq 0) {
+        Write-Host ''
+        Write-InilogStatus 'Nenhuma ferramenta encontrada. Use T para mostrar todas.' 'Warning'
+    }
+
+    Write-Host ''
+    Write-InilogRule
+    if ($width -ge 80) {
+        Write-Host ' B Buscar  |  T Todas  |  R Atualizar rede  |  P Downloads  |  0 Sair' -ForegroundColor Gray
+    } else {
+        Write-Host ' B Buscar | T Todas | R Atualizar rede' -ForegroundColor Gray
+        Write-Host ' P Downloads | 0 Sair' -ForegroundColor Gray
+    }
+    Write-InilogRule
+}
+
+function Invoke-InilogAction {
+    param([object]$Action)
+
+    try {
+        switch ($Action.Kind) {
+            'Links' {
+                return (Open-InilogLinks -Uris $Action.Uris -Description $Action.Label)
+            }
+            'Script' {
+                return (Invoke-InilogRemoteScript -Uri $Action.Uris[0] -Description $Action.Label -FileName $Action.FileName)
+            }
+            'Download' {
+                $destination = Join-Path $script:InilogState.DownloadDirectory $Action.FileName
+                $result = Save-InilogFile -Uri $Action.Uris[0] -Destination $destination -Description $Action.Label
+                if (-not $result.Success) { return $result }
+                if ($Action.Run) {
+                    return (Start-InilogProcess -Path $result.Path -Description $Action.Label)
+                }
+                return $result
+            }
+            'PrintQueue' {
+                $destination = Join-Path $script:InilogState.DownloadDirectory $Action.FileName
+                $result = Save-InilogFile -Uri $Action.Uris[0] -Destination $destination -Description $Action.Label
+                if (-not $result.Success) { return $result }
+                $arguments = '/d /c ""{0}""' -f $result.Path
+                return (Start-InilogProcess -Path 'cmd.exe' -Description $Action.Label -Arguments $arguments -AsAdministrator)
+            }
+            default {
+                return (New-InilogResult $false 'Tipo de ferramenta não reconhecido.')
+            }
+        }
+    } catch {
+        return (New-InilogResult $false ('Falha em {0}: {1}' -f $Action.Label, $_.Exception.Message))
+    }
+}
+
+function Wait-InilogMenu {
+    Write-Host ''
+    [void](Read-Host 'Pressione Enter para voltar ao menu')
+}
+
+function Start-InilogConsole {
+    param([string]$DownloadDirectory)
+
+    Initialize-InilogState -DownloadDirectory $DownloadDirectory
+    try {
+        [Net.ServicePointManager]::SecurityProtocol =
+            [Net.ServicePointManager]::SecurityProtocol -bor [Net.SecurityProtocolType]::Tls12
+        $Host.UI.RawUI.WindowTitle = 'INILOG | Painel de suporte'
+    } catch {}
+
+    if (-not (Show-InilogLogin)) { return }
+
+    Write-InilogStatus 'Consultando informações da conexão...'
+    Update-InilogNetworkInfo
+
+    while ($true) {
+        Show-InilogMenu
+        Write-Host ''
+        $choiceText = Read-Host 'Opção ou comando'
+        if ($null -eq $choiceText) { break }
+        $choiceText = $choiceText.Trim()
+        if (-not $choiceText) { continue }
+        $commandName = $choiceText.ToUpperInvariant()
+
+        if ($commandName -eq '0') { break }
+        if ($commandName -eq 'B') {
+            $filterText = Read-Host 'Buscar por nome ou número (Enter mostra tudo)'
+            $script:InilogState.Filter = [string]$filterText
+            $script:InilogState.Filter = $script:InilogState.Filter.Trim()
+            continue
+        }
+        if ($commandName -eq 'T') {
+            $script:InilogState.Filter = ''
+            continue
+        }
+        if ($commandName -eq 'R') {
+            Write-InilogStatus 'Atualizando informações da conexão...'
+            Update-InilogNetworkInfo
+            continue
+        }
+        if ($commandName -eq 'P') {
+            try {
+                $directory = $script:InilogState.DownloadDirectory
+                if (-not (Test-Path -LiteralPath $directory -PathType Container)) {
+                    New-Item -ItemType Directory -Path $directory -Force -ErrorAction Stop | Out-Null
+                }
+                $opened = Start-InilogProcess -Path $directory -Description 'Pasta de downloads'
+                if (-not $opened.Success) { Write-InilogStatus $opened.Message 'Error'; Wait-InilogMenu }
+            } catch {
+                Write-InilogStatus $_.Exception.Message 'Error'
+                Wait-InilogMenu
+            }
+            continue
+        }
+
+        $selectedId = 0
+        if (-not [int]::TryParse($choiceText, [ref]$selectedId) -or
+            -not $script:InilogActionMap.ContainsKey($selectedId)) {
+            Write-InilogStatus 'Opção inválida. Digite um número do menu ou um dos comandos exibidos.' 'Warning'
+            Wait-InilogMenu
+            continue
+        }
+
+        Write-Host ''
+        $result = Invoke-InilogAction -Action $script:InilogActionMap[$selectedId]
+        if ($result.Success) {
+            Write-InilogStatus $result.Message 'Success'
+        } else {
+            Write-InilogStatus $result.Message 'Error'
+        }
+        Wait-InilogMenu
+    }
+
+    Write-Host ''
+    Write-InilogStatus 'INILOG encerrado.' 'Success'
+}
+
+if ($env:OS -ne 'Windows_NT') {
+    Write-InilogStatus 'Este painel precisa ser executado no Windows com PowerShell 5.1 ou superior.' 'Error'
     return
 }
 
-Initialize-WorkingDirectory
-Get-PublicNetworkInfo
-
-$choice = $null
-
-do {
-    Show-Menu
-    $choice = (Read-Host 'Escolha uma opção').Trim()
-    Write-Host ''
-
-    switch ($choice) {
-        '1' {
-            Open-WebAddress `
-                -Uri 'https://drive.google.com/file/d/1WLEhOUIJMR3i6xWvYZVaYi13L6PpSGZ7/view' `
-                -Description 'instruções do Office'
-
-            Open-WebAddress `
-                -Uri 'https://c2rsetup.officeapps.live.com/c2r/download.aspx?ProductreleaseID=O365BusinessRetail&platform=x64&language=pt-br&version=O16GA' `
-                -Description 'instalador do Office'
-        }
-
-        '2' {
-            Open-WebAddress `
-                -Uri 'https://www.microsoft.com/pt-br/software-download/windows10' `
-                -Description 'download oficial do Windows 10'
-        }
-
-        '3' {
-            Save-RemoteFile `
-                -Uri 'https://raw.githubusercontent.com/francisney/inilog/refs/heads/main/Zerar_fila_de_impressao.cmd' `
-                -Destination "$script:DiretorioTI\zerar_fila_de_impressao.cmd" `
-                -Description 'script de limpeza da fila de impressão'
-
-            $cmdFile = "$script:DiretorioTI\zerar_fila_de_impressao.cmd"
-            if (Test-Path -LiteralPath $cmdFile) {
-                try {
-                    Start-Process -FilePath 'cmd.exe' -ArgumentList "/c `"$cmdFile`"" -Verb RunAs
-                    Write-Status 'Limpeza da fila de impressão iniciada.' 'Success'
-                } catch {
-                    Write-Status "Não foi possível iniciar a limpeza. $($_.Exception.Message)" 'Error'
-                }
-            }
-        }
-
-        '4' {
-            Save-RemoteFile `
-                -Uri 'https://download.ccleaner.com/portable/ccsetup629.zip' `
-                -Destination "$script:DiretorioTI\ccleaner.zip" `
-                -Description 'CCleaner Portable'
-        }
-
-        '5' {
-            Save-RemoteFile `
-                -Uri 'https://download.revouninstaller.com/RevoUninstaller_Portable.zip' `
-                -Destination "$script:DiretorioTI\RevoUninstaller_Portable.zip" `
-                -Description 'Revo Uninstaller Portable'
-        }
-
-        '6' {
-            Save-RemoteFile `
-                -Uri 'https://inilog.com/suporte/628/files/driver-zebra-zd220-e-zd230.zip' `
-                -Destination "$script:DiretorioTI\driver-zebra-zd220-e-zd230.zip" `
-                -Description 'driver Zebra ZD220/ZD230'
-        }
-
-        '7' {
-            Save-RemoteFile `
-                -Uri 'https://www.inilog.com/suporte/628/files/MP-4200.zip' `
-                -Destination "$script:DiretorioTI\MP-4200.zip" `
-                -Description 'driver MP-4200'
-        }
-
-        '8' {
-            Save-RemoteFile `
-                -Uri 'https://download.advanced-ip-scanner.com/download/files/Advanced_IP_Scanner_2.5.4594.1.exe' `
-                -Destination "$script:DiretorioTI\Advanced_IP_Scanner.exe" `
-                -Description 'Advanced IP Scanner'
-        }
-
-        '9' {
-            Invoke-RemoteScript `
-                -Uri 'https://get.activated.win/' `
-                -Description 'ATV WIN Office'
-        }
-
-        '10' {
-            Save-RemoteFile `
-                -Uri 'https://www.inilog.com/suporte/628/files/CrystalDiskInfoPortable.zip' `
-                -Destination "$script:DiretorioTI\CrystalDiskInfo.zip" `
-                -Description 'CrystalDiskInfo Portable'
-        }
-
-        '11' {
-            Save-RemoteFile `
-                -Uri 'https://www.win-rar.com/fileadmin/winrar-versions/winrar/winrar-x64-701.exe' `
-                -Destination "$script:DiretorioTI\WinRAR.exe" `
-                -Description 'WinRAR'
-        }
-
-        '12' {
-            Save-RemoteFile `
-                -Uri 'https://download.anydesk.com/AnyDesk.exe' `
-                -Destination "$script:DiretorioTI\AnyDesk.exe" `
-                -Description 'AnyDesk'
-        }
-
-        '13' {
-            Save-RemoteFile `
-                -Uri 'https://github.com/rustdesk/rustdesk/releases/download/1.3.2/rustdesk-1.3.2-x86_64.exe' `
-                -Destination "$script:DiretorioTI\rustdesk-1.3.2-x86_64.exe" `
-                -Description 'RustDesk'
-        }
-
-        # Opção reservada para serviço específico. Não é exibida no menu.
-        '14' {
-            Invoke-RemoteScript `
-                -Uri 'https://inilog.com/suporte/628/files/628.ps1' `
-                -Description 'serviço específico 628'
-        }
-
-        '15' {
-            Save-RemoteFile `
-                -Uri 'https://github.com/hellzerg/optimizer/releases/download/16.7/Optimizer-16.7.exe' `
-                -Destination "$script:DiretorioTI\Optimizer.exe" `
-                -Description 'Optimizer'
-        }
-
-        '16' {
-            Save-RemoteFile `
-                -Uri 'https://www.inilog.com/suporte/628/files/WinMTR.exe' `
-                -Destination "$script:DiretorioTI\WinMTR.exe" `
-                -Description 'WinMTR'
-        }
-
-        '17' {
-            Save-RemoteFile `
-                -Uri 'https://download.cpuid.com/cpu-z/cpu-z_2.11-en.zip' `
-                -Destination "$script:DiretorioTI\cpu-z.zip" `
-                -Description 'CPU-Z'
-        }
-
-        '18' {
-            Open-WebAddress `
-                -Uri 'https://cdn2.minitool.com/?p=pw&e=pw-free' `
-                -Description 'MiniTool Partition Wizard'
-        }
-
-        '19' {
-            Open-WebAddress `
-                -Uri 'https://www.inilog.com/suporte/628/files/WINTOHD_Hasleo.zip' `
-                -Description 'WinToHDD'
-        }
-
-        '20' {
-            Invoke-RemoteScript `
-                -Uri 'https://raw.githubusercontent.com/francisney/inilog/refs/heads/main/godmode' `
-                -Description 'GodMode'
-        }
-
-        '21' {
-            Invoke-RemoteScript `
-                -Uri 'https://raw.githubusercontent.com/francisney/inilog/refs/heads/main/adm.ps1' `
-                -Description 'ferramentas administrativas'
-        }
-
-        '22' {
-            Invoke-RemoteScript `
-                -Uri 'https://raw.githubusercontent.com/francisney/inilog/refs/heads/main/speedtest.ps1' `
-                -Description 'teste de velocidade'
-        }
-
-        '23' {
-            Invoke-RemoteScript `
-                -Uri 'https://raw.githubusercontent.com/francisney/inilog/main/cls.ps1' `
-                -Description 'CLS'
-        }
-
-'24' {
-    Invoke-RemoteScript `
-        -Uri 'https://raw.githubusercontent.com/francisney/inilog/refs/heads/main/sysinternals.ps1' `
-        -Description 'Microsoft Sysinternals'
-}
-
-        '25' {
-            Invoke-RemoteScript `
-                -Uri 'https://raw.githubusercontent.com/francisney/winutil/refs/heads/main/windev.ps1' `
-                -Description 'WinUtil'
-        }
-
-        '26' {
-            Save-RemoteFile `
-                -Uri 'https://www.win-rar.com/fileadmin/winrar-versions/winrar/winrar-x64-701.exe' `
-                -Destination "$script:DiretorioTI\winrar-x64-701.exe" `
-                -Description 'WinRAR alternativo'
-        }
-
-        '27' {
-            Save-RemoteFile `
-                -Uri 'https://inilog.com/suporte/628/files/MudaLink.exe' `
-                -Destination "$script:DiretorioTI\MudaLink.exe" `
-                -Description 'MudaLink / Fake Failover'
-        }
-
-        '28' {
-            # Apesar da extensão .exe no repositório, este endereço retorna código PowerShell em texto.
-            Invoke-RemoteScript `
-                -Uri 'https://raw.githubusercontent.com/francisney/inilog/refs/heads/main/anydesk.exe' `
-                -Description 'reset do AnyDesk'
-        }
-
-        '29' {
-     Save-RemoteFile `
-                -Uri 'https://inilog.com/suporte/628/files/InilogWeb.exe' `
-                -Destination "$script:DiretorioTI\InilogWeb.exe" `
-                -Description 'InilogWeb.exe'
-        }
-
-        '30' {
-            Save-RemoteFile `
-                -Uri 'https://raw.githubusercontent.com/francisney/inilog/refs/heads/main/HWiNFO64.exe' `
-                -Destination "$script:DiretorioTI\HWiNFO64.exe" `
-                -Description 'HWiNFO64'
-        }
-
-        '31' {
-            Open-WebAddress `
-                -Uri 'https://www.glenn.delahoy.com/snappy-driver-installer-origin/' `
-                -Description 'Snappy Driver Installer Origin'
-        }
-
-        '32' {
-            Invoke-RemoteScript `
-                -Uri 'https://raw.githubusercontent.com/francisney/inilog/refs/heads/main/zebra.ps1' `
-                -Description 'Gerenciador Zebra N2'
-        }
-
-        '33' {
-            Invoke-RemoteScript `
-                -Uri 'https://raw.githubusercontent.com/francisney/inilog/refs/heads/main/ReparoCompartilhamento.ps1' `
-                -Description 'Reparo Compartilhamento'
-        }
-
-
-
-'34' {
-    Save-RemoteFile `
-        -Uri 'https://inilog.com/upload/INILOG_Auditoria.exe' `
-        -Destination 'C:\ti\Auditoria\INILOG_Downloader.exe' `
-        -Description 'INILOG Downloader' `
-        -Run
-}
-
-
-        '0' {
-            Write-Centered 'Encerrando o INILOG...' $script:CorAviso
-            Start-Sleep -Milliseconds 500
-        }
-
-        default {
-            Write-Status "Opção '$choice' inválida. Tente novamente." 'Warning'
-        }
-    }
-
-    if ($choice -ne '0') {
-        Write-Host ''
-        [void](Read-Host 'Pressione Enter para voltar ao menu')
-    }
-} while ($choice -ne '0')
-
-Clear-Host
-Write-Centered 'INILOG encerrado.' $script:CorSucesso
-Write-Host ''
+Start-InilogConsole -DownloadDirectory $DiretorioDownloads
