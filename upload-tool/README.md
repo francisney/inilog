@@ -6,7 +6,9 @@ Aplicativo portátil para Windows 10 e 11, com seleção de qualquer formato de 
 
 Abrir `upload.exe`, escolher um arquivo, clicar em **Carregar** e, ao concluir, clicar em **Copiar link**. O aplicativo continua sem senha. O arquivo permanece no servidor para o link continuar funcionando depois que o programa fechar.
 
-O painel web em `/backup/` exige senha e oferece **Listar arquivos**, busca por nome, tamanho, data, download e cópia do link. A listagem reúne uploads concluídos e downloads existentes na raiz do próprio backup, excluindo os componentes e configurações do sistema. O diretório `/upload/` pertence a outro sistema e não foi alterado, copiado ou redirecionado.
+O painel web em `/backup/` exige senha e oferece **Listar arquivos**, busca por nome, tamanho, data, download, cópia do link e **Apagar** com confirmação. Os arquivos apagados saem da lista e são movidos para `.inilog-upload/trash`, fora da pasta pública. Cada exclusão preserva os bytes, metadados e um `restore.json` com os caminhos originais, para recuperação administrativa. O aplicativo de distribuição `upload.exe` e os componentes PHP não podem ser apagados pelo painel.
+
+A listagem reúne uploads concluídos e downloads existentes na raiz do próprio backup, excluindo os componentes e configurações do sistema. O diretório `/upload/` pertence a outro sistema e não foi alterado, copiado ou redirecionado.
 
 O aplicativo não requer instalação, não pede administrador, não grava configurações, senha, histórico ou cópia temporária do arquivo no PC. O seletor usa a opção do Windows para não adicionar o arquivo à lista de documentos recentes. Isso não impede registros normais mantidos pelo próprio Windows, como os de execução do programa. O link copiado permanece na área de transferência por escolha do usuário.
 
@@ -31,7 +33,7 @@ Os links são públicos no formato `https://inilog.com/backup/uploads/<identific
 ## Verificações
 
 - 37 verificações do cliente no Windows: arquivo vazio, Unicode, múltiplos blocos, reenvio sem duplicação, cancelamento, integridade, layout e rodapé.
-- 100 verificações do receptor PHP: formatos diversos, nomes especiais, download público, HEAD, download parcial, rejeição de conteúdo incompleto/corrompido, login, CSRF, sessão, listagem protegida, logout e multipart autenticado.
+- 113 verificações do receptor PHP cobrem formatos diversos, nomes especiais, download público, HEAD, download parcial, rejeição de conteúdo incompleto/corrompido, login, CSRF, sessão, listagem protegida, exclusão recuperável, proteção dos componentes do sistema, logout e multipart autenticado. O total fica registrado no relatório `backend-validation.json`.
 - `tests/LiveSmoke.cs` valida o cliente compilado contra o endereço real usando arquivos de demonstração, incluindo mais de um bloco e conteúdo PHP servido sem execução.
 
 Fazer backup do código e do diretório privado antes de atualizar. Os testes e as ferramentas de compilação não devem ser publicados dentro do diretório web.

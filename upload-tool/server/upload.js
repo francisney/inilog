@@ -39,7 +39,9 @@ function renderFiles(){
   const actions=document.createElement('div');actions.className='listed-actions';
   const download=document.createElement('a');download.href=file.url;download.textContent='Baixar';download.download='';
   const copyLink=document.createElement('button');copyLink.type='button';copyLink.textContent='Copiar link';copyLink.dataset.copyUrl=file.url;
-  actions.append(download,copyLink);row.append(info,actions);filesList.append(row);
+  actions.append(download,copyLink);
+  if(file.deletable){const remove=document.createElement('button');remove.type='button';remove.textContent='Apagar';remove.className='delete-file';remove.dataset.deleteKey=file.key;remove.dataset.filename=file.name;actions.append(remove);}
+  row.append(info,actions);filesList.append(row);
  }
 }
 async function loadFiles(){
@@ -51,4 +53,15 @@ async function loadFiles(){
 filesPanel.addEventListener('toggle',()=>{if(filesPanel.open)loadFiles();});
 document.getElementById('files-refresh').addEventListener('click',loadFiles);
 filesSearch.addEventListener('input',renderFiles);
-filesList.addEventListener('click',async event=>{const button=event.target.closest('[data-copy-url]');if(!button)return;try{await navigator.clipboard.writeText(button.dataset.copyUrl);filesStatus.textContent='Link copiado.';}catch{link.value=button.dataset.copyUrl;link.select();filesStatus.textContent='Link selecionado no campo acima. Use Ctrl+C para copiar.';}});
+filesList.addEventListener('click',async event=>{
+ const remove=event.target.closest('[data-delete-key]');
+ if(remove){
+  if(!window.confirm('Apagar o arquivo "'+remove.dataset.filename+'"?\nEle sairá da lista e o link deixará de estar disponível no servidor.'))return;
+  remove.disabled=true;
+  try{const response=await fetch('index.php?panel=delete',{method:'POST',headers:{'Content-Type':'application/json',...webHeaders},body:JSON.stringify({key:remove.dataset.deleteKey})});const data=await response.json();if(!response.ok||!data.ok)throw Error(data.error||'Não foi possível apagar o arquivo.');listedFiles=listedFiles.filter(file=>file.key!==remove.dataset.deleteKey);renderFiles();filesStatus.textContent=data.message;}
+  catch(error){filesStatus.textContent=error.message;remove.disabled=false;}
+  return;
+ }
+ const button=event.target.closest('[data-copy-url]');if(!button)return;
+ try{await navigator.clipboard.writeText(button.dataset.copyUrl);filesStatus.textContent='Link copiado.';}catch{link.value=button.dataset.copyUrl;link.select();filesStatus.textContent='Link selecionado no campo acima. Use Ctrl+C para copiar.';}
+});
