@@ -82,7 +82,7 @@ function Initialize-InilogState {
     param([string]$DownloadDirectory)
 
     $script:InilogState = [PSCustomObject]@{
-        Version = '2.0.2'
+        Version = '2.0.3'
         DownloadDirectory = $DownloadDirectory
         PublicIP = ('Indispon' + [char]0x00ED + 'vel')
         Provider = ('Indispon' + [char]0x00ED + 'vel')
@@ -225,7 +225,7 @@ function Save-InilogFile {
         Write-InilogStatus ('Baixando {0}...' -f $Description)
 
         $request = [Net.HttpWebRequest]::Create($address)
-        $request.UserAgent = 'INILOG-Suporte/2.0.2'
+        $request.UserAgent = 'INILOG-Suporte/2.0.3'
         $request.Timeout = 30000
         $request.ReadWriteTimeout = 30000
         $request.AllowAutoRedirect = $true
@@ -445,7 +445,6 @@ function Get-InilogActions {
         New-InilogAction -Id 8 -Category $diagnostics -Label 'Advanced IP Scanner' -Kind Download -Uri 'https://download.advanced-ip-scanner.com/download/files/Advanced_IP_Scanner_2.5.4594.1.exe' -FileName 'Advanced_IP_Scanner.exe'
         New-InilogAction -Id 9 -Category 'Reservado' -Label ('Ativa' + [char]0x00E7 + [char]0x00E3 + 'o Windows/Office') -Kind Script -Uri 'https://get.activated.win/' -FileName 'Scripts\reservado-09.ps1' -Hidden
         New-InilogAction -Id 10 -Category $diagnostics -Label 'CrystalDiskInfo Portable' -Kind Download -Uri 'https://www.inilog.com/suporte/628/files/CrystalDiskInfoPortable.zip' -FileName 'CrystalDiskInfo.zip'
-        New-InilogAction -Id 13 -Category $support -Label 'RustDesk' -Kind Download -Uri 'https://github.com/rustdesk/rustdesk/releases/download/1.3.2/rustdesk-1.3.2-x86_64.exe' -FileName 'rustdesk-1.3.2-x86_64.exe'
         New-InilogAction -Id 14 -Category 'Reservado' -Label ('Servi' + [char]0x00E7 + 'o espec' + [char]0x00ED + 'fico 628') -Kind Script -Uri 'https://inilog.com/suporte/628/files/628.ps1' -FileName 'Scripts\628.ps1' -Hidden
         New-InilogAction -Id 15 -Category $system -Label 'Optimizer' -Kind Download -Uri 'https://github.com/hellzerg/optimizer/releases/download/16.7/Optimizer-16.7.exe' -FileName 'Optimizer.exe'
         New-InilogAction -Id 16 -Category $diagnostics -Label 'WinMTR' -Kind Download -Uri 'https://www.inilog.com/suporte/628/files/WinMTR.exe' -FileName 'WinMTR.exe'
@@ -454,13 +453,13 @@ function Get-InilogActions {
         New-InilogAction -Id 19 -Category $system -Label 'WinToHDD' -Kind Links -Uri 'https://www.inilog.com/suporte/628/files/WINTOHD_Hasleo.zip'
         New-InilogAction -Id 20 -Category $system -Label 'GodMode' -Kind Script -Uri 'https://raw.githubusercontent.com/francisney/inilog/refs/heads/main/godmode' -FileName 'Scripts\godmode.ps1'
         New-InilogAction -Id 22 -Category $diagnostics -Label 'Teste de velocidade' -Kind Script -Uri 'https://raw.githubusercontent.com/francisney/inilog/refs/heads/main/speedtest.ps1' -FileName 'Scripts\speedtest.ps1'
-        New-InilogAction -Id 24 -Category $diagnostics -Label 'Microsoft Sysinternals' -Kind Script -Uri 'https://raw.githubusercontent.com/francisney/inilog/refs/heads/main/sysinternals.ps1' -FileName 'Scripts\sysinternals.ps1'
         New-InilogAction -Id 25 -Category $system -Label 'WinUtil' -Kind Script -Uri 'https://raw.githubusercontent.com/francisney/winutil/refs/heads/main/windev.ps1' -FileName 'Scripts\windev.ps1'
         New-InilogAction -Id 27 -Category $diagnostics -Label 'MudaLink / Fake Failover' -Kind Download -Uri 'https://inilog.com/suporte/628/files/MudaLink.exe' -FileName 'MudaLink.exe'
         New-InilogAction -Id 29 -Category $support -Label 'Web Control / InilogWeb' -Kind Download -Uri 'https://inilog.com/suporte/628/files/InilogWeb.exe' -FileName 'InilogWeb.exe'
         New-InilogAction -Id 30 -Category $diagnostics -Label 'HWiNFO64' -Kind Download -Uri 'https://raw.githubusercontent.com/francisney/inilog/refs/heads/main/HWiNFO64.exe' -FileName 'HWiNFO64.exe'
         New-InilogAction -Id 31 -Category $system -Label 'Snappy Driver Installer Origin' -Kind Links -Uri 'https://www.glenn.delahoy.com/snappy-driver-installer-origin/'
         New-InilogAction -Id 34 -Category $support -Label 'Auditoria INILOG' -Kind Download -Uri 'https://inilog.com/upload/INILOG_Auditoria.exe' -FileName 'Auditoria\INILOG_Downloader.exe' -Run
+        New-InilogAction -Id 35 -Category $system -Label 'Ninite - Instalar programas' -Kind Links -Uri 'https://ninite.com/'
     )
 }
 
