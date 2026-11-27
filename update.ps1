@@ -446,7 +446,7 @@ function Get-InilogActions {
         New-InilogAction -Id 9 -Category 'Reservado' -Label ('Ativa' + [char]0x00E7 + [char]0x00E3 + 'o Windows/Office') -Kind Script -Uri 'https://get.activated.win/' -FileName 'Scripts\reservado-09.ps1' -Hidden
         New-InilogAction -Id 10 -Category $diagnostics -Label 'CrystalDiskInfo Portable' -Kind Download -Uri 'https://www.inilog.com/suporte/628/files/CrystalDiskInfoPortable.zip' -FileName 'CrystalDiskInfo.zip'
         New-InilogAction -Id 14 -Category 'Reservado' -Label ('Servi' + [char]0x00E7 + 'o espec' + [char]0x00ED + 'fico 628') -Kind Script -Uri 'https://inilog.com/suporte/628/files/628.ps1' -FileName 'Scripts\628.ps1' -Hidden
-        New-InilogAction -Id 15 -Category $system -Label 'Optimizer' -Kind Download -Uri 'https://github.com/hellzerg/optimizer/releases/download/16.7/Optimizer-16.7.exe' -FileName 'Optimizer.exe'
+        New-InilogAction -Id 15 -Category $system -Label 'Optimizer' -Kind Download -Uri 'https://github.com/hellzerg/optimizer/releases/download/17.1/Optimizer-17.1.exe' -FileName 'Optimizer.exe'
         New-InilogAction -Id 16 -Category $diagnostics -Label 'WinMTR' -Kind Download -Uri 'https://www.inilog.com/suporte/628/files/WinMTR.exe' -FileName 'WinMTR.exe'
         New-InilogAction -Id 17 -Category $diagnostics -Label 'CPU-Z' -Kind Download -Uri 'https://download.cpuid.com/cpu-z/cpu-z_2.11-en.zip' -FileName 'cpu-z.zip'
         New-InilogAction -Id 18 -Category $system -Label 'MiniTool Partition Wizard' -Kind Links -Uri 'https://cdn2.minitool.com/?p=pw&e=pw-free'
